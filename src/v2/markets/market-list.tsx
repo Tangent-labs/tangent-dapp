@@ -1,0 +1,547 @@
+"use client"
+
+import Link from "next/link"
+import { ReactNode, useMemo, useState } from "react"
+import { formatUnits } from "viem"
+import { AnimatePresence, motion } from "framer-motion"
+import { ChevronRight, LayoutGrid, List, Search } from "lucide-react"
+import { cn } from "@/lib/utils"
+import { ListRowData } from "@/types"
+import { formatMillions } from "@/lib/number_formatter"
+import { useRootContext } from "@/components/products/root/root_context"
+import { useUSGContext } from "@/components/products/usg/usg_context"
+import { useUSGMaketListContext } from "@/components/products/usg/list/usg_market_list_context"
+import { marketOptions, protocolOptions } from "@/components/products/usg/list/usg_market_controller"
+import { TokenImage } from "@/components/design_system/structure/token_image"
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
+import { SelectMenu } from "@/v2/ui/select-menu"
+import { Sparkline } from "@/v2/ui/sparkline"
+
+/** Market kinds as the docs define them (docs.tangent.finance, markets overview). */
+const KINDS: Record<string, { title: string; rule: string }> = {
+  HEC: { title: "High emissions collateral", rule: "rewards cut up to 90%, then interest under the market threshold" },
+  LEC: { title: "Low emissions collateral", rule: "dynamic interest from day one, rewards cut 2.5%" },
+  FIR: { title: "Fixed interest rate", rule: "fixed interest, rewards cut 10%" },
+}
+const VENUE: Record<string, string> = {
+  Convex_CRV: "Curve LP · Convex",
+  Convex_FXN: "Curve LP · Convex",
+  STAKEDAO_CRV_Vault: "Curve LP · Stake DAO",
+  CRV_Gauge: "Curve LP",
+  Pendle_PT: "Pendle PT",
+}
+const kindOf = (r: ListRowData) => (r.isFixedRate ? "FIR" : r.type)
+const ind = (r: ListRowData, key: string) => r.indicators.find((i) => i.key === key)
+const pct = (n?: number) => (n === undefined || Number.isNaN(n) ? "-" : `${n.toFixed(2)}%`)
+
+/** Sort keys are the ones the live getSortedRows understands. */
+const SORTS = [
+  { value: "default", label: "Your positions, then TVL" },
+  { value: "tvl", label: "TVL" },
+  { value: "vapr", label: "vAPR" },
+  { value: "maxvapr", label: "Max lev. vAPR" },
+  { value: "borrowRate", label: "Borrow rate", asc: true },
+  { value: "borrowed", label: "Borrowed" },
+]
+const SHOW = [
+  { value: "all", label: "All markets" },
+  { value: "deposits", label: "Your deposits" },
+  { value: "deprecated", label: "Deprecated" },
+]
+
+export function MarketListV2() {
+  const {
+    displayRows,
+    globalData,
+    searchValue,
+    setSearchValue,
+    userData,
+    getSortedRows,
+    marketType,
+    setMarketType,
+    protocol,
+    setProtocol,
+    filteredBy,
+    setFilteredBy,
+  } = useUSGMaketListContext()
+  const { sUSGCurrentAPY, priceHistory } = useRootContext()
+  const { lpUserPoints, voteUserPoints } = useUSGContext()
+  const [sort, setSort] = useState("default")
+  const [view, setView] = useState<"list" | "cards">("list")
+
+  const loading = globalData.USGPrice === "-"
+  const sorted = useMemo(() => {
+    const s = SORTS.find((x) => x.value === sort)
+    return getSortedRows(displayRows, { search: undefined, sort: { key: sort, direction: s?.asc ? "asc" : "desc" } })
+  }, [displayRows, sort, getSortedRows])
+
+  const groups = (["HEC", "LEC", "FIR"] as const).map((k) => ({ k, rows: sorted.filter((r) => kindOf(r) === k) })).filter((g) => g.rows.length)
+  const grouped = sort === "default"
+
+  const userDebt = Number(formatUnits(userData?.totalUserDebt || 0n, 18))
+  const userDeposit = Number(formatUnits(userData?.totalUserDeposit || 0n, 18))
+  const points = (lpUserPoints?.lpTotalPoints || 0) + (voteUserPoints?.voteTotalPoints || 0)
+
+  const typeOptions = marketOptions.map((o) => ({ ...o, label: o.value === "All" ? "All types" : o.label, hint: KINDS[o.value]?.title }))
+  const protocolOpts = protocolOptions.map((o) => ({ ...o, label: o.value === "All" ? "All protocols" : o.label }))
+
+  return (
+    <div className="font-sans">
+      <h1 className="text-[32px] font-semibold tracking-[-0.02em]">Markets</h1>
+      <p className="mt-1 text-[14px] text-ink-2">
+        Borrow USG against productive collateral.
+        {!loading && ` Markets hold $${formatMillions(globalData.globalTvl)} of collateral against ${formatMillions(globalData.globalDebt)} USG of debt.`}{" "}
+        <Link
+          href="https://docs.tangent.finance/docs/usg/overview_usg#markets%E2%80%8B"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-white underline decoration-white/25 underline-offset-4 hover:decoration-white"
+        >
+          HEC, LEC and FIR explained
+        </Link>
+      </p>
+
+      {/* overview: the peg first, then the four protocol numbers */}
+      <div className="mt-6 grid grid-cols-1 gap-4 xl:grid-cols-2">
+        <div className="flex flex-col rounded-2xl border border-hairline bg-surface p-6">
+          <span className="text-[13px] font-medium text-ink-2">USG price</span>
+          <span className={cn("mt-1 text-[44px] font-light tabular-nums leading-none tracking-[-0.03em]", loading && "animate-pulse text-ink-3")}>
+            {loading ? "$-" : `$${globalData.USGPrice}`}
+          </span>
+          {!loading && (
+            <p className="mt-3 text-[13px] text-ink-2">
+              {(() => {
+                const under = (1 - Number(globalData.USGPrice)) * 100
+                return under > 0 ? `${under.toFixed(2)}% under the $1.00 peg.` : `${(-under).toFixed(2)}% above the $1.00 peg.`
+              })()}{" "}
+              USG supply {globalData.USGSupply}.
+            </p>
+          )}
+          <div className="mt-auto pt-5">
+            <div className="mb-1 flex justify-between text-[11px] text-ink-3">
+              <span>Last month</span>
+              <span>Peg $1.00</span>
+            </div>
+            <Sparkline values={(priceHistory?.USG ?? []).map((p) => p.uv)} height={56} reference={1} />
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <Tile label="Markets TVL" value={loading ? "-" : `$${formatMillions(globalData.globalTvl)}`} foot="Collateral deposited in all markets" />
+          <Tile label="Total debt" value={loading ? "-" : `${formatMillions(globalData.globalDebt)} USG`} foot="USG borrowed across markets" />
+          <Tile label="Collateral ratio" value={globalData.globalCr} foot="Markets TVL over total debt" />
+          <Tile
+            label="sUSG APY"
+            value={sUSGCurrentAPY ? `${sUSGCurrentAPY.toFixed(2)}%` : "-"}
+            foot={`sUSG ${globalData.sUSGPrice}, supply ${globalData.sUSGSupply}`}
+          />
+        </div>
+      </div>
+
+      {/* your numbers, only when there is something to show */}
+      {(userDeposit > 0 || userDebt > 0 || points > 0) && (
+        <div className="mt-4 flex flex-wrap items-center gap-x-8 gap-y-2 rounded-2xl border border-hairline bg-surface px-5 py-3.5 text-[13px]">
+          <span className="font-semibold">You</span>
+          <Inline label="Collateral" value={`$${formatMillions(userDeposit)}`} />
+          <Inline label="Debt" value={`${formatMillions(userDebt)} USG`} />
+          <Inline
+            label="Points"
+            value={
+              <HoverCard openDelay={100} closeDelay={100}>
+                <HoverCardTrigger asChild>
+                  <span className="cursor-help underline decoration-white/20 decoration-dotted underline-offset-4">{formatMillions(points)} pts</span>
+                </HoverCardTrigger>
+                <HoverCardContent side="top" className="z-[9999] w-fit rounded-lg border-white/10 bg-[#1a1a1d] p-2 text-xs text-ink-2">
+                  LP points {formatMillions(lpUserPoints?.lpTotalPoints)}, vote points {formatMillions(voteUserPoints?.voteTotalPoints)}
+                </HoverCardContent>
+              </HoverCard>
+            }
+          />
+        </div>
+      )}
+
+      {/* toolbar: same filters as the live list (single select), plus sort and view */}
+      <div className="mb-3 mt-10 flex flex-wrap items-center gap-2">
+        <div role="tablist" className="flex h-10 items-center gap-0.5 rounded-[10px] bg-white/[0.03] p-1 ring-1 ring-inset ring-hairline">
+          {SHOW.map((s) => (
+            <button
+              key={s.value}
+              role="tab"
+              aria-selected={filteredBy === s.value}
+              onClick={() => setFilteredBy(s.value)}
+              className={cn(
+                "relative h-8 rounded-lg px-3 text-[13px] font-medium transition-colors",
+                filteredBy === s.value ? "text-white" : "text-ink-3 hover:text-ink-2"
+              )}
+            >
+              {filteredBy === s.value && (
+                <motion.span
+                  layoutId="v2-market-show"
+                  className="absolute inset-0 rounded-lg bg-white/[0.09]"
+                  transition={{ type: "spring", visualDuration: 0.3, bounce: 0.15 }}
+                />
+              )}
+              <span className="relative">{s.label}</span>
+            </button>
+          ))}
+        </div>
+        <SelectMenu label="Type" value={marketType} options={typeOptions} onChange={setMarketType} allValue="All" />
+        <SelectMenu label="Protocol" value={protocol} options={protocolOpts} onChange={setProtocol} allValue="All" />
+        <label className="ml-auto flex h-10 w-full items-center gap-2 rounded-[10px] bg-white/[0.03] px-3.5 text-[13px] ring-1 ring-inset ring-hairline focus-within:ring-white/20 sm:w-[220px]">
+          <Search className="h-3.5 w-3.5 text-ink-3" strokeWidth={1.75} />
+          <input
+            value={searchValue ?? ""}
+            onChange={(e) => setSearchValue(e.target.value)}
+            placeholder="Filter markets"
+            className="w-full bg-transparent outline-none placeholder:text-ink-3"
+          />
+        </label>
+        <SelectMenu label="Sort" value={sort} options={SORTS} onChange={setSort} />
+        <div role="radiogroup" aria-label="View" className="flex h-10 items-center gap-0.5 rounded-[10px] bg-white/[0.03] p-1 ring-1 ring-inset ring-hairline">
+          {(
+            [
+              ["list", List],
+              ["cards", LayoutGrid],
+            ] as const
+          ).map(([v, Icon]) => (
+            <button
+              key={v}
+              role="radio"
+              aria-checked={view === v}
+              aria-label={v === "list" ? "List view" : "Card view"}
+              onClick={() => setView(v)}
+              className={cn("relative grid h-8 w-8 place-items-center rounded-lg", view === v ? "text-white" : "text-ink-3 hover:text-ink-2")}
+            >
+              {view === v && (
+                <motion.span
+                  layoutId="v2-market-view"
+                  className="absolute inset-0 rounded-lg bg-white/[0.09]"
+                  transition={{ type: "spring", visualDuration: 0.3, bounce: 0.15 }}
+                />
+              )}
+              <Icon className="relative h-4 w-4" strokeWidth={1.75} />
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {loading ? (
+        <div className="space-y-2 rounded-2xl border border-hairline bg-surface p-4">
+          {Array.from({ length: 6 }, (_, i) => (
+            <div key={i} className="h-12 animate-pulse rounded-lg bg-white/[0.03]" />
+          ))}
+        </div>
+      ) : sorted.length === 0 ? (
+        <div className="rounded-2xl border border-hairline bg-surface px-4 py-16 text-center">
+          <div className="text-[15px] font-semibold">{filteredBy === "deposits" ? "You have no deposit yet" : "No market matches these filters"}</div>
+          <p className="mt-1 text-[13px] text-ink-2">
+            {filteredBy === "deposits"
+              ? "Open a market and deposit collateral to see it here."
+              : "Change the type or protocol, or try a token symbol such as USDC."}
+          </p>
+          <button
+            onClick={() => {
+              setFilteredBy("all")
+              setMarketType("All")
+              setProtocol("All")
+              setSearchValue(null)
+            }}
+            className="mt-4 h-9 rounded-[9px] bg-white/[0.07] px-4 text-[13px] font-semibold transition-colors hover:bg-white/10"
+          >
+            Show all markets
+          </button>
+        </div>
+      ) : view === "list" ? (
+        <div className="overflow-x-auto rounded-2xl border border-hairline bg-surface px-2 pb-3">
+          <div className="min-w-[900px]">
+            <div className="grid grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,0.85fr))_minmax(0,0.9fr)_minmax(0,1.25fr)_24px] gap-4 px-4 pb-2 pt-4 text-xs text-ink-3">
+              <span>Collateral</span>
+              <Head info="vAPR of the collateral. Hover a value for its breakdown.">Collateral vAPR</Head>
+              <Head info="Interest rate that borrowers pay on their outstanding debt.">Borrow rate</Head>
+              <Head info="Net vAPR at max leverage.">Max lev. vAPR</Head>
+              <Head info="Value of the collateral deposited in the market.">TVL</Head>
+              <Head info="USG borrowed out of the market's borrow cap. At the cap, borrowing pauses until debt is repaid.">Borrow capacity</Head>
+              <span />
+            </div>
+            {grouped
+              ? groups.map((g) => (
+                  <div key={g.k}>
+                    <GroupHead kind={g.k} rows={g.rows} />
+                    {g.rows.map((r) => (
+                      <Row key={r.address} r={r} />
+                    ))}
+                  </div>
+                ))
+              : sorted.map((r) => <Row key={r.address} r={r} />)}
+          </div>
+        </div>
+      ) : (
+        <div className="space-y-6">
+          {(grouped ? groups : [{ k: "", rows: sorted }]).map((g) => (
+            <div key={g.k || "all"}>
+              {g.k && <GroupHead kind={g.k} rows={g.rows} flush />}
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+                <AnimatePresence initial={false}>
+                  {g.rows.map((r) => (
+                    <Card key={r.address} r={r} />
+                  ))}
+                </AnimatePresence>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function Tile({ label, value, foot }: { label: string; value: string; foot: string }) {
+  return (
+    <div className="flex flex-col rounded-2xl border border-hairline bg-surface p-[18px]">
+      <span className="text-[13px] font-medium text-ink-2">{label}</span>
+      <span className={cn("mt-2 text-[26px] font-medium tabular-nums tracking-[-0.02em]", value === "-" && "animate-pulse text-ink-3")}>{value}</span>
+      <div className="mt-auto border-t border-divider pt-2.5 text-xs text-ink-3">{foot}</div>
+    </div>
+  )
+}
+
+function Inline({ label, value }: { label: string; value: ReactNode }) {
+  return (
+    <span className="flex items-baseline gap-2">
+      <span className="text-ink-3">{label}</span>
+      <span className="font-medium tabular-nums">{value}</span>
+    </span>
+  )
+}
+
+function Head({ children, info }: { children: ReactNode; info: string }) {
+  return (
+    <HoverCard openDelay={150} closeDelay={80}>
+      <HoverCardTrigger asChild>
+        <span className="w-fit cursor-help underline decoration-white/15 decoration-dotted underline-offset-4">{children}</span>
+      </HoverCardTrigger>
+      <HoverCardContent side="top" align="start" className="z-[9999] w-fit max-w-60 rounded-lg border-white/10 bg-[#1a1a1d] p-2 text-xs text-ink-2">
+        {info}
+      </HoverCardContent>
+    </HoverCard>
+  )
+}
+
+function GroupHead({ kind, rows, flush }: { kind: string; rows: ListRowData[]; flush?: boolean }) {
+  const tvl = rows.reduce((s, r) => s + Number(formatUnits(BigInt(r.totalCollateralUSDValue || "0"), 18)), 0)
+  return (
+    <div className={cn("flex flex-wrap items-baseline gap-x-2.5 gap-y-0.5", flush ? "px-1 pb-3" : "px-4 pb-2 pt-4")}>
+      <span className="text-[14px] font-semibold">{kind}</span>
+      <span className="text-[13px] text-ink-2">
+        {KINDS[kind]?.title}, {KINDS[kind]?.rule}
+      </span>
+      <span className="ml-auto text-xs tabular-nums text-ink-3">
+        {rows.length} {rows.length > 1 ? "markets" : "market"} · ${formatMillions(tvl)} TVL
+      </span>
+    </div>
+  )
+}
+
+function capacity(r: ListRowData) {
+  const borrowed = Number(ind(r, "borrowed")?.raw || 0)
+  const cap = Number(r.maxBorrowable || 0)
+  return { ratio: cap > 0 ? Math.min(1, borrowed / cap) : 0, label: `${ind(r, "borrowed")?.value} / ${ind(r, "borrowed")?.subValue}` }
+}
+
+function Status({ r }: { r: ListRowData }) {
+  const paused = r.isDepositPaused || r.isBorrowPaused || r.isLeveragePaused
+  if (!paused && !r.userHasDeposited) return null
+  return (
+    <span className="ml-2 inline-flex items-center gap-3 text-[11px] text-ink-2">
+      {r.userHasDeposited && (
+        <span className="inline-flex items-center gap-1">
+          <span className="h-1.5 w-1.5 rounded-full bg-action" /> Your deposit
+        </span>
+      )}
+      {paused && (
+        <span className="inline-flex items-center gap-1">
+          <span className="h-1.5 w-1.5 rounded-full bg-warning" />{" "}
+          {r.isDepositPaused ? "Deposits paused" : r.isBorrowPaused ? "Borrowing paused" : "Leverage paused"}
+        </span>
+      )}
+    </span>
+  )
+}
+
+function Row({ r }: { r: ListRowData }) {
+  const { ratio, label } = capacity(r)
+  const lev = Number(ind(r, "maxvapr")?.value)
+  const levProj = Number(ind(r, "maxvapr")?.subValue)
+  const rate = ind(r, "borrowRate")
+  return (
+    <Link
+      href={`/${r.address}/deposit-borrow`}
+      className="group grid grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,0.85fr))_minmax(0,0.9fr)_minmax(0,1.25fr)_24px] items-center gap-4 rounded-[10px] px-4 py-3 outline-none transition-colors duration-150 hover:bg-white/[0.045] focus-visible:bg-white/[0.045]"
+    >
+      <span className="flex min-w-0 items-center gap-3">
+        <TokenImage token={r.logoKey} size={32} className="h-8 w-auto shrink-0" />
+        <span className="min-w-0">
+          <span className="block truncate text-[14px] font-semibold leading-5">{r.name}</span>
+          <span className="flex items-center truncate text-xs leading-4 text-ink-3">
+            {VENUE[r.protocol] ?? r.protocol}
+            <Status r={r} />
+          </span>
+        </span>
+      </span>
+      <Vapr r={r} />
+      <Two top={rate?.value ?? "-"} sub={r.isFixedRate ? "Fixed rate" : "Variable"} />
+      <Two
+        top={pct(lev)}
+        topClass={lev < 0 ? "text-negative" : undefined}
+        sub={Number.isNaN(levProj) ? "No projection" : `Proj. ${pct(levProj)}`}
+        subClass={levProj < 0 ? "text-negative" : undefined}
+      />
+      <Two top={ind(r, "tvl")?.value ?? "-"} sub={`Max LTV ${(r.maxLTV * 100).toFixed(0)}%`} />
+      <span className="min-w-0">
+        <span className={cn("block text-[15px] tabular-nums leading-5", r.isBorrowCapReached && "text-warning")}>
+          {r.isBorrowCapReached ? "Cap reached" : `${Math.round(ratio * 100)}%`}
+        </span>
+        <span className="mt-1 flex items-center gap-2">
+          <Ticks ratio={ratio} full={r.isBorrowCapReached} />
+          <span className="truncate text-xs tabular-nums text-ink-3">{label}</span>
+        </span>
+      </span>
+      <ChevronRight
+        className="h-4 w-4 text-ink-3 opacity-0 transition-[opacity,transform] duration-150 group-hover:translate-x-0.5 group-hover:opacity-100"
+        strokeWidth={1.75}
+      />
+    </Link>
+  )
+}
+
+function Card({ r }: { r: ListRowData }) {
+  const { ratio, label } = capacity(r)
+  const lev = Number(ind(r, "maxvapr")?.value)
+  const levProj = Number(ind(r, "maxvapr")?.subValue)
+  return (
+    <motion.div
+      layout
+      initial={{ opacity: 0, scale: 0.98 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.98 }}
+      transition={{ duration: 0.18 }}
+    >
+      <Link
+        href={`/${r.address}/deposit-borrow`}
+        className="focus-visible:ring-action/60 group flex h-full flex-col rounded-2xl border border-hairline bg-surface outline-none transition-colors duration-150 hover:border-white/15 hover:bg-[#1a1a1d] focus-visible:ring-2"
+      >
+        <div className="flex items-center gap-3 px-5 pt-5">
+          <TokenImage token={r.logoKey} size={32} className="h-8 w-auto shrink-0" />
+          <span className="min-w-0 flex-1">
+            <span className="block truncate text-[15px] font-semibold leading-5">{r.name}</span>
+            <span className="block truncate text-xs leading-4 text-ink-3">
+              {kindOf(r)} · {VENUE[r.protocol] ?? r.protocol}
+            </span>
+          </span>
+          <ChevronRight
+            className="h-4 w-4 text-ink-3 opacity-0 transition-[opacity,transform] duration-150 group-hover:translate-x-0.5 group-hover:opacity-100"
+            strokeWidth={1.75}
+          />
+        </div>
+        <div className="px-5">
+          <Status r={r} />
+        </div>
+        <div className="grid grid-cols-[1fr_auto] gap-4 px-5 pt-4">
+          <div>
+            <div className="text-xs text-ink-3">Collateral vAPR</div>
+            <div className="mt-1.5 text-[28px] font-semibold tabular-nums leading-none tracking-[-0.02em]">{pct(r.apr.current)}</div>
+            <div className="mt-1.5 text-xs tabular-nums text-ink-3">Projected {pct(r.apr.projected)}</div>
+          </div>
+          <div className="text-right">
+            <div className="text-xs text-ink-3">TVL</div>
+            <div className="mt-1.5 text-[15px] font-medium tabular-nums leading-5">{ind(r, "tvl")?.value}</div>
+            <div className="mt-1 text-xs tabular-nums text-ink-3">Max LTV {(r.maxLTV * 100).toFixed(0)}%</div>
+          </div>
+        </div>
+        <div className="mx-5 mb-4 mt-5 grid grid-cols-2 gap-4 border-t border-divider pt-4">
+          <div>
+            <div className="text-xs text-ink-3">Borrow rate</div>
+            <div className="mt-1 text-[15px] font-medium tabular-nums leading-5">{ind(r, "borrowRate")?.value}</div>
+            <div className="text-xs text-ink-3">{r.isFixedRate ? "Fixed" : "Variable"}</div>
+          </div>
+          <div>
+            <div className="text-xs text-ink-3">Max lev. vAPR</div>
+            <div className={cn("mt-1 text-[15px] font-medium tabular-nums leading-5", lev < 0 && "text-negative")}>{pct(lev)}</div>
+            <div className="text-xs tabular-nums text-ink-3">{Number.isNaN(levProj) ? "No projection" : `Projected ${pct(levProj)}`}</div>
+          </div>
+        </div>
+        <div className="mt-auto rounded-b-2xl border-t border-divider bg-white/[0.015] px-5 py-3.5">
+          <div className="flex items-baseline justify-between">
+            <span className="text-xs text-ink-3">Borrow capacity</span>
+            <span className={cn("text-xs font-medium tabular-nums", r.isBorrowCapReached ? "text-warning" : "text-white")}>
+              {r.isBorrowCapReached ? "Cap reached" : `${Math.round(ratio * 100)}% used`}
+            </span>
+          </div>
+          <div className="mt-2 flex items-center justify-between gap-3">
+            <Ticks ratio={ratio} full={r.isBorrowCapReached} />
+            <span className="text-xs tabular-nums text-ink-3">{label} USG</span>
+          </div>
+        </div>
+      </Link>
+    </motion.div>
+  )
+}
+
+function Two({ top, sub, topClass, subClass }: { top: string; sub: string; topClass?: string; subClass?: string }) {
+  return (
+    <span className="min-w-0">
+      <span className={cn("block text-[15px] tabular-nums leading-5", topClass)}>{top}</span>
+      <span className={cn("mt-1 block text-xs tabular-nums leading-4 text-ink-3", subClass)}>{sub}</span>
+    </span>
+  )
+}
+
+/** 20 ticks, 1 tick = 5% of the borrow cap. Blue while there is room, amber at the cap. */
+function Ticks({ ratio, full }: { ratio: number; full?: boolean }) {
+  const on = Math.round(ratio * 20)
+  return (
+    <span className="flex shrink-0 gap-[2px]" aria-hidden>
+      {Array.from({ length: 20 }, (_, i) => (
+        <span key={i} className={cn("h-2.5 w-[3px] rounded-[1px]", i < on ? (full ? "bg-warning" : "bg-action") : "bg-white/10")} />
+      ))}
+    </span>
+  )
+}
+
+/** vAPR column: the value that matters, with the live per-token breakdown on hover. */
+function Vapr({ r }: { r: ListRowData }) {
+  return (
+    <HoverCard openDelay={120} closeDelay={80}>
+      <HoverCardTrigger asChild>
+        <span className="min-w-0 cursor-help">
+          <span className="block text-[15px] font-semibold tabular-nums leading-5">{pct(r.apr.current)}</span>
+          <span className="mt-1 block text-xs tabular-nums leading-4 text-ink-3">Proj. {pct(r.apr.projected)}</span>
+        </span>
+      </HoverCardTrigger>
+      <HoverCardContent side="top" align="start" className="z-[9999] w-[240px] rounded-[10px] border-white/10 bg-[#1c1c1f] p-3 text-xs text-white">
+        <div className="flex items-center gap-1.5 font-semibold">
+          <TokenImage token={r.logoKey} size={16} className="h-4 w-auto" /> {r.name}
+        </div>
+        <Breakdown title="Current vAPR" total={r.apr.current} details={r.currentAPRDetails} />
+        {r.protocol !== "Pendle_PT" && <Breakdown title="Projected vAPR" total={r.apr.projected} details={r.projectedAPRDetails} />}
+      </HoverCardContent>
+    </HoverCard>
+  )
+}
+
+function Breakdown({ title, total, details }: { title: string; total?: number; details?: Record<string, number> }) {
+  const rows = Object.entries(details ?? {}).filter(([, v]) => (v ?? 0) >= 0.01)
+  return (
+    <div className="mt-2.5">
+      <div className="flex justify-between border-b border-white/10 pb-1 font-semibold">
+        <span>{title}</span>
+        <span className="tabular-nums">{pct(total)}</span>
+      </div>
+      {rows.map(([k, v]) => (
+        <div key={k} className="mt-1 flex justify-between text-ink-2">
+          <span>{k === "APY" ? "Base APY" : `${k} APR`}</span>
+          <span className="tabular-nums">{pct(v)}</span>
+        </div>
+      ))}
+    </div>
+  )
+}

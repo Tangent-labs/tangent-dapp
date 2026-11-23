@@ -1,8 +1,17 @@
 import { HTMLAttributes, forwardRef } from "react"
+import { cn } from "@/lib/utils"
+import { UI_V2 } from "@/v2/ui"
 
 type ReliefCardProps = HTMLAttributes<HTMLDivElement>
 
 export const ReliefCard = forwardRef<HTMLDivElement, ReliefCardProps>(({ children, className = "", ...props }, ref) => {
+  if (UI_V2)
+    return (
+      <div ref={ref} {...props} className={cn("relative overflow-hidden rounded-2xl border border-hairline bg-surface", className)}>
+        {children}
+      </div>
+    )
+
   return (
     <div ref={ref} {...props} className={`relative overflow-hidden rounded-lg bg-overlay-panel backdrop-blur-[60px] ${className}`}>
       {/* Gradient border effect */}

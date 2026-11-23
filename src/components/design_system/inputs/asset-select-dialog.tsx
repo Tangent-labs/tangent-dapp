@@ -11,6 +11,8 @@ import { Input } from "@/components/ui/input"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 import { DepositReceiveAsset } from "@/components/products/usg/usg_type"
 import { specialTokensList } from "@/components/products/usg/usg_repository"
+import { UI_V2 } from "@/v2/ui"
+import { TokenDialogV2, TokenOption } from "@/v2/ui/token-dialog"
 
 type OptionT = DepositReceiveAsset
 
@@ -102,19 +104,42 @@ export function AssetSelectionDialog<T extends OptionT>({
     )
   }
 
+  if (UI_V2)
+    return (
+      <TokenDialogV2
+        options={options as unknown as TokenOption[]}
+        selected={selected as unknown as TokenOption | null}
+        onSelect={handleSelect}
+        placeholder={placeholder}
+        disabled={disabled}
+      />
+    )
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <div
         onClick={() => {
           if (!disabled) setOpen(true)
         }}
-        className="rounded-[10px] border border-white/10 p-0 transition-all duration-200 hover:scale-[1.02] hover:bg-white/5 active:scale-[0.99]"
+        className={
+          UI_V2
+            ? "rounded-lg bg-white/[0.07] transition-colors duration-150 hover:bg-white/[0.11]"
+            : "rounded-[10px] border border-white/10 p-0 transition-all duration-200 hover:scale-[1.02] hover:bg-white/5 active:scale-[0.99]"
+        }
       >
-        <button disabled={disabled} type="button" className="flex h-10 w-full items-center justify-between rounded-[9px] bg-select-input px-2.5">
+        <button
+          disabled={disabled}
+          type="button"
+          className={
+            UI_V2
+              ? "flex h-9 w-full items-center justify-between gap-1 rounded-lg px-2 text-[13px] font-medium disabled:cursor-not-allowed"
+              : "flex h-10 w-full items-center justify-between rounded-[9px] bg-select-input px-2.5"
+          }
+        >
           <span className="flex items-center gap-2">
             <RenderAsset selected={selected} placeholder={placeholder} />
           </span>
-          <ChevronDown className="ml-1 h-4 w-4 opacity-80" />
+          <ChevronDown className={UI_V2 ? "h-3.5 w-3.5 text-ink-3" : "ml-1 h-4 w-4 opacity-80"} />
         </button>
       </div>
 

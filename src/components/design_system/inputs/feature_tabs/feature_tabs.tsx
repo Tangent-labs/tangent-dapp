@@ -2,6 +2,8 @@
 
 import { Address } from "viem"
 import { cn } from "@/lib/utils"
+import { UI_V2 } from "@/v2/ui"
+import { motion } from "framer-motion"
 import { LayoutGroup } from "framer-motion"
 import { Divider } from "../../structure/divider"
 import { LargeButtonTab } from "../large_button_tab"
@@ -44,6 +46,64 @@ export const FeatureTabs = ({
   onTabClick,
   onTabClickLeverage,
 }: FeatureTabsProps) => {
+  if (UI_V2) {
+    const borrowTabs = [
+      { key: "deposit-borrow", label: "Deposit & borrow", go: () => onTabClick("deposit&borrow"), paused: isDepositPaused || isBorrowPaused, enabled: true },
+      {
+        key: "leverage",
+        label: "Leverage",
+        go: () => IS_LEVERAGE_ON && onTabClickLeverage(),
+        paused: isLeveragePaused || isBorrowPaused || isDepositPaused,
+        enabled: IS_LEVERAGE_ON && canLeverage,
+      },
+      { key: "deposit", label: "Deposit", go: () => onTabClick("deposit"), paused: isDepositPaused, enabled: true },
+      { key: "borrow", label: "Borrow", go: () => onTabClick("borrow"), paused: isBorrowPaused, enabled: true },
+    ]
+    const repayTabs = [
+      { key: "repay-withdraw", label: "Repay & withdraw", go: () => onTabClick("repay&withdraw"), paused: false, enabled: true },
+      { key: "repay", label: "Repay", go: () => onTabClick("repay"), paused: false, enabled: true },
+      { key: "withdraw", label: "Withdraw", go: () => onTabClick("withdraw"), paused: false, enabled: true },
+      { key: "liquidate", label: "Liquidate", go: () => onTabClick("liquidate"), paused: false, enabled: true },
+    ]
+    const tabs = activeTab === "Borrow" ? borrowTabs : repayTabs
+    return (
+      <div className="flex w-full flex-col">
+        <div role="tablist" className="flex w-full gap-1 rounded-[10px] bg-white/[0.04] p-1">
+          <LargeButtonTab label="Borrow" active={activeTab === "Borrow"} onClick={onClickBorrow} />
+          <LargeButtonTab label="Repay" active={activeTab === "Repay"} onClick={onClickRepay} />
+        </div>
+        <div role="tablist" className="mt-4 flex w-full justify-between gap-3 border-b border-hairline">
+          {tabs.map((t) => {
+            const active = feature === t.key
+            return (
+              <button
+                key={t.key}
+                role="tab"
+                aria-selected={active}
+                disabled={!t.enabled}
+                onClick={t.go}
+                className={cn(
+                  "relative whitespace-nowrap px-1 pb-2.5 pt-1 text-[13px] font-medium transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-40",
+                  active ? "text-white" : "text-ink-3 hover:text-ink-2"
+                )}
+              >
+                {t.label}
+                {t.paused && <span className="ml-1.5 inline-block h-1.5 w-1.5 rounded-full bg-warning align-middle" title="Paused" />}
+                {active && (
+                  <motion.span
+                    layoutId={`v2-action-${marketAddress}`}
+                    className="absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-white"
+                    transition={{ type: "spring", visualDuration: 0.35, bounce: 0.15 }}
+                  />
+                )}
+              </button>
+            )
+          })}
+        </div>
+      </div>
+    )
+  }
+
   return (
     <>
       <div className="hidden w-full flex-col items-center justify-between gap-1 md:flex">

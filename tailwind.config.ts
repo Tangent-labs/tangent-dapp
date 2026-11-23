@@ -8,6 +8,7 @@ const config: Config = {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/lib/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/v2/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {
@@ -15,7 +16,9 @@ const config: Config = {
         "md-lg": "930px",
       },
       fontFamily: {
-        gilroy: ["var(--font-gilroy)", "sans-serif"],
+        // V2 typeface. The "gilroy" key is kept so existing font-gilroy classes switch to DM Sans without edits.
+        gilroy: ["var(--font-dm-sans)", "system-ui", "sans-serif"],
+        sans: ["var(--font-dm-sans)", "system-ui", "sans-serif"],
       },
       borderWidth: {
         tangent: "1.5px",
@@ -40,6 +43,21 @@ const config: Config = {
         body: "var(--tgt-image-body)",
       },
       colors: {
+        // V2 tokens (css_globals.css --tgt-v2-*), for the reworked components
+        page: "var(--tgt-v2-bg-page)",
+        sidebar: "var(--tgt-v2-bg-sidebar)",
+        surface: "var(--tgt-v2-bg-surface)",
+        subtle: "var(--tgt-v2-bg-subtle)",
+        control: "var(--tgt-v2-bg-control)",
+        hairline: "var(--tgt-v2-border-hairline)",
+        divider: "var(--tgt-v2-border-divider)",
+        ink: { DEFAULT: "var(--tgt-v2-text-primary)", 2: "var(--tgt-v2-text-secondary)", 3: "var(--tgt-v2-text-tertiary)" },
+        action: "var(--tgt-v2-action-primary)",
+        "data-primary": "var(--tgt-v2-data-primary)",
+        projected: "var(--tgt-v2-data-projected)",
+        negative: "var(--tgt-v2-data-negative)",
+        warning: "var(--tgt-v2-status-warning)",
+        alert: "var(--tgt-v2-status-alert)",
         "button-active-hover": "var(--tgt-button-active-hover)",
         "button-active": "var(--tgt-button-active)",
         "button-active-dark": "var(--tgt-button-active-dark)",

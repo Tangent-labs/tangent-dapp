@@ -9,19 +9,30 @@ import { useEffect, useMemo, useState } from "react"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { getTokensPrice, getTokensPriceChange } from "@/services/service_price"
+import { UI_V2 } from "@/v2/ui"
 import { MARKET_TYPE_TO_PLATFORMS, PLATFORM_INFOS, PlatformInfo } from "@/data/platformInfos"
 
 type MarketDetailsInfosProps = {
   marketData: MarketDetailData
 }
 
-const LinkButton = ({ href, label }: { href: string; label: string }) => (
-  <ReliefCard>
-    <a href={href} target="_blank" rel="noopener noreferrer" className="block px-3 py-1 text-xs text-subtitle transition-colors hover:text-white">
+const LinkButton = ({ href, label }: { href: string; label: string }) =>
+  UI_V2 ? (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="rounded-md bg-white/[0.06] px-2.5 py-1 text-xs text-ink-2 transition-colors hover:bg-white/[0.1] hover:text-white"
+    >
       {label}
     </a>
-  </ReliefCard>
-)
+  ) : (
+    <ReliefCard>
+      <a href={href} target="_blank" rel="noopener noreferrer" className="block px-3 py-1 text-xs text-subtitle transition-colors hover:text-white">
+        {label}
+      </a>
+    </ReliefCard>
+  )
 
 const PlatformRow = ({ platform }: { platform: PlatformInfo }) => (
   <div className="flex flex-col gap-2">
@@ -31,7 +42,7 @@ const PlatformRow = ({ platform }: { platform: PlatformInfo }) => (
           <Image src={platform.logoPath} alt={platform.name} width={12} height={12} className="h-3 w-3" />
           <span className="text-xs text-white">{platform.name}</span>
         </div>
-        <span className="rounded-full bg-overlay-panel px-2 py-1 text-xs text-white">{platform.type}</span>
+        <span className={UI_V2 ? "text-xs text-ink-3" : "rounded-full bg-overlay-panel px-2 py-1 text-xs text-white"}>{platform.type}</span>
       </div>
       <div className="flex items-center gap-2">
         <LinkButton href={platform.website} label="Website" />
@@ -53,9 +64,11 @@ const AssetRow = ({ token, price, priceChange }: { token: string; price?: number
           <span className="text-xs text-white">{token}</span>
 
           {!!price && !!priceChange && (
-            <div className="flex items-center justify-center gap-1 rounded-full bg-overlay-panel px-2 py-1">
+            <div className={UI_V2 ? "ml-1 flex items-center gap-1.5" : "flex items-center justify-center gap-1 rounded-full bg-overlay-panel px-2 py-1"}>
               <span className="text-xs text-subtitle">${price.toLocaleString("en-US", { minimumFractionDigits: 3, maximumFractionDigits: 4 })}</span>
-              <span className={`text-xs ${priceChange >= 0 ? "text-green-400" : "text-red-400"}`}>
+              <span
+                className={`text-xs tabular-nums ${priceChange >= 0 ? (UI_V2 ? "text-white" : "text-green-400") : UI_V2 ? "text-negative" : "text-red-400"}`}
+              >
                 {priceChange >= 0 ? "+" : ""}
                 {priceChange.toFixed(2)}%
               </span>

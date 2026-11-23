@@ -6,6 +6,12 @@ import { computeIR, computeRewardsCut } from "./usg_record_controller"
 import { useUSGRecordContext } from "./usg_record_context"
 import { ResponsiveContainer, AreaChart, XAxis, YAxis, CartesianGrid, Area, Tooltip, ReferenceLine } from "recharts"
 import { isVolatileCollateral } from "@/lib/risk_color"
+import { UI_V2 } from "@/v2/ui"
+
+const TICK = UI_V2 ? "rgba(255,255,255,0.45)" : "rgba(255,255,255,0.6)"
+const IR_COLOR = UI_V2 ? "#EDEDEF" : "#95FF00"
+const IR_FILL = UI_V2 ? "237,237,239" : "149,255,0"
+const GRID = UI_V2 ? "rgba(255,255,255,0.05)" : "#FFFFFF1A"
 
 const CustomTooltip = ({
   active,
@@ -33,13 +39,13 @@ const CustomTooltip = ({
 }
 
 const RewardsCutAxisTick = ({ x, y, value }: { x?: number; y?: number; value: string }) => (
-  <text x={(x ?? 0) + 8} y={y} dy={4} textAnchor="start" fill="rgba(255,255,255,0.6)" fontSize={11}>
+  <text x={(x ?? 0) + 8} y={y} dy={4} textAnchor="start" fill={TICK} fontSize={11}>
     {value}%
   </text>
 )
 
 const InterestRateAxisTick = ({ x, y, value }: { x?: number; y?: number; value: string }) => (
-  <text x={(x ?? 0) - 8} y={y} dy={4} textAnchor="end" fill="rgba(255,255,255,0.6)" fontSize={11}>
+  <text x={(x ?? 0) - 8} y={y} dy={4} textAnchor="end" fill={TICK} fontSize={11}>
     {value}%
   </text>
 )
@@ -106,9 +112,9 @@ export function InterestRateGraph() {
             <stop offset="100%" stopColor="rgba(0,117,255,0)" stopOpacity={0} />
           </linearGradient>
           <linearGradient id="gradiant-yellow" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="rgba(149,255,0,0.3)" stopOpacity={1} />
-            <stop offset="50%" stopColor="rgba(149,255,0,0.05)" stopOpacity={1} />
-            <stop offset="100%" stopColor="rgba(149,255,0,0)" stopOpacity={0} />
+            <stop offset="0%" stopColor={`rgba(${IR_FILL},${UI_V2 ? 0.14 : 0.3})`} stopOpacity={1} />
+            <stop offset="50%" stopColor={`rgba(${IR_FILL},0.03)`} stopOpacity={1} />
+            <stop offset="100%" stopColor={`rgba(${IR_FILL},0)`} stopOpacity={0} />
           </linearGradient>
         </defs>
 
@@ -124,7 +130,7 @@ export function InterestRateGraph() {
           domain={[0.98, 1.0]}
           padding={{ left: 25, right: 30 }}
           textAnchor="middle"
-          tick={{ fontSize: 12, fill: "rgba(255,255,255,0.6)" }}
+          tick={{ fontSize: UI_V2 ? 11 : 12, fill: TICK }}
           tickMargin={8}
         />
 
@@ -151,7 +157,7 @@ export function InterestRateGraph() {
           tick={({ x, y, payload }) => <InterestRateAxisTick x={x} y={y - 7} value={payload.value} />}
         />
 
-        <CartesianGrid horizontal={true} vertical={false} stroke="#FFFFFF1A" />
+        <CartesianGrid horizontal={true} vertical={false} stroke={GRID} />
 
         <Tooltip content={<CustomTooltip />} />
 
@@ -163,7 +169,7 @@ export function InterestRateGraph() {
           label={{
             value: `$${(USGInfo?.price ?? 1).toFixed(4)}`,
             position: "insideTopRight",
-            fill: "rgba(255,255,255,0.6)",
+            fill: TICK,
             fontSize: 11,
           }}
         />
@@ -174,7 +180,7 @@ export function InterestRateGraph() {
           yAxisId="right"
           type="monotone"
           dataKey="interestRate"
-          stroke="#95FF00"
+          stroke={IR_COLOR}
           strokeWidth={1.5}
           fill="url(#gradiant-yellow)"
           fillOpacity={1}

@@ -23,48 +23,66 @@
 }
 
 @layer base {
-  /* Variables tangent   */
+  /* Variables tangent: V2 values (neutral grays, brand blue for actions and data, no neon gradients).
+     Names are unchanged so every component keeps working; gradients stay valid background-images. */
   :root {
-    --tgt-background: #070707;
+    --tgt-background: #0b0b0c;
     --tgt-foreground: #fff;
     --tgt-row-tonic: #0075ff;
-    --tgt-row-success: #95ff00;
-    --tgt-row-danger: #ff005b;
-    --tgt-row-warning: #ff8800;
-    --tgt-dash-keepers: #24dd9a;
-    --tgt-dash-wts: #95ff00;
-    --tgt-dash-susg: #4eb3df;
-    --tgt-bg-button-inactive: radial-gradient(77.27% 104.46% at 50% 100%, #8c8c8c 0%, #444444 100%);
-    --tgt-bg-top-performing-lps: radial-gradient(139.72% 99.23% at 50% 100%, #0075ff 0%, rgba(0, 0, 0, 0) 100%);
-    --tgt-bg-earn-action: linear-gradient(135deg, rgba(0, 117, 255, 0.5) 0%, rgba(0, 194, 255, 0.5) 100%);
-    --tgt-bg-progress: linear-gradient(90deg, #000000 0%, #0075ff 100%);
-    --tgt-bg-pink: linear-gradient(135deg, #bd00ff 0%, #fa00ff 100%);
-    --tgt-bg-danger: linear-gradient(135deg, #ff0300 0%, #ff5b5b 100%);
-    --tgt-bg-tonic: linear-gradient(315.15deg, #fbf911 0.08%, #99ff00 100%);
-    --tgt-bg-light-tonic: linear-gradient(135deg, #f7cd61 0%, #fff500 100%);
-    --tgt-bg-select-input: linear-gradient(135deg, rgba(0, 0, 0, 0) 0%, rgba(255, 255, 255, 0.1) 100%);
-    --tgt-bg-header: linear-gradient(135deg, #070707 0%, #101010 100%);
-    --tgt-bg-panel-hover: #ffffff1a;
-    --tgt-bg-overlay-panel: #ffffff08;
-    --tgt-bg-panel-disabled: #ffffff26;
-    --tgt-bg-tab: linear-gradient(135deg, #0075ff 0%, #00c2ff 100%);
-    --tgt-bg-lec: linear-gradient(135deg, #ff8800 0%, #f79f61 100%);
-    --tgt-slippage-warning: #ffe100;
+    --tgt-row-success: rgb(255 255 255 / 0.92);
+    --tgt-row-danger: #ff5c5c;
+    --tgt-row-warning: #f5b544;
+    --tgt-dash-keepers: #d9c49a;
+    --tgt-dash-wts: #8fa3bf;
+    --tgt-dash-susg: #a79bff;
+    --tgt-bg-button-inactive: linear-gradient(rgb(255 255 255 / 0.07), rgb(255 255 255 / 0.07));
+    --tgt-bg-top-performing-lps: linear-gradient(rgb(0 117 255 / 0.12), rgb(0 117 255 / 0.12));
+    --tgt-bg-earn-action: linear-gradient(#0075ff, #0075ff);
+    --tgt-bg-progress: linear-gradient(#0075ff, #0075ff);
+    --tgt-bg-pink: linear-gradient(rgb(255 255 255 / 0.07), rgb(255 255 255 / 0.07));
+    --tgt-bg-danger: linear-gradient(#ff5c5c, #ff5c5c);
+    --tgt-bg-tonic: linear-gradient(#ededef, #ededef);
+    --tgt-bg-light-tonic: linear-gradient(#ededef, #ededef);
+    --tgt-bg-select-input: linear-gradient(rgb(255 255 255 / 0.04), rgb(255 255 255 / 0.04));
+    --tgt-bg-header: linear-gradient(#0b0b0c, #0b0b0c);
+    --tgt-bg-panel-hover: rgb(255 255 255 / 0.06);
+    --tgt-bg-overlay-panel: rgb(255 255 255 / 0.045);
+    --tgt-bg-panel-disabled: rgb(255 255 255 / 0.1);
+    --tgt-bg-tab: linear-gradient(#ededef, #ededef);
+    --tgt-bg-lec: linear-gradient(rgb(255 255 255 / 0.07), rgb(255 255 255 / 0.07));
+    --tgt-slippage-warning: #f5b544;
     --tgt-button-active: #0075ff;
-    --tgt-button-active-dark: #023774;
-    --tgt-button-active-hover: #0060d2;
-    --tgt-light-tonic: #fbf911;
-    --tgt-tonic: #d9fb0b;
-    --tgt-success: #99ff00;
-    --tgt-subtitle: #9b9b9b;
-    --tgt-danger: #ff0300;
-    --tgt-dark: #070707;
-    --tgt-list-row-hover: linear-gradient(0deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03)), linear-gradient(90deg, #0075ff 0%, rgba(0, 0, 0, 0) 50%);
-    --tgt-panel-title-gradient: linear-gradient(0deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.03)),
-      radial-gradient(75% 250% at 0% 50%, #0075ff 0%, rgba(0, 0, 0, 0) 100%);
-    --tgt-bg-selected-row: radial-gradient(50.04% 826.49% at 0% 50%, rgba(0, 117, 255, 0.4) 0%, rgba(0, 117, 255, 0.2) 100%);
-    --tgt-button: linear-gradient(135deg, rgba(0, 0, 0, 0) 0%, rgba(255, 255, 255, 0.1) 100%);
-    --tgt-image-body: url("/medias/background.svg");
+    --tgt-button-active-dark: #0a3a80;
+    --tgt-button-active-hover: #1a84ff;
+    --tgt-light-tonic: #ededef;
+    --tgt-tonic: #ededef;
+    --tgt-success: #ededef;
+    --tgt-subtitle: rgb(255 255 255 / 0.6);
+    --tgt-danger: #ff5c5c;
+    --tgt-dark: #0b0b0c;
+    --tgt-list-row-hover: linear-gradient(rgb(255 255 255 / 0.045), rgb(255 255 255 / 0.045));
+    --tgt-panel-title-gradient: linear-gradient(rgb(255 255 255 / 0.03), rgb(255 255 255 / 0.03));
+    --tgt-bg-selected-row: linear-gradient(rgb(255 255 255 / 0.07), rgb(255 255 255 / 0.07));
+    --tgt-button: linear-gradient(rgb(255 255 255 / 0.07), rgb(255 255 255 / 0.07));
+    --tgt-image-body: none;
+
+    /* V2 tokens, used by the reworked design system components (tailwind: page, surface, ink...) */
+    --tgt-v2-bg-page: #0b0b0c;
+    --tgt-v2-bg-sidebar: #0f0f11;
+    --tgt-v2-bg-surface: #17171a;
+    --tgt-v2-bg-subtle: rgb(255 255 255 / 0.04);
+    --tgt-v2-bg-control: rgb(255 255 255 / 0.07);
+    --tgt-v2-border-hairline: rgb(255 255 255 / 0.07);
+    --tgt-v2-border-divider: rgb(255 255 255 / 0.06);
+    --tgt-v2-text-primary: #ffffff;
+    --tgt-v2-text-secondary: rgb(255 255 255 / 0.6);
+    --tgt-v2-text-tertiary: rgb(255 255 255 / 0.5);
+    --tgt-v2-action-primary: #0075ff;
+    --tgt-v2-data-primary: #0075ff;
+    --tgt-v2-data-projected: #00c2ff;
+    --tgt-v2-data-negative: #ff5c5c;
+    --tgt-v2-status-warning: #f5b544;
+    --tgt-v2-status-alert: #ff8a3d;
   }
 
   /* Variables @web3-onboard   */
@@ -103,7 +121,7 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
-    --radius: 0.5rem;
+    --radius: 0.625rem;
   }
 
   body {
@@ -206,4 +224,24 @@ input[type="range"]::-moz-range-thumb {
 .group\/trigger:has([data-state="open"]) > span {
   transform-origin: left;
   transform: scaleX(1);
+}
+
+/* V2 scrollbars: thin, no track, quiet thumb. Opt-in class, so V1 surfaces are unchanged. */
+.v2-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
+}
+.v2-scroll::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.v2-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.v2-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.14);
+  border-radius: 9999px;
+}
+.v2-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.24);
 }

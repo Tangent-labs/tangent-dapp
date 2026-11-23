@@ -15,6 +15,8 @@ import { MarketDetailsParameters } from "./header/components/market_details_para
 import { FeatureTabs } from "@/components/design_system/inputs/feature_tabs/feature_tabs"
 import { MarketDetailsContracts } from "./header/components/market_details_contracts"
 import { VAPRCalculator } from "./vapr_calculator/vapr_calculator"
+import { UI_V2 } from "@/v2/ui"
+import { RecordLayoutV2 } from "@/v2/record/record-layout"
 
 type USGRecordLayoutProps = {
   children: React.ReactNode
@@ -78,6 +80,24 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
     setupNavigationOnInit()
   }, [])
 
+  const featureTabs = (
+    <FeatureTabs
+      feature={feature}
+      activeTab={activeTab}
+      canLeverage={canLeverage}
+      marketAddress={marketInfo?.marketAddress}
+      isDepositPaused={marketPauseStruct?.isDepositPaused || false}
+      isBorrowPaused={marketPauseStruct?.isBorrowPaused || false}
+      isLeveragePaused={marketPauseStruct?.isLeveragePaused || false}
+      onTabClick={onTabClick}
+      onTabClickLeverage={onTabClickLeverage}
+      onClickBorrow={onClickBorrow}
+      onClickRepay={onClickRepay}
+    ></FeatureTabs>
+  )
+
+  if (UI_V2) return <RecordLayoutV2 featureTabs={featureTabs}>{children}</RecordLayoutV2>
+
   return (
     <>
       <USGRecordPageHeader />
@@ -87,19 +107,7 @@ export default function USGRecordLayout({ children }: USGRecordLayoutProps) {
       <div className="mt-2 flex flex-col gap-4">
         <div className="relative flex items-start justify-start gap-5 max-xl:flex-col">
           <ReliefCard className="w-full p-5 xl:w-5/12">
-            <FeatureTabs
-              feature={feature}
-              activeTab={activeTab}
-              canLeverage={canLeverage}
-              marketAddress={marketInfo?.marketAddress}
-              isDepositPaused={marketPauseStruct?.isDepositPaused || false}
-              isBorrowPaused={marketPauseStruct?.isBorrowPaused || false}
-              isLeveragePaused={marketPauseStruct?.isLeveragePaused || false}
-              onTabClick={onTabClick}
-              onTabClickLeverage={onTabClickLeverage}
-              onClickBorrow={onClickBorrow}
-              onClickRepay={onClickRepay}
-            ></FeatureTabs>
+            {featureTabs}
 
             <div className="mt-[10px]">{children}</div>
           </ReliefCard>

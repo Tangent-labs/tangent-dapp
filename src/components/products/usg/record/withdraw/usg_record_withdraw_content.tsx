@@ -1,5 +1,6 @@
 "use client"
 
+import { v2Hidden } from "@/v2/ui"
 import { zeroAddress } from "viem"
 import { CollateralInfo } from "@/types"
 import { formatBigInt } from "@/lib/number_formatter"
@@ -88,7 +89,7 @@ export default function USGWithdrawContent() {
       <div className="flex flex-col gap-1.5">
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-semibold md:text-xl">Withdraw collateral</span>
+            <span className={v2Hidden("text-sm font-semibold md:text-xl")}>Withdraw collateral</span>
             <span className="text-xs text-subtitle">
               Max: {formatBigInt(maxWithdrawable, 18, 3)} {selectedAsset}
             </span>

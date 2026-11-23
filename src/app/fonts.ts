@@ -1,3 +1,4 @@
+import { DM_Sans } from "next/font/google"
 import localFont from "next/font/local"
 
 export const gilroy = localFont({
@@ -56,3 +57,6 @@ export const gilroy = localFont({
   variable: "--font-gilroy",
   display: "swap",
 })
+
+/** V2 typeface (brand board): DM Sans, Light for hero numbers, Medium and SemiBold for UI */
+export const dmSans = DM_Sans({ subsets: ["latin"], weight: ["300", "400", "500", "600", "700"], variable: "--font-dm-sans", display: "swap" })

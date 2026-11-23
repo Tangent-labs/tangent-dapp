@@ -1,6 +1,7 @@
 "use client"
 
 import { cn } from "@/lib/utils"
+import { UI_V2 } from "@/v2/ui"
 import { createRippleEffect } from "@/lib/animations"
 import { ButtonHTMLAttributes, useRef, ReactNode, useEffect, useState } from "react"
 
@@ -36,6 +37,30 @@ export const Button = ({
 
   const buttonRef = useRef<HTMLButtonElement>(null)
   const isDisabled = effectiveState !== "active" || disabled
+
+  if (UI_V2)
+    return (
+      <div className={cn("relative inline-flex w-full", className)}>
+        <button
+          {...props}
+          ref={buttonRef}
+          disabled={isDisabled}
+          data-state={effectiveState}
+          onClick={(e) => {
+            if (isDisabled) return
+            onClick?.(e)
+          }}
+          className={cn(
+            "flex h-11 w-full items-center justify-center gap-2 rounded-[10px] px-4 font-sans text-sm font-semibold transition-[background-color,color,transform] duration-150 active:scale-[0.98] disabled:cursor-not-allowed",
+            effectiveState === "active" ? "bg-action text-white hover:bg-[#1a84ff]" : "bg-white/[0.07] text-ink-3",
+            classNameChild
+          )}
+        >
+          {hasLoadingState && isLoading && <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" aria-label="Loading" />}
+          {children || label}
+        </button>
+      </div>
+    )
 
   return (
     <div

@@ -3,6 +3,7 @@
 import { cn } from "@/lib/utils"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { formatDollar, formatNumber } from "@/lib/number_formatter"
+import { UI_V2 } from "@/v2/ui"
 
 import {
   AutoscaleInfo,
@@ -23,6 +24,16 @@ import {
 
 import { CollatGraphData } from "../usg_type"
 import { OraclePricePoint } from "./collat_price/collat_price_controller"
+
+/** V2 palette. SVG/canvas need literal colors, not CSS variables. No green in V2: candles read in ink, down candles dimmed. */
+const V2_CHART = {
+  up: "rgba(237,237,239,0.92)",
+  down: "rgba(237,237,239,0.3)",
+  oracle: "#0075FF",
+  liquidation: "#f5b544",
+  text: "rgba(255,255,255,0.45)",
+  grid: "rgba(255,255,255,0.04)",
+}
 
 // The oracle series comes with its own timestamps, which can stretch the shared time scale
 // and visually separate the candles. We keep the candles as the source of truth and project
@@ -149,15 +160,15 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
     const chartOptions: DeepPartial<TimeChartOptions> = {
       layout: {
         background: { color: "transparent" },
-        textColor: "rgba(255,255,255,0.82)",
+        textColor: UI_V2 ? V2_CHART.text : "rgba(255,255,255,0.82)",
+        ...(UI_V2 ? { fontFamily: "var(--font-dm-sans), sans-serif", fontSize: 11, attributionLogo: false } : {}),
       },
       grid: {
-        vertLines: { color: "rgba(255,255,255,0.06)" },
-        horzLines: { color: "rgba(255,255,255,0.06)" },
+        vertLines: { color: UI_V2 ? "transparent" : "rgba(255,255,255,0.06)" },
+        horzLines: { color: UI_V2 ? V2_CHART.grid : "rgba(255,255,255,0.06)" },
       },
-      rightPriceScale: {
-        scaleMargins: { top: 0.1, bottom: 0.1 },
-      },
+      ...(UI_V2 ? { rightPriceScale: { borderVisible: false, scaleMargins: { top: 0.1, bottom: 0.1 } } } : {}),
+      ...(UI_V2 ? {} : { rightPriceScale: { scaleMargins: { top: 0.1, bottom: 0.1 } } }),
       timeScale: {
         borderVisible: false,
         rightOffset: 2,
@@ -174,13 +185,15 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
     const chart = createChart(containerRef.current, chartOptions)
     chartRef.current = chart
 
+    const up = UI_V2 ? V2_CHART.up : "#26a69a"
+    const down = UI_V2 ? V2_CHART.down : "#ef5350"
     const seriesOptions: DeepPartial<CandlestickSeriesOptions> = {
-      upColor: "#26a69a",
-      downColor: "#ef5350",
-      borderUpColor: "#26a69a",
-      borderDownColor: "#ef5350",
-      wickUpColor: "#26a69a",
-      wickDownColor: "#ef5350",
+      upColor: up,
+      downColor: down,
+      borderUpColor: up,
+      borderDownColor: down,
+      wickUpColor: up,
+      wickDownColor: down,
       priceFormat: { type: "price", minMove: 0.0001 },
     }
 
@@ -188,7 +201,7 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
     seriesRef.current = series
 
     const oracleSeriesOptions: DeepPartial<LineSeriesOptions> = {
-      color: "#3b82f6",
+      color: UI_V2 ? V2_CHART.oracle : "#3b82f6",
       lineWidth: 2,
       crosshairMarkerVisible: true,
       lastValueVisible: false,
@@ -280,13 +293,16 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
     const series = seriesRef.current
     if (!series) return
 
+    // V2: no loan means no liquidation price, so the line and its "$0" label are not drawn
+    const hasLiquidation = !UI_V2 || liquidationPriceNumber > 0
     const options: Partial<PriceLineOptions> = {
       price: liquidationPriceNumber,
-      color: "#ff0300",
+      color: UI_V2 ? V2_CHART.liquidation : "#ff0300",
       lineWidth: 1,
-      lineStyle: LineStyle.Dotted,
-      axisLabelVisible: true,
-      title: `Liquidation price`,
+      lineStyle: UI_V2 ? LineStyle.Dashed : LineStyle.Dotted,
+      lineVisible: hasLiquidation,
+      axisLabelVisible: hasLiquidation,
+      title: hasLiquidation ? `Liquidation price` : "",
     }
 
     if (!priceLineRef.current) {
@@ -353,17 +369,26 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
   }, [liquidationPriceNumber, isPending, graphData?.data?.length, lastVisibleOracleValue])
 
   return (
-    <div ref={chartShellRef} className="relative min-h-80 w-full rounded-[10px] bg-[#0a0a0a] ring-1 ring-white/5">
+    <div ref={chartShellRef} className={cn("relative min-h-80 w-full", UI_V2 ? "rounded-xl" : "rounded-[10px] bg-[#0a0a0a] ring-1 ring-white/5")}>
       <div ref={containerRef} className={cn("absolute inset-0", isPending && "animate-pulse")} />
 
       {oracleLabelTop !== null && !isPending && (
-        <div className="absolute right-2 z-10 rounded-[2px] bg-[#3b82f6] px-1 py-0.5 text-xs text-white" style={{ top: `${oracleLabelTop}px` }}>
+        <div
+          className={cn("absolute right-2 z-10 px-1 py-0.5 text-xs text-white", UI_V2 ? "rounded bg-action tabular-nums" : "rounded-[2px] bg-[#3b82f6]")}
+          style={{ top: `${oracleLabelTop}px` }}
+        >
           Oracle ${(lastVisibleOracleValue || 0).toFixed(5)}
         </div>
       )}
 
-      {showBackupBadge && !isPending && (
-        <div className={cn("absolute right-2 z-10 rounded-[2px] bg-[#ff0300] px-1 py-0.5 text-xs text-white", isAboveView ? "top-2" : "bottom-2")}>
+      {showBackupBadge && !isPending && (!UI_V2 || liquidationPriceNumber > 0) && (
+        <div
+          className={cn(
+            "absolute right-2 z-10 px-1 py-0.5 text-xs",
+            UI_V2 ? "rounded bg-warning tabular-nums text-black" : "rounded-[2px] bg-[#ff0300] text-white",
+            isAboveView ? "top-2" : "bottom-2"
+          )}
+        >
           Liquidation price ${formatNumber(liquidationPriceNumber, 3)}
         </div>
       )}

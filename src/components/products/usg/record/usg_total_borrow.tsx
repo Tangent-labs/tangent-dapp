@@ -2,6 +2,9 @@
 
 import { formatDollar, formatMillions } from "@/lib/number_formatter"
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts"
+import { UI_V2 } from "@/v2/ui"
+
+const TICK = UI_V2 ? "rgba(255,255,255,0.45)" : "rgba(255,255,255,0.6)"
 
 type UsgTotalBorrowProps = {
   totalBorrow: Array<{
@@ -23,7 +26,7 @@ const getAdaptiveYAxisStep = (maxValue: number) => {
 }
 
 const PriceAxisTick = ({ x, y, value }: { x?: number; y?: number; value: string }) => (
-  <text x={(x ?? 0) - 8} y={y} dy={4} textAnchor="end" fill="rgba(255,255,255,0.6)" fontSize={11}>
+  <text x={(x ?? 0) - 8} y={y} dy={4} textAnchor="end" fill={TICK} fontSize={11}>
     ${value}
   </text>
 )
@@ -83,18 +86,18 @@ export default function UsgTotalBorrow({ totalBorrow }: UsgTotalBorrowProps) {
       >
         <defs>
           <linearGradient id="borrowGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.4} />
-            <stop offset="100%" stopColor="#3b82f6" stopOpacity={0} />
+            <stop offset="0%" stopColor={UI_V2 ? "#0075FF" : "#3b82f6"} stopOpacity={UI_V2 ? 0.28 : 0.4} />
+            <stop offset="100%" stopColor={UI_V2 ? "#0075FF" : "#3b82f6"} stopOpacity={0} />
           </linearGradient>
         </defs>
-        <CartesianGrid horizontal={true} vertical={false} stroke="#FFFFFF1A" />
+        <CartesianGrid horizontal={true} vertical={false} stroke={UI_V2 ? "rgba(255,255,255,0.05)" : "#FFFFFF1A"} />
         <XAxis
           dataKey="timestamp"
           ticks={xAxisTicks}
           minTickGap={24}
           tickMargin={8}
           padding={{ right: 38 }}
-          tick={{ fontSize: 12, fill: "rgba(255,255,255,0.6)" }}
+          tick={{ fontSize: UI_V2 ? 11 : 12, fill: TICK }}
           axisLine={false}
           tickLine={false}
           tickFormatter={formatAxisDate}
@@ -134,7 +137,7 @@ export default function UsgTotalBorrow({ totalBorrow }: UsgTotalBorrowProps) {
             return null
           }}
         />
-        <Area type="monotone" dataKey="value" stroke="#1568ed" strokeWidth={1.5} fill="url(#borrowGradient)" dot={false} />
+        <Area type="monotone" dataKey="value" stroke={UI_V2 ? "#0075FF" : "#1568ed"} strokeWidth={1.5} fill="url(#borrowGradient)" dot={false} />
       </AreaChart>
     </ResponsiveContainer>
   )

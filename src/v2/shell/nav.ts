@@ -28,10 +28,13 @@ export type NavItem = {
 
 export type NavGroup = { group: string | null; items: NavItem[] }
 
-/** Same destinations as the live MenuBarFeature, grouped for the sidebar. Swap keeps the live default pair. */
+/**
+ * Same destinations as the live MenuBarFeature, grouped by intent like the Aave Pro sidebar:
+ * the products first, then your rewards, then the protocol itself, then the airdrop. Swap keeps the live default pair.
+ */
 export const NAV: NavGroup[] = [
   {
-    group: null,
+    group: "Explore",
     items: [
       { href: "/", label: "Markets", icon: BarChart3, isActive: isOnMarket },
       { href: "/stake", label: "Savings", icon: PiggyBank, isActive: (p) => p.startsWith("/stake") },
@@ -42,16 +45,22 @@ export const NAV: NavGroup[] = [
         icon: ArrowLeftRight,
         isActive: (p) => p === "/swap",
       },
-      { href: "/claim", label: "Claim", icon: HandCoins },
-      { href: "/tan/lock", label: "TAN", icon: Coins, isActive: (p) => p.startsWith("/tan") },
-      { href: "/dashboard", label: "Protocol", icon: Activity },
     ],
   },
   {
-    group: "DAO",
+    group: "Rewards",
     items: [
-      { href: "https://snapshot.box/#/s:tangent-finance.eth", label: "Snapshot", icon: Vote, external: true },
+      { href: "/claim", label: "Claim", icon: HandCoins },
       { href: "/harvest", label: "Harvest", icon: Wheat },
+    ],
+  },
+  {
+    group: "Protocol",
+    items: [
+      { href: "/dashboard", label: "Protocol", icon: Activity },
+      { href: "/tan/lock", label: "TAN", icon: Coins, isActive: (p) => p.startsWith("/tan") },
+      { href: "https://snapshot.box/#/s:tangent-finance.eth", label: "Governance", icon: Vote, external: true },
+      { href: "https://docs.tangent.finance/docs/overview", label: "Docs", icon: BookOpen, external: true },
     ],
   },
   {
@@ -63,7 +72,6 @@ export const NAV: NavGroup[] = [
       { href: "/boosts", label: "Boosts", icon: Rocket },
     ],
   },
-  { group: "Resources", items: [{ href: "https://docs.tangent.finance/docs/overview", label: "Docs", icon: BookOpen, external: true }] },
 ]
 
 /** Footer links of the live app, shown as a small row at the bottom of the sidebar. */

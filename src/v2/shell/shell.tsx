@@ -211,7 +211,7 @@ function Nav({ path, collapsed }: { path: string; collapsed: boolean }) {
   return (
     <nav className="flex-1 overflow-y-auto overflow-x-hidden px-3">
       {NAV.map((g) => (
-        <div key={g.group ?? "main"} className="mb-4">
+        <div key={g.group ?? "main"} className="mb-3">
           {g.group && (
             <div className="relative h-[22px] px-3 pb-1.5" aria-hidden={collapsed || undefined}>
               <span
@@ -237,7 +237,7 @@ function Nav({ path, collapsed }: { path: string; collapsed: boolean }) {
                 aria-label={collapsed ? it.label : undefined}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "group relative flex h-10 items-center gap-3 rounded-lg px-3 text-[14px] font-medium transition-colors",
+                  "group relative flex h-9 items-center gap-3 rounded-lg px-3 text-[14px] font-medium transition-colors",
                   active ? "text-white" : "text-ink-2 hover:bg-white/[0.04] hover:text-white"
                 )}
               >

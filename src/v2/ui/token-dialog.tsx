@@ -132,7 +132,7 @@ export function TokenDialogV2({
         <DialogPrimitive.Content
           aria-describedby={undefined}
           onKeyDown={onKey}
-          className="fixed left-1/2 top-[14vh] z-50 w-[440px] max-w-[calc(100vw-2rem)] -translate-x-1/2 overflow-hidden rounded-2xl border border-white/10 bg-[#1a1a1d] font-sans text-white shadow-[0_24px_60px_rgba(0,0,0,0.55)] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-[0.98] data-[state=open]:zoom-in-[0.97]"
+          className="fixed left-1/2 top-[14vh] z-50 w-[440px] max-w-[calc(100vw-2rem)] -translate-x-1/2 overflow-hidden rounded-2xl border border-white/10 bg-raised font-sans text-white shadow-[0_24px_60px_rgba(0,0,0,0.55)] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-[0.98] data-[state=open]:zoom-in-[0.97]"
         >
           <DialogPrimitive.Title className="sr-only">Select a token</DialogPrimitive.Title>
           <label className="flex items-center gap-2.5 border-b border-divider px-4 py-3">

@@ -222,7 +222,7 @@ export function VAPRCalculatorV2(p: VAPRCalculatorV2Props) {
                           cursor={{ stroke: "rgba(255,255,255,0.15)" }}
                           content={({ active, payload, label }) =>
                             active && payload?.length ? (
-                              <div className="rounded-lg border border-white/10 bg-[#1a1a1d] px-3 py-2 text-xs shadow-[0_12px_32px_rgba(0,0,0,0.5)]">
+                              <div className="rounded-lg border border-white/10 bg-raised px-3 py-2 text-xs shadow-[0_12px_32px_rgba(0,0,0,0.5)]">
                                 <div className="text-ink-3">USG at ${Number(label).toFixed(4)}</div>
                                 <div className={cn("mt-0.5 font-medium tabular-nums", Number(payload[0]?.payload?.vAPR) < 0 && "text-negative")}>
                                   {Number(payload[0]?.payload?.vAPR).toFixed(2)}% net vAPR
@@ -277,7 +277,7 @@ function Label({ text, info }: { text: string; info: string }) {
       <HoverCardTrigger asChild>
         <span className="cursor-help text-[13px] text-ink-2 underline decoration-white/20 decoration-dotted underline-offset-4">{text}</span>
       </HoverCardTrigger>
-      <HoverCardContent side="top" align="start" className="z-[9999] w-fit max-w-56 rounded-lg border-white/10 bg-[#1a1a1d] p-2 text-xs">
+      <HoverCardContent side="top" align="start" className="z-[9999] w-fit max-w-56 rounded-lg border-white/10 bg-raised p-2 text-xs">
         {info}
       </HoverCardContent>
     </HoverCard>

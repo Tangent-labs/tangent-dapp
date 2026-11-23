@@ -118,7 +118,7 @@ export function HarvestPageV2() {
                       {formatDollar(item.rewards?.totalDollar || 0)}
                     </span>
                     {details.length > 0 && (
-                      <span className="pointer-events-none absolute bottom-full left-0 z-30 mb-2 hidden w-[240px] rounded-[10px] border border-white/10 bg-[#1c1c1f] p-3 text-xs shadow-[0_12px_32px_rgba(0,0,0,0.55)] peer-hover:block">
+                      <span className="pointer-events-none absolute bottom-full left-0 z-30 mb-2 hidden w-[240px] rounded-[10px] border border-white/10 bg-raised p-3 text-xs shadow-[0_12px_32px_rgba(0,0,0,0.55)] peer-hover:block">
                         <span className="mb-1.5 block font-semibold">{item.asset} rewards</span>
                         {details.map((r, i) => (
                           <span key={i} className="mt-1 flex items-center gap-2 tabular-nums">

@@ -51,7 +51,7 @@ export function AirdropHeaderV2({ title, description }: { title: string; descrip
                   <button
                     onClick={signMessage}
                     disabled={airdropDataIsLoading || !isConnected}
-                    className="h-9 rounded-[9px] bg-action px-4 text-[13px] font-semibold text-white transition-colors hover:bg-[#1a84ff] disabled:opacity-40"
+                    className="h-9 rounded-[9px] bg-action px-4 text-[13px] font-semibold text-white transition-colors hover:bg-action-hover disabled:opacity-40"
                   >
                     Apply
                   </button>

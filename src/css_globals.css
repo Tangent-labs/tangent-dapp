@@ -66,18 +66,22 @@
     --tgt-button: linear-gradient(rgb(255 255 255 / 0.07), rgb(255 255 255 / 0.07));
     --tgt-image-body: none;
 
-    /* V2 tokens, used by the reworked design system components (tailwind: page, surface, ink...) */
-    --tgt-v2-bg-page: #0b0b0c;
-    --tgt-v2-bg-sidebar: #0f0f11;
-    --tgt-v2-bg-surface: #17171a;
+    /* V2 tokens, used by the reworked design system components (tailwind: page, surface, ink...).
+       Tuned on Morpho dark (markets.morpho.org): cards sit a few steps above the page, held by a 7% hairline, so the page reads as one material. */
+    --tgt-v2-bg-page: #090909;
+    --tgt-v2-bg-sidebar: #0c0c0d;
+    --tgt-v2-bg-surface: #101011;
+    /* one step above the cards: hovered cards, popovers, tooltips, menus */
+    --tgt-v2-bg-raised: #161618;
     --tgt-v2-bg-subtle: rgb(255 255 255 / 0.04);
     --tgt-v2-bg-control: rgb(255 255 255 / 0.07);
     --tgt-v2-border-hairline: rgb(255 255 255 / 0.07);
     --tgt-v2-border-divider: rgb(255 255 255 / 0.06);
     --tgt-v2-text-primary: #ffffff;
-    --tgt-v2-text-secondary: rgb(255 255 255 / 0.6);
+    --tgt-v2-text-secondary: rgb(255 255 255 / 0.65);
     --tgt-v2-text-tertiary: rgb(255 255 255 / 0.5);
     --tgt-v2-action-primary: #0075ff;
+    --tgt-v2-action-hover: #1a84ff;
     --tgt-v2-data-primary: #0075ff;
     --tgt-v2-data-projected: #00c2ff;
     --tgt-v2-data-negative: #ff5c5c;

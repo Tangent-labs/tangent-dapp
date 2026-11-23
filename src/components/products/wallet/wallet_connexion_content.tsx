@@ -55,7 +55,7 @@ export function WalletConnexionContent({ className }: WalletConnexionContentProp
               type="button"
               onClick={() => (isConnected ? setPopoverOpen((v) => !v) : connect())}
               className={cn(
-                "h-10 shrink-0 rounded-[10px] bg-action px-5 text-[14px] font-semibold text-white transition-colors hover:bg-[#1a84ff] active:scale-[0.98]",
+                "h-10 shrink-0 rounded-[10px] bg-action px-5 text-[14px] font-semibold text-white transition-colors hover:bg-action-hover active:scale-[0.98]",
                 className
               )}
             >
@@ -82,7 +82,7 @@ export function WalletConnexionContent({ className }: WalletConnexionContentProp
           <PopoverContent
             align="end"
             sideOffset={8}
-            className="w-[260px] rounded-xl border border-white/10 bg-[#1a1a1d] p-1.5 font-sans shadow-[0_16px_40px_rgba(0,0,0,0.5)]"
+            className="w-[260px] rounded-xl border border-white/10 bg-raised p-1.5 font-sans shadow-[0_16px_40px_rgba(0,0,0,0.5)]"
           >
             <div className="flex items-center gap-2.5 px-2.5 pb-2.5 pt-1.5">
               <WalletOrb address={currentAddress} size={32} />

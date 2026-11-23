@@ -150,7 +150,7 @@ export function MarketListV2() {
                 <HoverCardTrigger asChild>
                   <span className="cursor-help underline decoration-white/20 decoration-dotted underline-offset-4">{formatMillions(points)} pts</span>
                 </HoverCardTrigger>
-                <HoverCardContent side="top" className="z-[9999] w-fit rounded-lg border-white/10 bg-[#1a1a1d] p-2 text-xs text-ink-2">
+                <HoverCardContent side="top" className="z-[9999] w-fit rounded-lg border-white/10 bg-raised p-2 text-xs text-ink-2">
                   LP points {formatMillions(lpUserPoints?.lpTotalPoints)}, vote points {formatMillions(voteUserPoints?.voteTotalPoints)}
                 </HoverCardContent>
               </HoverCard>
@@ -461,7 +461,7 @@ function Card({ r }: { r: ListRowData }) {
     >
       <Link
         href={`/${r.address}/deposit-borrow`}
-        className="focus-visible:ring-action/60 group flex h-full flex-col rounded-2xl border border-hairline bg-surface outline-none transition-colors duration-150 hover:border-white/15 hover:bg-[#1a1a1d] focus-visible:ring-2"
+        className="focus-visible:ring-action/60 group flex h-full flex-col rounded-2xl border border-hairline bg-surface outline-none transition-colors duration-150 hover:border-white/15 hover:bg-raised focus-visible:ring-2"
       >
         <div className="flex items-center gap-3 px-5 pt-5">
           <TokenImage token={r.logoKey} size={32} className="h-8 w-auto shrink-0" />
@@ -556,7 +556,7 @@ function Vapr({ r }: { r: ListRowData }) {
           <span className="mt-1 block text-xs tabular-nums leading-4 text-ink-3">Proj. {pct(r.apr.projected)}</span>
         </span>
       </HoverCardTrigger>
-      <HoverCardContent side="top" align="start" className="z-[9999] w-[240px] rounded-[10px] border-white/10 bg-[#1c1c1f] p-3 text-xs text-white">
+      <HoverCardContent side="top" align="start" className="z-[9999] w-[240px] rounded-[10px] border-white/10 bg-raised p-3 text-xs text-white">
         <div className="flex items-center gap-1.5 font-semibold">
           <TokenImage token={r.logoKey} size={16} className="h-4 w-auto" /> {r.name}
         </div>

@@ -41,7 +41,7 @@ export function Term({
           {children}
         </span>
       </HoverCardTrigger>
-      <HoverCardContent side="top" align={align} className="z-[9999] w-fit max-w-60 rounded-lg border-white/10 bg-[#1a1a1d] p-2 text-xs font-normal text-ink-2">
+      <HoverCardContent side="top" align={align} className="z-[9999] w-fit max-w-60 rounded-lg border-white/10 bg-raised p-2 text-xs font-normal text-ink-2">
         {info}
       </HoverCardContent>
     </HoverCard>

@@ -94,7 +94,7 @@ export function ClaimPageV2() {
                 {!isWellConnected && (
                   <button
                     onClick={connect}
-                    className="mt-4 h-9 rounded-[9px] bg-action px-4 text-[13px] font-semibold text-white transition-colors hover:bg-[#1a84ff]"
+                    className="mt-4 h-9 rounded-[9px] bg-action px-4 text-[13px] font-semibold text-white transition-colors hover:bg-action-hover"
                   >
                     Connect wallet
                   </button>
@@ -206,7 +206,7 @@ function AprHoverRewards({ item }: { item: ClaimData }) {
       <span className="peer cursor-help text-[15px] font-semibold tabular-nums underline decoration-white/15 decoration-dotted underline-offset-4">
         {formatDollar(item.totalClaimableValue || 0, 2)}
       </span>
-      <span className="pointer-events-none absolute bottom-full left-0 z-30 mb-2 hidden w-[260px] rounded-[10px] border border-white/10 bg-[#1c1c1f] p-3 text-xs shadow-[0_12px_32px_rgba(0,0,0,0.55)] peer-hover:block">
+      <span className="pointer-events-none absolute bottom-full left-0 z-30 mb-2 hidden w-[260px] rounded-[10px] border border-white/10 bg-raised p-3 text-xs shadow-[0_12px_32px_rgba(0,0,0,0.55)] peer-hover:block">
         <span className="mb-1.5 block font-semibold">{item.marketName} rewards</span>
         {(item.claimable as ClaimAsset[]).map((r) => (
           <span key={r.symbol} className="mt-1 flex items-center gap-2 tabular-nums">

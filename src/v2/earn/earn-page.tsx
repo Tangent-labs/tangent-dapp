@@ -236,7 +236,7 @@ function SortHead({ active, dir, onClick, children }: { active: boolean; dir: "a
 function ProtocolDot({ name, className }: { name: string; className?: string }) {
   const key = protocolConfig[name as ProtocolName]
   return (
-    <span title={name} className={cn("grid h-6 w-6 place-items-center rounded-full border border-hairline bg-[#1a1a1d]", className)}>
+    <span title={name} className={cn("grid h-6 w-6 place-items-center rounded-full border border-hairline bg-raised", className)}>
       {key ? <TokenImage token={key} size={16} className="h-4 w-4" /> : <span className="text-[9px] font-semibold text-ink-2">{name.slice(0, 2)}</span>}
     </span>
   )

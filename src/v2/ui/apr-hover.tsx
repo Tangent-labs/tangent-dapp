@@ -56,7 +56,7 @@ export function AprHover({
           )}
         </span>
       </HoverCardTrigger>
-      <HoverCardContent side="top" align="start" className="z-[9999] w-[240px] rounded-[10px] border-white/10 bg-[#1c1c1f] p-3 text-xs text-white">
+      <HoverCardContent side="top" align="start" className="z-[9999] w-[240px] rounded-[10px] border-white/10 bg-raised p-3 text-xs text-white">
         <div className="flex items-center gap-1.5 font-semibold">
           {logoKey && <TokenImage token={logoKey} size={16} className="h-4 w-auto" />} {name}
         </div>

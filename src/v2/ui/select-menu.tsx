@@ -47,7 +47,7 @@ export function SelectMenu({
       <PopoverContent
         align="start"
         sideOffset={6}
-        className="w-[240px] rounded-xl border border-white/10 bg-[#1a1a1d] p-1.5 font-sans text-white shadow-[0_16px_40px_rgba(0,0,0,0.5)]"
+        className="w-[240px] rounded-xl border border-white/10 bg-raised p-1.5 font-sans text-white shadow-[0_16px_40px_rgba(0,0,0,0.5)]"
       >
         <div role="listbox" aria-label={label}>
           {options.map((o) => {

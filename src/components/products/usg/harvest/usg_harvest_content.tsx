@@ -20,6 +20,8 @@ import { ListGradientBorder } from "@/components/design_system/list/list_gradien
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
 import { FeatureBannerCarousel } from "@/components/design_system/structure/feature_banner_carousel"
 import { UsgBalanceAndTotalPoints } from "@/components/design_system/structure/balance_and_total_points"
+import { UI_V2 } from "@/v2/ui"
+import { HarvestPageV2 } from "@/v2/harvest/harvest-page"
 
 const listeState: ListState = {
   search: undefined,
@@ -43,6 +45,12 @@ const HarvestRowDisposition = ({ children }: { children: React.ReactNode[] }) =>
 }
 
 export default function USGHarvestContent() {
+  if (UI_V2) return <HarvestPageV2 />
+
+  return <USGHarvestContentV1 />
+}
+
+function USGHarvestContentV1() {
   const { lpUserPoints, voteUserPoints } = useUSGContext()
 
   const { isConnected, connect } = useWalletConnexionContext()

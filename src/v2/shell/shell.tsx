@@ -249,9 +249,7 @@ function Nav({ path, collapsed }: { path: string; collapsed: boolean }) {
                   active ? "font-medium text-white" : "text-ink-2 hover:bg-white/[0.04] hover:text-white"
                 )}
               >
-                {active && (
-                  <span className="absolute inset-0 rounded-[8px] bg-white/[0.07]" />
-                )}
+                {active && <span className="absolute inset-0 rounded-[8px] bg-white/[0.07]" />}
                 <Icon
                   className={cn(
                     "relative h-[18px] w-[18px] shrink-0 text-white transition-opacity",

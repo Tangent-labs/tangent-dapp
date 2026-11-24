@@ -191,7 +191,17 @@ export const GraphTokenPrice = ({ token, title, selectedTab, data, fetchPriceHis
                 label={{ value: "Peg $1.00", position: "insideTopLeft", fill: "#8f8f8f", fontSize: 11 }}
               />
             )}
-            {latestPoint && <ReferenceDot x={latestPoint.date} y={latestPoint.uv} r={4} fill={accentColor} stroke={accentColor} isFront={true} />}
+            {latestPoint && (
+              <ReferenceDot
+                x={latestPoint.date}
+                y={latestPoint.uv}
+                r={4}
+                fill={accentColor}
+                stroke={UI_V2 ? "#1a1a1a" : accentColor}
+                strokeWidth={UI_V2 ? 2 : 1}
+                isFront={true}
+              />
+            )}
 
             <TypedCustomized
               component={(props) => {

@@ -7,7 +7,7 @@ import { formatXAxis, formatYAxis, getDataRangeMs, getXAxisTicks } from "../dash
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { CustomTooltip, TooltipCategory } from "./CustomGraphTooltip"
 import { UI_V2 } from "@/v2/ui"
-import { ChartHeadV2, ChartLegendV2, V2_CURSOR, rangeChange } from "@/v2/ui/chart"
+import { ChartHeadV2, ChartLegendV2, V2_CURSOR, rangeChange, v2ActiveDot } from "@/v2/ui/chart"
 
 type MarketDebtProps = {
   USGCurrentSupply: number
@@ -199,6 +199,7 @@ export const GraphUSGsUSG = ({
               stroke={UI_V2 ? "rgba(167, 155, 255, 0.9)" : "rgba(251, 249, 17, 0.8)"}
               fill="url(#supply-susgGradient)"
               name="sUSG Total Supply"
+              activeDot={UI_V2 ? v2ActiveDot("#a79bff") : undefined}
               connectNulls
             />
 
@@ -209,6 +210,7 @@ export const GraphUSGsUSG = ({
               stroke="rgba(0, 117, 255, 0.8)"
               fill="url(#supply-usgGradient)"
               name="USG Total Supply"
+              activeDot={UI_V2 ? v2ActiveDot("#0075FF") : undefined}
               connectNulls
             />
 

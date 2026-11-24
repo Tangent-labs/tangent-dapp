@@ -104,7 +104,7 @@ export function ShellV2({ children }: { children: ReactNode }) {
               <div className="mt-3 border-t border-hairline pt-3">
                 <div className={cn("mb-2 flex items-center justify-between px-1 text-[13px]", !protocolCurrentTVL?.total && "animate-pulse")}>
                   <span className="text-ink-3">Protocol TVL</span>
-                  <span className="font-semibold tabular-nums">{protocolCurrentTVL?.total ? `${formatMillions(protocolCurrentTVL.total)}` : "-"}</span>
+                  <span className="font-semibold tabular-nums">{protocolCurrentTVL?.total ? `$${formatMillions(protocolCurrentTVL.total)}` : "-"}</span>
                 </div>
                 <WalletConnexionContent placement="sidebar" className="w-full" />
                 <Socials />

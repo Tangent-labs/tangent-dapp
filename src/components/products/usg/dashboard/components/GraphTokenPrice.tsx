@@ -1,7 +1,8 @@
 "use client"
 
 import { UI_V2 } from "@/v2/ui"
-import { ChartHeadV2, ChartTooltipV2, V2_CURSOR, rangeChange, tooltipDate, v2ActiveDot } from "@/v2/ui/chart"
+import { TimeChartV2 } from "@/v2/ui/time-chart"
+import { ChartHeadV2, V2_CURSOR, rangeChange, v2ActiveDot } from "@/v2/ui/chart"
 
 import { useId } from "react"
 import type { ComponentType } from "react"
@@ -31,20 +32,10 @@ type GraphTokenPriceProps = {
   gradientStart: string
 }
 
-const PriceTooltip = ({ active, payload, label, peg }: { active?: boolean; payload?: Array<{ value?: number }>; label?: number; peg?: boolean }) => {
+const PriceTooltip = ({ active, payload, label }: { active?: boolean; payload?: Array<{ value?: number }>; label?: number; peg?: boolean }) => {
   if (!active || !payload?.length || !label) return null
 
   const value = Number(payload[0]?.value ?? 0)
-  if (UI_V2)
-    return (
-      <ChartTooltipV2
-        title={tooltipDate(label)}
-        rows={[
-          { label: "Price", value: formatDollar(value, 4) },
-          ...(peg ? [{ label: "vs peg", value: `${value >= 1 ? "+" : "−"}${Math.abs((value - 1) * 100).toFixed(2)}%` }] : []),
-        ]}
-      />
-    )
   const date = new Date(label)
   const isoDate = date.toISOString().slice(0, 10)
   const timeLabel = `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`
@@ -111,121 +102,136 @@ export const GraphTokenPrice = ({ token, title, selectedTab, data, fetchPriceHis
         </div>
       </div>
 
-      <div className="relative mt-4 flex h-56 min-h-56 w-full items-center justify-center">
-        <ResponsiveContainer width="100%" height="100%">
-          <AreaChart
-            data={data}
-            margin={{
-              top: 20,
-              right: -50,
-              left: 0,
-              bottom: 12,
-            }}
-          >
-            <defs>
-              <linearGradient id={`${gradientId}-peg`} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#f5b544" stopOpacity={0.18} />
-                <stop offset="100%" stopColor="#f5b544" stopOpacity={0.02} />
-              </linearGradient>
-              <linearGradient id={`${gradientId}-fill`} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={gradientStart} stopOpacity={0.35} />
-                <stop offset="100%" stopColor={gradientStart} stopOpacity={0} />
-              </linearGradient>
-            </defs>
-
-            <CartesianGrid horizontal={true} vertical={false} stroke="rgba(255,255,255,0.04)" />
-
-            <XAxis
-              dataKey="date"
-              ticks={xAxisTicks}
-              minTickGap={24}
-              tickMargin={8}
-              scale="point"
-              tick={{ fontSize: 11, fill: "rgba(255,255,255,0.45)" }}
-              axisLine={{ stroke: "rgba(255,255,255,0.08)" }}
-              tickLine={false}
-              tickFormatter={(tick) => formatXAxis(tick, rangeMs)}
-              padding={{ left: 0, right: 48 }}
-            />
-
-            <YAxis
-              axisLine={false}
-              orientation="right"
-              ticks={yTicks}
-              tickFormatter={(tick) => formatPriceTick(tick, yTickStep)}
-              tick={({ x, y, payload }) => <PriceAxisTick x={x - 10} y={y - 7} value={formatPriceTick(payload.value, yTickStep)} />}
-              tickLine={false}
-              width={48}
-              domain={[domainMin, domainMax]}
-            />
-
-            <Tooltip
-              cursor={
-                UI_V2
-                  ? V2_CURSOR
-                  : {
-                      stroke: "rgba(255,255,255,0.65)",
-                      strokeWidth: 1.5,
-                      strokeDasharray: "4 4",
-                    }
-              }
-              allowEscapeViewBox={{ x: false, y: false }}
-              content={<PriceTooltip peg={pegMode} />}
-            />
-
-            <Area
-              type="monotone"
-              dataKey="uv"
-              stroke={accentColor}
-              strokeWidth={2}
-              fill={pegMode ? `url(#${gradientId}-peg)` : `url(#${gradientId}-fill)`}
-              baseValue={pegMode ? 1 : undefined}
-              dot={false}
-              activeDot={UI_V2 ? v2ActiveDot(accentColor) : { r: 4, fill: accentColor, stroke: accentColor }}
-            />
-
-            {pegMode && (
-              <ReferenceLine
-                y={1}
-                stroke="rgba(255,255,255,0.35)"
-                strokeDasharray="3 3"
-                label={{ value: "Peg $1.00", position: "insideTopLeft", fill: COLOR.ink3, fontSize: 11 }}
-              />
-            )}
-            {latestPoint && (
-              <ReferenceDot
-                x={latestPoint.date}
-                y={latestPoint.uv}
-                r={4}
-                fill={accentColor}
-                stroke={UI_V2 ? COLOR.ring : accentColor}
-                strokeWidth={UI_V2 ? 2 : 1}
-                isFront={true}
-              />
-            )}
-
-            <TypedCustomized
-              component={(props) => {
-                const xScale = Object.values(props.xAxisMap)[0]?.scale
-                const yScale = Object.values(props.yAxisMap)[0]?.scale
-                if (!xScale || !yScale || !latestPoint) return null
-                const cx = xScale(latestPoint.date)
-                const cy = yScale(latestPoint.uv)
-                return (
-                  <foreignObject x={cx - 40} y={cy + 10} width={70} height={20} style={{ overflow: "visible" }}>
-                    <div
-                      style={{ backgroundColor: accentColor, color: badgeTextColor }}
-                      className="w-fit whitespace-nowrap rounded-full p-[5px] text-[10px] font-semibold leading-none"
-                    >
-                      {badgeLabel}
-                    </div>
-                  </foreignObject>
-                )
+      {UI_V2 ? (
+        <TimeChartV2
+          className="-mx-5 -mb-5 mt-4 w-[calc(100%+2.5rem)]"
+          data={data}
+          xKey="date"
+          series={[{ key: "uv", label: `${title} price`, color: accentColor }]}
+          format={(v) => formatPriceTick(v, yTickStep)}
+          valueFormat={(v) => formatDollar(v, 4)}
+          domain={[domainMin, domainMax]}
+          ticks={yTicks.slice(1)}
+          baseValue={pegMode ? 1 : undefined}
+          reference={pegMode ? { y: 1, label: "Peg $1.00" } : undefined}
+        />
+      ) : (
+        <div className="relative mt-4 flex h-56 min-h-56 w-full items-center justify-center">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart
+              data={data}
+              margin={{
+                top: 20,
+                right: -50,
+                left: 0,
+                bottom: 12,
               }}
-            />
-          </AreaChart>
-        </ResponsiveContainer>
-      </div>
+            >
+              <defs>
+                <linearGradient id={`${gradientId}-peg`} x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#f5b544" stopOpacity={0.18} />
+                  <stop offset="100%" stopColor="#f5b544" stopOpacity={0.02} />
+                </linearGradient>
+                <linearGradient id={`${gradientId}-fill`} x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={gradientStart} stopOpacity={0.35} />
+                  <stop offset="100%" stopColor={gradientStart} stopOpacity={0} />
+                </linearGradient>
+              </defs>
+
+              <CartesianGrid horizontal={true} vertical={false} stroke="rgba(255,255,255,0.04)" />
+
+              <XAxis
+                dataKey="date"
+                ticks={xAxisTicks}
+                minTickGap={24}
+                tickMargin={8}
+                scale="point"
+                tick={{ fontSize: 11, fill: "rgba(255,255,255,0.45)" }}
+                axisLine={{ stroke: "rgba(255,255,255,0.08)" }}
+                tickLine={false}
+                tickFormatter={(tick) => formatXAxis(tick, rangeMs)}
+                padding={{ left: 0, right: 48 }}
+              />
+
+              <YAxis
+                axisLine={false}
+                orientation="right"
+                ticks={yTicks}
+                tickFormatter={(tick) => formatPriceTick(tick, yTickStep)}
+                tick={({ x, y, payload }) => <PriceAxisTick x={x - 10} y={y - 7} value={formatPriceTick(payload.value, yTickStep)} />}
+                tickLine={false}
+                width={48}
+                domain={[domainMin, domainMax]}
+              />
+
+              <Tooltip
+                cursor={
+                  UI_V2
+                    ? V2_CURSOR
+                    : {
+                        stroke: "rgba(255,255,255,0.65)",
+                        strokeWidth: 1.5,
+                        strokeDasharray: "4 4",
+                      }
+                }
+                allowEscapeViewBox={{ x: false, y: false }}
+                content={<PriceTooltip peg={pegMode} />}
+              />
+
+              <Area
+                type="monotone"
+                dataKey="uv"
+                stroke={accentColor}
+                strokeWidth={2}
+                fill={pegMode ? `url(#${gradientId}-peg)` : `url(#${gradientId}-fill)`}
+                baseValue={pegMode ? 1 : undefined}
+                dot={false}
+                activeDot={UI_V2 ? v2ActiveDot(accentColor) : { r: 4, fill: accentColor, stroke: accentColor }}
+              />
+
+              {pegMode && (
+                <ReferenceLine
+                  y={1}
+                  stroke="rgba(255,255,255,0.35)"
+                  strokeDasharray="3 3"
+                  label={{ value: "Peg $1.00", position: "insideTopLeft", fill: COLOR.ink3, fontSize: 11 }}
+                />
+              )}
+              {latestPoint && (
+                <ReferenceDot
+                  x={latestPoint.date}
+                  y={latestPoint.uv}
+                  r={4}
+                  fill={accentColor}
+                  stroke={UI_V2 ? COLOR.ring : accentColor}
+                  strokeWidth={UI_V2 ? 2 : 1}
+                  isFront={true}
+                />
+              )}
+
+              <TypedCustomized
+                component={(props) => {
+                  const xScale = Object.values(props.xAxisMap)[0]?.scale
+                  const yScale = Object.values(props.yAxisMap)[0]?.scale
+                  if (!xScale || !yScale || !latestPoint) return null
+                  const cx = xScale(latestPoint.date)
+                  const cy = yScale(latestPoint.uv)
+                  return (
+                    <foreignObject x={cx - 40} y={cy + 10} width={70} height={20} style={{ overflow: "visible" }}>
+                      <div
+                        style={{ backgroundColor: accentColor, color: badgeTextColor }}
+                        className="w-fit whitespace-nowrap rounded-full p-[5px] text-[10px] font-semibold leading-none"
+                      >
+                        {badgeLabel}
+                      </div>
+                    </foreignObject>
+                  )
+                }}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      )}
     </ReliefCard>
   )
 }

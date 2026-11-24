@@ -3,6 +3,7 @@
 import { formatDollar, formatMillions } from "@/lib/number_formatter"
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts"
 import { UI_V2 } from "@/v2/ui"
+import { TimeChartV2 } from "@/v2/ui/time-chart"
 import { ChartTooltipV2, V2_CURSOR, V2_GRID, V2_TICK, v2ActiveDot } from "@/v2/ui/chart"
 import { COLOR } from "@/v2/theme/colors"
 
@@ -74,6 +75,18 @@ export default function UsgTotalBorrow({ totalBorrow }: UsgTotalBorrowProps) {
     const valueInMillions = value / 1_000_000
     return `$${Number(valueInMillions.toFixed(2)).toString()}M`
   }
+
+  if (UI_V2)
+    return (
+      <TimeChartV2
+        data={totalBorrow}
+        xKey="timestamp"
+        series={[{ key: "value", label: "Total borrow", color: COLOR.data }]}
+        format={formatYAxisValue}
+        valueFormat={(v) => formatDollar(v.toFixed(0), 0)}
+        height="100%"
+      />
+    )
 
   return (
     <ResponsiveContainer width="100%" height="100%">

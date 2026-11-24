@@ -10,8 +10,9 @@ import { ResponsiveContainer, XAxis, YAxis, Area, AreaChart, Tooltip, CartesianG
 import { formatXAxis, formatYAxis, getDataRangeMs, getXAxisTicks } from "../dashboard_controller"
 import { CustomTooltip, TooltipCategory } from "./CustomGraphTooltip"
 import { UI_V2 } from "@/v2/ui"
+import { TimeChartV2 } from "@/v2/ui/time-chart"
 import { ChartHeadV2, ChartLegendV2, V2_CURSOR, v2ActiveDot } from "@/v2/ui/chart"
-import { COLOR } from "@/v2/theme/colors"
+import { COLOR, SERIES } from "@/v2/theme/colors"
 
 type GraphLpLiquidityProps = {
   liquidity: LpLiquidityHistory
@@ -33,11 +34,11 @@ const LIVE_PALETTE = [
 // V2: blue first, then quiet tints (no green, no yellow)
 const V2_PALETTE = [
   { stroke: COLOR.data, className: "text-data-primary" },
-  { stroke: "#a79bff", className: "text-[#a79bff]" },
-  { stroke: "#e78fb3", className: "text-[#e78fb3]" },
-  { stroke: "#d9c49a", className: "text-[#d9c49a]" },
-  { stroke: "#8fa3bf", className: "text-[#8fa3bf]" },
-  { stroke: "#d4d4d8", className: "text-[#d4d4d8]" },
+  { stroke: SERIES.violet, className: "text-[color:var(--tgt-v2-series-violet)]" },
+  { stroke: SERIES.pink, className: "text-[color:var(--tgt-v2-series-pink)]" },
+  { stroke: SERIES.gold, className: "text-[color:var(--tgt-v2-series-gold)]" },
+  { stroke: SERIES.slate, className: "text-[color:var(--tgt-v2-series-slate)]" },
+  { stroke: COLOR.ink3, className: "text-ink-3" },
 ]
 const PALETTE = UI_V2 ? V2_PALETTE : LIVE_PALETTE
 
@@ -131,64 +132,75 @@ export const GraphLpLiquidity = ({ liquidity, selectedTab, fetchLiquidity }: Gra
       )}
 
       {/* CHART */}
-      <div className="relative min-h-56 w-full flex-1">
-        <ResponsiveContainer width="100%" height="100%" className="absolute inset-0">
-          <AreaChart data={data} margin={{ top: 15, right: -50, left: -5, bottom: -10 }}>
-            <XAxis
-              dataKey="date"
-              tickFormatter={(tick) => formatXAxis(tick, rangeMs)}
-              ticks={xAxisTicks}
-              scale="point"
-              tick={{ fontSize: 11, fill: "rgba(255,255,255,0.5)" }}
-              axisLine={{ stroke: "rgba(255,255,255,0.08)" }}
-              tickLine={false}
-              padding={{ left: 0, right: 40 }}
-            />
-
-            <YAxis
-              orientation="right"
-              axisLine={false}
-              tick={({ x, y, payload }) => (
-                <text x={x - 10} y={y - 7} dy={4} textAnchor="end" fill="rgba(255,255,255,0.5)" fontSize={11}>
-                  {formatYAxis(payload.value)}
-                </text>
-              )}
-              tickLine={false}
-              width={48}
-            />
-            <CartesianGrid horizontal={true} vertical={false} stroke="rgba(255,255,255,0.06)" />
-
-            <defs>
-              {PALETTE.map((c, i) => (
-                <linearGradient key={c.stroke} id={`lp-liquidity-gradient-${i}`} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor={c.stroke} stopOpacity={0.6} />
-                  <stop offset="95%" stopColor={c.stroke} stopOpacity={0} />
-                </linearGradient>
-              ))}
-            </defs>
-
-            {series.map((s) => (
-              <Area
-                key={s.key}
-                type="monotone"
-                dataKey={s.key}
-                stackId="1"
-                stroke={s.stroke}
-                strokeWidth={1.5}
-                fill={`url(#lp-liquidity-gradient-${PALETTE.findIndex((c) => c.stroke === s.stroke)})`}
-                name={s.key}
-                activeDot={UI_V2 ? v2ActiveDot(s.stroke) : undefined}
+      {UI_V2 ? (
+        <TimeChartV2
+          className="-mx-5 -mb-5 mt-2 w-[calc(100%+2.5rem)]"
+          data={data}
+          xKey="date"
+          stacked
+          series={series.map((s) => ({ key: s.key, label: s.key, color: s.stroke }))}
+          format={formatYAxis}
+        />
+      ) : (
+        <div className="relative min-h-56 w-full flex-1">
+          <ResponsiveContainer width="100%" height="100%" className="absolute inset-0">
+            <AreaChart data={data} margin={{ top: 15, right: -50, left: -5, bottom: -10 }}>
+              <XAxis
+                dataKey="date"
+                tickFormatter={(tick) => formatXAxis(tick, rangeMs)}
+                ticks={xAxisTicks}
+                scale="point"
+                tick={{ fontSize: 11, fill: "rgba(255,255,255,0.5)" }}
+                axisLine={{ stroke: "rgba(255,255,255,0.08)" }}
+                tickLine={false}
+                padding={{ left: 0, right: 40 }}
               />
-            ))}
 
-            <Tooltip
-              cursor={UI_V2 ? V2_CURSOR : { stroke: "rgba(255,255,255,0.7)", strokeWidth: 2, strokeDasharray: "4 4" }}
-              allowEscapeViewBox={{ x: false, y: false }}
-              content={<CustomTooltip categories={categories} />}
-            />
-          </AreaChart>
-        </ResponsiveContainer>
-      </div>
+              <YAxis
+                orientation="right"
+                axisLine={false}
+                tick={({ x, y, payload }) => (
+                  <text x={x - 10} y={y - 7} dy={4} textAnchor="end" fill="rgba(255,255,255,0.5)" fontSize={11}>
+                    {formatYAxis(payload.value)}
+                  </text>
+                )}
+                tickLine={false}
+                width={48}
+              />
+              <CartesianGrid horizontal={true} vertical={false} stroke="rgba(255,255,255,0.06)" />
+
+              <defs>
+                {PALETTE.map((c, i) => (
+                  <linearGradient key={c.stroke} id={`lp-liquidity-gradient-${i}`} x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor={c.stroke} stopOpacity={0.6} />
+                    <stop offset="95%" stopColor={c.stroke} stopOpacity={0} />
+                  </linearGradient>
+                ))}
+              </defs>
+
+              {series.map((s) => (
+                <Area
+                  key={s.key}
+                  type="monotone"
+                  dataKey={s.key}
+                  stackId="1"
+                  stroke={s.stroke}
+                  strokeWidth={1.5}
+                  fill={`url(#lp-liquidity-gradient-${PALETTE.findIndex((c) => c.stroke === s.stroke)})`}
+                  name={s.key}
+                  activeDot={UI_V2 ? v2ActiveDot(s.stroke) : undefined}
+                />
+              ))}
+
+              <Tooltip
+                cursor={UI_V2 ? V2_CURSOR : { stroke: "rgba(255,255,255,0.7)", strokeWidth: 2, strokeDasharray: "4 4" }}
+                allowEscapeViewBox={{ x: false, y: false }}
+                content={<CustomTooltip categories={categories} />}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      )}
     </ReliefCard>
   )
 }

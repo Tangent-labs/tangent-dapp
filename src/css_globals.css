@@ -90,7 +90,7 @@
        cursor and empty slider tracks */
     --tgt-v2-chart-ring: #1a1a1a;
     --tgt-v2-chart-line: rgb(255 255 255 / 0.35);
-    --tgt-v2-chart-cursor: rgb(255 255 255 / 0.22);
+    --tgt-v2-chart-cursor: rgb(255 255 255 / 0.4);
     --tgt-v2-chart-track: rgb(255 255 255 / 0.12);
     /* data series after the blue */
     --tgt-v2-series-violet: #a79bff;
@@ -450,7 +450,7 @@ html[data-ui="v2"][data-theme="light"] {
   --tgt-v2-status-alert: #d4550a;
   --tgt-v2-chart-ring: #ffffff;
   --tgt-v2-chart-line: rgb(0 0 0 / 0.3);
-  --tgt-v2-chart-cursor: rgb(0 0 0 / 0.2);
+  --tgt-v2-chart-cursor: rgb(0 0 0 / 0.55);
   --tgt-v2-chart-track: rgb(0 0 0 / 0.1);
   --tgt-v2-series-violet: #6f5cf0;
   --tgt-v2-series-pink: #c2457a;

@@ -11,6 +11,7 @@ import { formatXAxis, formatYAxis, getDataRangeMs, getXAxisTicks } from "../dash
 import { returnTVLType } from "../utils"
 import { CustomTooltip, TooltipCategory } from "./CustomGraphTooltip"
 import { UI_V2 } from "@/v2/ui"
+import { TimeChartV2 } from "@/v2/ui/time-chart"
 import { ChartHeadV2, ChartLegendV2, V2_CURSOR, rangeChange, v2ActiveDot } from "@/v2/ui/chart"
 import { COLOR, SERIES } from "@/v2/theme/colors"
 
@@ -139,88 +140,99 @@ export const GraphGlobalTVL = ({ fetchTVLData, tvlSelectedTab, protocolCurrentTV
         </>
       )}
       {/* CHART */}
-      <div className="flex h-56 min-h-56 w-full items-center justify-center">
-        <ResponsiveContainer width="100%" height="100%">
-          <AreaChart
-            data={tvl}
-            margin={{
-              top: 15,
-              right: -50,
-              left: -5,
-              bottom: -10,
-            }}
-          >
-            <XAxis
-              dataKey="date"
-              tickFormatter={(tick) => formatXAxis(tick, rangeMs)}
-              ticks={xAxisTicks}
-              scale="point"
-              tick={{ fontSize: 11, fill: "rgba(255,255,255,0.5)" }}
-              axisLine={{ stroke: "rgba(255,255,255,0.08)" }}
-              tickLine={false}
-              padding={{ left: 0, right: 40 }}
-            />
-
-            <YAxis
-              orientation="right"
-              axisLine={false}
-              tick={({ x, y, payload }) => (
-                <text x={x - 10} y={y - 7} dy={4} textAnchor="end" fill="rgba(255,255,255,0.5)" fontSize={11}>
-                  {formatYAxis(payload.value)}
-                </text>
-              )}
-              tickLine={false}
-              width={48}
-            />
-            <CartesianGrid horizontal={true} vertical={false} stroke="rgba(255,255,255,0.06)" />
-
-            <defs>
-              <linearGradient id="tvl-marketsGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor={COLOR.data} stopOpacity={0.6} />
-                <stop offset="95%" stopColor={COLOR.data} stopOpacity={0} />
-              </linearGradient>
-
-              <linearGradient id="tvl-pegKeepersGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor={SERIES_CONFIG[1].stroke} stopOpacity={0.6} />
-                <stop offset="95%" stopColor={SERIES_CONFIG[1].stroke} stopOpacity={0} />
-              </linearGradient>
-
-              <linearGradient id="tvl-susgGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor={SERIES_CONFIG[2].stroke} stopOpacity={0.6} />
-                <stop offset="95%" stopColor={SERIES_CONFIG[2].stroke} stopOpacity={0} />
-              </linearGradient>
-            </defs>
-
-            {sortedSeries.map((s) => (
-              <Area
-                key={s.key}
-                type="monotone"
-                dataKey={s.key}
-                stackId="1"
-                stroke={s.stroke}
-                strokeWidth={1.5}
-                fill={`url(#${s.gradient})`}
-                name={s.name}
-                activeDot={UI_V2 ? v2ActiveDot(s.stroke) : undefined}
+      {UI_V2 ? (
+        <TimeChartV2
+          className="-mx-5 -mb-5 mt-2 w-[calc(100%+2.5rem)]"
+          data={tvl}
+          xKey="date"
+          stacked
+          series={sortedSeries.map((s) => ({ key: s.key as string, label: TVL_CATEGORY_METADATA[s.key as string]?.label ?? s.name, color: s.stroke }))}
+          format={formatYAxis}
+        />
+      ) : (
+        <div className="flex h-56 min-h-56 w-full items-center justify-center">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart
+              data={tvl}
+              margin={{
+                top: 15,
+                right: -50,
+                left: -5,
+                bottom: -10,
+              }}
+            >
+              <XAxis
+                dataKey="date"
+                tickFormatter={(tick) => formatXAxis(tick, rangeMs)}
+                ticks={xAxisTicks}
+                scale="point"
+                tick={{ fontSize: 11, fill: "rgba(255,255,255,0.5)" }}
+                axisLine={{ stroke: "rgba(255,255,255,0.08)" }}
+                tickLine={false}
+                padding={{ left: 0, right: 40 }}
               />
-            ))}
 
-            <Tooltip
-              cursor={
-                UI_V2
-                  ? V2_CURSOR
-                  : {
-                      stroke: "rgba(255,255,255,0.7)",
-                      strokeWidth: 2,
-                      strokeDasharray: "4 4",
-                    }
-              }
-              allowEscapeViewBox={{ x: false, y: false }}
-              content={<CustomTooltip categories={sortedCategories} />}
-            />
-          </AreaChart>
-        </ResponsiveContainer>
-      </div>
+              <YAxis
+                orientation="right"
+                axisLine={false}
+                tick={({ x, y, payload }) => (
+                  <text x={x - 10} y={y - 7} dy={4} textAnchor="end" fill="rgba(255,255,255,0.5)" fontSize={11}>
+                    {formatYAxis(payload.value)}
+                  </text>
+                )}
+                tickLine={false}
+                width={48}
+              />
+              <CartesianGrid horizontal={true} vertical={false} stroke="rgba(255,255,255,0.06)" />
+
+              <defs>
+                <linearGradient id="tvl-marketsGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor={COLOR.data} stopOpacity={0.6} />
+                  <stop offset="95%" stopColor={COLOR.data} stopOpacity={0} />
+                </linearGradient>
+
+                <linearGradient id="tvl-pegKeepersGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor={SERIES_CONFIG[1].stroke} stopOpacity={0.6} />
+                  <stop offset="95%" stopColor={SERIES_CONFIG[1].stroke} stopOpacity={0} />
+                </linearGradient>
+
+                <linearGradient id="tvl-susgGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor={SERIES_CONFIG[2].stroke} stopOpacity={0.6} />
+                  <stop offset="95%" stopColor={SERIES_CONFIG[2].stroke} stopOpacity={0} />
+                </linearGradient>
+              </defs>
+
+              {sortedSeries.map((s) => (
+                <Area
+                  key={s.key}
+                  type="monotone"
+                  dataKey={s.key}
+                  stackId="1"
+                  stroke={s.stroke}
+                  strokeWidth={1.5}
+                  fill={`url(#${s.gradient})`}
+                  name={s.name}
+                  activeDot={UI_V2 ? v2ActiveDot(s.stroke) : undefined}
+                />
+              ))}
+
+              <Tooltip
+                cursor={
+                  UI_V2
+                    ? V2_CURSOR
+                    : {
+                        stroke: "rgba(255,255,255,0.7)",
+                        strokeWidth: 2,
+                        strokeDasharray: "4 4",
+                      }
+                }
+                allowEscapeViewBox={{ x: false, y: false }}
+                content={<CustomTooltip categories={sortedCategories} />}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      )}
     </ReliefCard>
   )
 }

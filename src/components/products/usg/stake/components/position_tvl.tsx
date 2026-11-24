@@ -1,6 +1,7 @@
 import { ReactNode, useMemo, useState } from "react"
 import { UI_V2 } from "@/v2/ui"
-import { ChartTooltipV2, V2_CURSOR, V2_GRID, V2_TICK, v2ActiveDot } from "@/v2/ui/chart"
+import { TimeChartV2 } from "@/v2/ui/time-chart"
+import { V2_CURSOR, V2_GRID, V2_TICK, v2ActiveDot } from "@/v2/ui/chart"
 import { TVLData } from "../../usg_type"
 import { formatMillions } from "@/lib/number_formatter"
 import { convertRange } from "@/components/products/root/root_controller"
@@ -66,8 +67,6 @@ const TvlTooltip = (props: {
   const value = Number(props.payload[0]?.value)
 
   if (!Number.isFinite(props.label) || !Number.isFinite(value)) return null
-
-  if (UI_V2) return <ChartTooltipV2 title={props.fmtLabel(props.label)} rows={[{ color: SUSG_COLOR, label: "TVL", value: "$" + formatMillions(value) }]} />
 
   return (
     <div className="pointer-events-none flex flex-col items-start justify-between gap-3 rounded-[10px] bg-dark px-3 py-2 text-[10px]">
@@ -155,82 +154,94 @@ export const PositionTVL = ({ tvl }: PositionTVLProps) => {
       </div>
 
       {hasTvlHistory ? (
-        <div className="relative mt-2.5 h-[18rem]">
-          <ResponsiveContainer width="100%" height="100%" className="!max-h-none">
-            <AreaChart data={data} margin={CHART_MARGIN}>
-              <defs>
-                <linearGradient id="susgTvlGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor={SUSG_COLOR} stopOpacity={UI_V2 ? 0.22 : 0.4} />
-                  <stop offset="100%" stopColor={SUSG_COLOR} stopOpacity={0} />
-                </linearGradient>
-              </defs>
+        UI_V2 ? (
+          <TimeChartV2
+            className="-mx-6 mt-2.5 w-[calc(100%+3rem)]"
+            data={data}
+            xKey="date"
+            series={[{ key: "uv", label: "TVL", color: SUSG_COLOR }]}
+            format={formatYAxis}
+            valueFormat={(v) => "$" + formatMillions(v)}
+            height="18rem"
+          />
+        ) : (
+          <div className="relative mt-2.5 h-[18rem]">
+            <ResponsiveContainer width="100%" height="100%" className="!max-h-none">
+              <AreaChart data={data} margin={CHART_MARGIN}>
+                <defs>
+                  <linearGradient id="susgTvlGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor={SUSG_COLOR} stopOpacity={UI_V2 ? 0.22 : 0.4} />
+                    <stop offset="100%" stopColor={SUSG_COLOR} stopOpacity={0} />
+                  </linearGradient>
+                </defs>
 
-              <CartesianGrid horizontal={true} vertical={false} stroke={UI_V2 ? V2_GRID : "rgba(255,255,255,0.05)"} />
+                <CartesianGrid horizontal={true} vertical={false} stroke={UI_V2 ? V2_GRID : "rgba(255,255,255,0.05)"} />
 
-              <XAxis
-                padding={X_AXIS_PADDING}
-                dataKey="date"
-                type="number"
-                scale="time"
-                domain={[startTs, endTs]}
-                ticks={ticks}
-                tickFormatter={fmtTick}
-                tick={TICK_STYLE}
-                axisLine={AXIS_LINE_STYLE}
-                tickLine={false}
-                allowDataOverflow
-                height={20}
-              />
+                <XAxis
+                  padding={X_AXIS_PADDING}
+                  dataKey="date"
+                  type="number"
+                  scale="time"
+                  domain={[startTs, endTs]}
+                  ticks={ticks}
+                  tickFormatter={fmtTick}
+                  tick={TICK_STYLE}
+                  axisLine={AXIS_LINE_STYLE}
+                  tickLine={false}
+                  allowDataOverflow
+                  height={20}
+                />
 
-              <YAxis
-                orientation="right"
-                width={CHART_Y_AXIS_WIDTH}
-                axisLine={false}
-                tick={({ x, y, payload }) => (
-                  <text x={x - 10} y={y - 7} dy={4} textAnchor="end" fill={TICK_STYLE.fill} fontSize={11}>
-                    {formatYAxis(payload.value)}
-                  </text>
-                )}
-                tickLine={false}
-              />
+                <YAxis
+                  orientation="right"
+                  width={CHART_Y_AXIS_WIDTH}
+                  axisLine={false}
+                  tick={({ x, y, payload }) => (
+                    <text x={x - 10} y={y - 7} dy={4} textAnchor="end" fill={TICK_STYLE.fill} fontSize={11}>
+                      {formatYAxis(payload.value)}
+                    </text>
+                  )}
+                  tickLine={false}
+                />
 
-              <Area
-                type="monotone"
-                dataKey="uv"
-                stroke={SUSG_COLOR}
-                strokeWidth={UI_V2 ? 1.5 : 2}
-                fill="url(#susgTvlGradient)"
-                dot={false}
-                activeDot={
-                  UI_V2
-                    ? v2ActiveDot(SUSG_COLOR)
-                    : {
-                        r: 4,
-                        stroke: SUSG_COLOR,
-                        strokeWidth: 2,
-                        fill: SUSG_COLOR,
-                        filter: `drop-shadow(0 0 8px ${SUSG_COLOR})`,
-                      }
-                }
-              />
+                <Area
+                  type="monotone"
+                  dataKey="uv"
+                  stroke={SUSG_COLOR}
+                  strokeWidth={UI_V2 ? 1.5 : 2}
+                  fill="url(#susgTvlGradient)"
+                  dot={false}
+                  activeDot={
+                    UI_V2
+                      ? v2ActiveDot(SUSG_COLOR)
+                      : {
+                          r: 4,
+                          stroke: SUSG_COLOR,
+                          strokeWidth: 2,
+                          fill: SUSG_COLOR,
+                          filter: `drop-shadow(0 0 8px ${SUSG_COLOR})`,
+                        }
+                  }
+                />
 
-              <Tooltip
-                cursor={UI_V2 ? V2_CURSOR : { ...AXIS_LINE_STYLE, strokeWidth: 1.5, strokeDasharray: "4 4" }}
-                content={<TvlTooltip fmtLabel={fmtTooltipLabel} />}
-              />
+                <Tooltip
+                  cursor={UI_V2 ? V2_CURSOR : { ...AXIS_LINE_STYLE, strokeWidth: 1.5, strokeDasharray: "4 4" }}
+                  content={<TvlTooltip fmtLabel={fmtTooltipLabel} />}
+                />
 
-              <ReferenceDot
-                x={latestPoint.date}
-                y={latestPoint.uv}
-                r={4}
-                fill={SUSG_COLOR}
-                stroke={UI_V2 ? COLOR.ring : SUSG_COLOR}
-                strokeWidth={UI_V2 ? 2 : 1}
-                isFront={true}
-              />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
+                <ReferenceDot
+                  x={latestPoint.date}
+                  y={latestPoint.uv}
+                  r={4}
+                  fill={SUSG_COLOR}
+                  stroke={UI_V2 ? COLOR.ring : SUSG_COLOR}
+                  strokeWidth={UI_V2 ? 2 : 1}
+                  isFront={true}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        )
       ) : (
         <div className="mb mt-3 flex h-[18rem] w-full items-center justify-center text-subtitle">No TVL data</div>
       )}

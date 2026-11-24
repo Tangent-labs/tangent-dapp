@@ -10,8 +10,8 @@ import { COLOR } from "@/v2/theme/colors"
  * The live graph components keep their data, ranges and recharts setup; under UI_V2 they swap in these pieces.
  */
 
-/** Hover cursor: a quiet dashed hairline, not a bright 2px rule. */
-export const V2_CURSOR = { stroke: COLOR.cursor, strokeWidth: 1, strokeDasharray: "3 3" }
+/** Hover cursor: a solid hairline (Aave Pro), not a bright 2px rule. */
+export const V2_CURSOR = { stroke: COLOR.cursor, strokeWidth: 1 }
 
 /** Active point: the series color ringed with the card surface, so it reads on any line. */
 export const v2ActiveDot = (color: string) => ({ r: 4, fill: color, stroke: COLOR.ring, strokeWidth: 2 })
@@ -24,13 +24,16 @@ export const V2_GRID = COLOR.grid
 
 export type TooltipRow = { color?: string; label: string; value: string }
 
-/** Hover card: date on top, one row per series (dot, label, value), optional total. */
-export function ChartTooltipV2({ title, rows, total }: { title: ReactNode; rows: TooltipRow[]; total?: TooltipRow }) {
+/** Hover card (Aave Pro): date left and time right over a hairline, optional total, one row per series (dot, label, value). */
+export function ChartTooltipV2({ title, time, rows, total }: { title: ReactNode; time?: string; rows: TooltipRow[]; total?: TooltipRow }) {
   return (
-    <div className="min-w-[180px] rounded-[10px] border border-white/[0.08] bg-raised px-3 py-2.5 font-sans text-xs shadow-pop">
-      <div className="mb-2 text-[11px] tabular-nums text-ink-3">{title}</div>
+    <div className="min-w-[200px] rounded-[10px] border border-hairline bg-surface px-3 py-2.5 font-sans text-xs shadow-pop">
+      <div className="mb-2 flex items-center justify-between gap-4 border-b border-divider pb-2 text-[11px] tabular-nums text-ink-3">
+        <span>{title}</span>
+        {time && <span>{time}</span>}
+      </div>
       {total && (
-        <div className="mb-1.5 flex items-center justify-between gap-4 border-b border-white/[0.06] pb-1.5">
+        <div className="mb-1.5 flex items-center justify-between gap-4">
           <span className="font-medium text-white">{total.label}</span>
           <span className="font-semibold tabular-nums text-white">{total.value}</span>
         </div>

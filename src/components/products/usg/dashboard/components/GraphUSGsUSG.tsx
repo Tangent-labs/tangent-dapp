@@ -7,6 +7,7 @@ import { formatXAxis, formatYAxis, getDataRangeMs, getXAxisTicks } from "../dash
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { CustomTooltip, TooltipCategory } from "./CustomGraphTooltip"
 import { UI_V2 } from "@/v2/ui"
+import { TimeChartV2 } from "@/v2/ui/time-chart"
 import { ChartHeadV2, ChartLegendV2, V2_CURSOR, rangeChange, v2ActiveDot } from "@/v2/ui/chart"
 import { COLOR, SERIES } from "@/v2/theme/colors"
 
@@ -146,91 +147,104 @@ export const GraphUSGsUSG = ({
           {/* CHART */}
         </>
       )}
-      <div className="flex h-56 min-h-56 w-full items-center justify-center">
-        <ResponsiveContainer width="100%" height="100%">
-          <AreaChart
-            data={USGsUSGTotalSupplyData}
-            margin={{
-              top: 15,
-              right: -50,
-              left: -5,
-              bottom: -10,
-            }}
-          >
-            <XAxis
-              dataKey="date"
-              tickFormatter={(tick) => formatXAxis(tick, rangeMs)}
-              ticks={xAxisTicks}
-              scale="point"
-              tick={{ fontSize: 11, fill: "rgba(255,255,255,0.5)" }}
-              axisLine={{ stroke: "rgba(255,255,255,0.08)" }}
-              tickLine={false}
-              padding={{ left: 0, right: 40 }}
-            />
+      {UI_V2 ? (
+        <TimeChartV2
+          className="-mx-5 -mb-5 mt-2 w-[calc(100%+2.5rem)]"
+          data={USGsUSGTotalSupplyData}
+          xKey="date"
+          series={[
+            { key: "usg", label: "USG", color: COLOR.data },
+            { key: "susg", label: "sUSG", color: SERIES.violet },
+          ]}
+          format={(v) => "$" + formatMillions(v)}
+        />
+      ) : (
+        <div className="flex h-56 min-h-56 w-full items-center justify-center">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart
+              data={USGsUSGTotalSupplyData}
+              margin={{
+                top: 15,
+                right: -50,
+                left: -5,
+                bottom: -10,
+              }}
+            >
+              <XAxis
+                dataKey="date"
+                tickFormatter={(tick) => formatXAxis(tick, rangeMs)}
+                ticks={xAxisTicks}
+                scale="point"
+                tick={{ fontSize: 11, fill: "rgba(255,255,255,0.5)" }}
+                axisLine={{ stroke: "rgba(255,255,255,0.08)" }}
+                tickLine={false}
+                padding={{ left: 0, right: 40 }}
+              />
 
-            <YAxis
-              orientation="right"
-              axisLine={false}
-              tick={({ x, y, payload }) => (
-                <text x={x - 10} y={y - 7} dy={4} textAnchor="end" fill="rgba(255,255,255,0.5)" fontSize={11}>
-                  {formatYAxis(payload.value)}
-                </text>
-              )}
-              tickLine={false}
-              width={48}
-            />
+              <YAxis
+                orientation="right"
+                axisLine={false}
+                tick={({ x, y, payload }) => (
+                  <text x={x - 10} y={y - 7} dy={4} textAnchor="end" fill="rgba(255,255,255,0.5)" fontSize={11}>
+                    {formatYAxis(payload.value)}
+                  </text>
+                )}
+                tickLine={false}
+                width={48}
+              />
 
-            <CartesianGrid horizontal={true} vertical={false} stroke="rgba(255,255,255,0.06)" />
-            <defs>
-              <linearGradient id="supply-susgGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={UI_V2 ? SERIES.violet : "rgba(252, 248, 47, 0.3)"} stopOpacity={UI_V2 ? 0.3 : 1} />
-                <stop offset="100%" stopColor={UI_V2 ? SERIES.violet : "rgba(251, 249, 17, 0)"} stopOpacity={UI_V2 ? 0 : 1} />
-              </linearGradient>
+              <CartesianGrid horizontal={true} vertical={false} stroke="rgba(255,255,255,0.06)" />
+              <defs>
+                <linearGradient id="supply-susgGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={UI_V2 ? SERIES.violet : "rgba(252, 248, 47, 0.3)"} stopOpacity={UI_V2 ? 0.3 : 1} />
+                  <stop offset="100%" stopColor={UI_V2 ? SERIES.violet : "rgba(251, 249, 17, 0)"} stopOpacity={UI_V2 ? 0 : 1} />
+                </linearGradient>
 
-              <linearGradient id="supply-usgGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={COLOR.data} stopOpacity={0.3} />
-                <stop offset="100%" stopColor={COLOR.data} stopOpacity={0} />
-              </linearGradient>
-            </defs>
+                <linearGradient id="supply-usgGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={COLOR.data} stopOpacity={0.3} />
+                  <stop offset="100%" stopColor={COLOR.data} stopOpacity={0} />
+                </linearGradient>
+              </defs>
 
-            <Area
-              strokeWidth={1.5}
-              type="monotone"
-              dataKey="susg"
-              stroke={UI_V2 ? SERIES.violet : "rgba(251, 249, 17, 0.8)"}
-              fill="url(#supply-susgGradient)"
-              name="sUSG Total Supply"
-              activeDot={UI_V2 ? v2ActiveDot(SERIES.violet) : undefined}
-              connectNulls
-            />
+              <Area
+                strokeWidth={1.5}
+                type="monotone"
+                dataKey="susg"
+                stroke={UI_V2 ? SERIES.violet : "rgba(251, 249, 17, 0.8)"}
+                fill="url(#supply-susgGradient)"
+                name="sUSG Total Supply"
+                activeDot={UI_V2 ? v2ActiveDot(SERIES.violet) : undefined}
+                connectNulls
+              />
 
-            <Area
-              strokeWidth={1.5}
-              type="monotone"
-              dataKey="usg"
-              stroke={COLOR.data}
-              fill="url(#supply-usgGradient)"
-              name="USG Total Supply"
-              activeDot={UI_V2 ? v2ActiveDot(COLOR.data) : undefined}
-              connectNulls
-            />
+              <Area
+                strokeWidth={1.5}
+                type="monotone"
+                dataKey="usg"
+                stroke={COLOR.data}
+                fill="url(#supply-usgGradient)"
+                name="USG Total Supply"
+                activeDot={UI_V2 ? v2ActiveDot(COLOR.data) : undefined}
+                connectNulls
+              />
 
-            <Tooltip
-              cursor={
-                UI_V2
-                  ? V2_CURSOR
-                  : {
-                      stroke: "rgba(255,255,255,0.7)",
-                      strokeWidth: 2,
-                      strokeDasharray: "4 4",
-                    }
-              }
-              allowEscapeViewBox={{ x: false, y: false }}
-              content={<CustomTooltip categories={SUPPLY_CATEGORIES} totalKeys={["usg"]} />}
-            />
-          </AreaChart>
-        </ResponsiveContainer>
-      </div>
+              <Tooltip
+                cursor={
+                  UI_V2
+                    ? V2_CURSOR
+                    : {
+                        stroke: "rgba(255,255,255,0.7)",
+                        strokeWidth: 2,
+                        strokeDasharray: "4 4",
+                      }
+                }
+                allowEscapeViewBox={{ x: false, y: false }}
+                content={<CustomTooltip categories={SUPPLY_CATEGORIES} totalKeys={["usg"]} />}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      )}
     </ReliefCard>
   )
 }

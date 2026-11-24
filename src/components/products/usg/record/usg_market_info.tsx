@@ -43,7 +43,7 @@ export function USGMarketInfo() {
               ))}
             </div>
           </div>
-          <div className="mt-2 h-[236px] w-full">
+          <div className="-mx-5 -mb-5 mt-2 h-[236px]">
             <UsgTotalBorrow totalBorrow={totalBorrow?.data} />
           </div>
         </ReliefCard>

@@ -1,7 +1,8 @@
 import { ReactNode, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { APRDisplay } from "./apr_display"
 import { UI_V2 } from "@/v2/ui"
-import { ChartTooltipV2, V2_CURSOR, V2_GRID, V2_TICK, v2ActiveDot } from "@/v2/ui/chart"
+import { TimeChartV2 } from "@/v2/ui/time-chart"
+import { V2_CURSOR, V2_GRID, V2_TICK, v2ActiveDot } from "@/v2/ui/chart"
 import { COLOR } from "@/v2/theme/colors"
 
 const LINE = UI_V2 ? COLOR.data : "#95FF00"
@@ -78,21 +79,6 @@ const CustomAverageDisplay = (props: { averageApy: number; apy: number; viewBox?
 
   if (!viewBox || !text) return null
 
-  if (UI_V2) {
-    // V2 tag: right end of the dashed line, just under it (the latest values sit above the average), same size as the axis ticks
-    const tag = "avg " + averageApy.toFixed(2) + "%"
-    const tagWidth = Math.ceil(tag.length * 6.6) + 14
-    const right = (viewBox.x ?? 0) + viewBox.width
-    return (
-      <g>
-        <rect x={right - tagWidth} y={viewBox.y + 5} width={tagWidth} height={20} rx={5} fill={COLOR.raised} />
-        <text x={right - 7} y={viewBox.y + 19} textAnchor="end" fill={COLOR.ink2} fontSize={12} fontWeight={500} style={{ fontVariantNumeric: "tabular-nums" }}>
-          {tag}
-        </text>
-      </g>
-    )
-  }
-
   const { width, y } = viewBox
   const labelWidth = Math.ceil(measuredTextWidth) + AVERAGE_LABEL_PADDING_X * 2
 
@@ -123,8 +109,6 @@ const ApyTooltip = (props: {
   const value = Number(props.payload[0]?.value)
 
   if (!Number.isFinite(props.label) || !Number.isFinite(value)) return null
-
-  if (UI_V2) return <ChartTooltipV2 title={props.fmtLabel(props.label)} rows={[{ color: LINE, label: "APY", value: value.toFixed(2) + "%" }]} />
 
   return (
     <div className="pointer-events-none flex flex-col items-start justify-between gap-3 rounded-[10px] bg-dark px-3 py-2 text-[10px]">
@@ -195,93 +179,106 @@ export const PositionAPR = ({ apy, token, fetchsUSGHistoryAPY, sUSGSelectedTab, 
       </div>
 
       {hasApyHistory ? (
-        <div className="relative mt-2.5 h-[18rem]">
-          <ResponsiveContainer width="100%" height="100%" className="!max-h-none">
-            <AreaChart data={data} margin={CHART_MARGIN}>
-              <defs>
-                <linearGradient id="greenGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor={LINE} stopOpacity={UI_V2 ? 0.22 : 0.4} />
-                  <stop offset="100%" stopColor={LINE} stopOpacity={0} />
-                </linearGradient>
-              </defs>
+        UI_V2 ? (
+          <TimeChartV2
+            className="-mx-6 mt-2.5 w-[calc(100%+3rem)]"
+            data={data}
+            xKey="date"
+            series={[{ key: "uv", label: "APY", color: LINE }]}
+            format={formatYAxis}
+            valueFormat={(v) => v.toFixed(2) + "%"}
+            height="18rem"
+            reference={Number.isFinite(averageApy) ? { y: averageApy, label: "avg " + averageApy.toFixed(2) + "%" } : undefined}
+          />
+        ) : (
+          <div className="relative mt-2.5 h-[18rem]">
+            <ResponsiveContainer width="100%" height="100%" className="!max-h-none">
+              <AreaChart data={data} margin={CHART_MARGIN}>
+                <defs>
+                  <linearGradient id="greenGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor={LINE} stopOpacity={UI_V2 ? 0.22 : 0.4} />
+                    <stop offset="100%" stopColor={LINE} stopOpacity={0} />
+                  </linearGradient>
+                </defs>
 
-              <CartesianGrid horizontal={true} vertical={false} stroke={UI_V2 ? V2_GRID : "rgba(255,255,255,0.05)"} />
+                <CartesianGrid horizontal={true} vertical={false} stroke={UI_V2 ? V2_GRID : "rgba(255,255,255,0.05)"} />
 
-              <XAxis
-                padding={X_AXIS_PADDING}
-                dataKey="date"
-                type="number"
-                scale="time"
-                domain={[startTs, endTs]}
-                ticks={ticks}
-                tickFormatter={fmtTick}
-                tick={TICK_STYLE}
-                axisLine={AXIS_LINE_STYLE}
-                tickLine={false}
-                allowDataOverflow
-                height={20}
-              />
+                <XAxis
+                  padding={X_AXIS_PADDING}
+                  dataKey="date"
+                  type="number"
+                  scale="time"
+                  domain={[startTs, endTs]}
+                  ticks={ticks}
+                  tickFormatter={fmtTick}
+                  tick={TICK_STYLE}
+                  axisLine={AXIS_LINE_STYLE}
+                  tickLine={false}
+                  allowDataOverflow
+                  height={20}
+                />
 
-              <YAxis
-                orientation="right"
-                width={CHART_Y_AXIS_WIDTH}
-                axisLine={false}
-                tick={({ x, y, payload }) => (
-                  <text x={x - 10} y={y - 7} dy={4} textAnchor="end" fill={TICK_STYLE.fill} fontSize={11}>
-                    {formatYAxis(payload.value)}
-                  </text>
-                )}
-                tickLine={false}
-              />
+                <YAxis
+                  orientation="right"
+                  width={CHART_Y_AXIS_WIDTH}
+                  axisLine={false}
+                  tick={({ x, y, payload }) => (
+                    <text x={x - 10} y={y - 7} dy={4} textAnchor="end" fill={TICK_STYLE.fill} fontSize={11}>
+                      {formatYAxis(payload.value)}
+                    </text>
+                  )}
+                  tickLine={false}
+                />
 
-              <Area
-                type="monotone"
-                dataKey="uv"
-                stroke={LINE}
-                strokeWidth={UI_V2 ? 1.5 : 2}
-                fill="url(#greenGradient)"
-                dot={false}
-                activeDot={
-                  UI_V2
-                    ? v2ActiveDot(LINE)
-                    : {
-                        r: 4,
-                        stroke: LINE,
-                        strokeWidth: 2,
-                        fill: LINE,
-                        filter: UI_V2 ? "drop-shadow(0 0 8px rgba(0, 117, 255, 0.7))" : "drop-shadow(0 0 8px rgba(217, 251, 11, 0.7))",
-                      }
-                }
-              />
+                <Area
+                  type="monotone"
+                  dataKey="uv"
+                  stroke={LINE}
+                  strokeWidth={UI_V2 ? 1.5 : 2}
+                  fill="url(#greenGradient)"
+                  dot={false}
+                  activeDot={
+                    UI_V2
+                      ? v2ActiveDot(LINE)
+                      : {
+                          r: 4,
+                          stroke: LINE,
+                          strokeWidth: 2,
+                          fill: LINE,
+                          filter: UI_V2 ? "drop-shadow(0 0 8px rgba(0, 117, 255, 0.7))" : "drop-shadow(0 0 8px rgba(217, 251, 11, 0.7))",
+                        }
+                  }
+                />
 
-              <Tooltip
-                cursor={UI_V2 ? V2_CURSOR : { ...AXIS_LINE_STYLE, strokeWidth: 1.5, strokeDasharray: "4 4" }}
-                content={<ApyTooltip fmtLabel={fmtTooltipLabel} />}
-              />
+                <Tooltip
+                  cursor={UI_V2 ? V2_CURSOR : { ...AXIS_LINE_STYLE, strokeWidth: 1.5, strokeDasharray: "4 4" }}
+                  content={<ApyTooltip fmtLabel={fmtTooltipLabel} />}
+                />
 
-              <ReferenceLine
-                segment={[
-                  { x: startTs, y: averageApy },
-                  { x: endTs, y: averageApy },
-                ]}
-                stroke={UI_V2 ? COLOR.line : "#0075FF"}
-                strokeDasharray={UI_V2 ? "4 4" : "8 6"}
-                strokeWidth={UI_V2 ? 1 : 2}
-                label={<CustomAverageDisplay averageApy={averageApy} apy={apy} />}
-              />
+                <ReferenceLine
+                  segment={[
+                    { x: startTs, y: averageApy },
+                    { x: endTs, y: averageApy },
+                  ]}
+                  stroke={UI_V2 ? COLOR.line : "#0075FF"}
+                  strokeDasharray={UI_V2 ? "4 4" : "8 6"}
+                  strokeWidth={UI_V2 ? 1 : 2}
+                  label={<CustomAverageDisplay averageApy={averageApy} apy={apy} />}
+                />
 
-              <ReferenceDot
-                x={latestPoint.date}
-                y={latestPoint.uv}
-                r={4}
-                fill={LINE}
-                stroke={UI_V2 ? COLOR.ring : LINE}
-                strokeWidth={UI_V2 ? 2 : 1}
-                isFront={true}
-              />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
+                <ReferenceDot
+                  x={latestPoint.date}
+                  y={latestPoint.uv}
+                  r={4}
+                  fill={LINE}
+                  stroke={UI_V2 ? COLOR.ring : LINE}
+                  strokeWidth={UI_V2 ? 2 : 1}
+                  isFront={true}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        )
       ) : (
         <div className="mb mt-3 flex h-[18rem] w-full items-center justify-center text-subtitle">No APY data</div>
       )}

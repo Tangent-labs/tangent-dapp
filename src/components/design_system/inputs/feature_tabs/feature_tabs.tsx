@@ -72,7 +72,7 @@ export const FeatureTabs = ({
           <LargeButtonTab label="Borrow" active={activeTab === "Borrow"} onClick={onClickBorrow} />
           <LargeButtonTab label="Repay" active={activeTab === "Repay"} onClick={onClickRepay} />
         </div>
-        <div role="tablist" className="v2-chips mt-4 flex w-full justify-between gap-2 overflow-x-auto border-b border-hairline sm:gap-3">
+        <div role="tablist" className="v2-chips mt-4 flex w-full justify-between gap-1 overflow-x-auto border-b border-hairline sm:gap-3">
           {tabs.map((t) => {
             const active = feature === t.key
             return (

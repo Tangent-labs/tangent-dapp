@@ -105,6 +105,12 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
               )}
             </AnimatePresence>
           </div>
+          {/* phones and tablets: your position comes before the market details, not after them */}
+          <div className="mb-8 empty:hidden xl:hidden">
+            <div className="hidden xl:block">
+              <YourLoanV2 />
+            </div>
+          </div>
           <div role="tablist" className="mb-6 flex gap-6 border-b border-hairline">
             {(["overview", "activity"] as const).map((t) => (
               <button
@@ -192,14 +198,14 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
                   title="Borrowing"
                   note={`Borrow rate and rewards cut both depend on the USG price.${maxBorrowCapReached ? " Borrowing is paused while the cap is reached." : ""}`}
                 >
-                  <div className="grid grid-cols-2 divide-divider border-y border-hairline py-4 md:grid-cols-4 md:divide-x [&>*:first-child]:pl-0">
+                  <div className="grid grid-cols-2 gap-y-4 divide-divider border-y border-hairline py-4 md:grid-cols-4 md:gap-y-0 md:divide-x [&>*:first-child]:pl-0">
                     {[
                       ["TVL", `$${formatMillions(marketDisplayData?.tvlDollar)}`, "Collateral deposited"],
                       ["Available", `${formatMillions(marketDisplayData?.available)} USG`, "Left to borrow"],
                       ["Max LTV", marketDisplayData.maxLtv, "Max borrow vs collateral", TERMS.maxLtv],
                       ["Liquidation threshold", marketDisplayData.lt, "Health 1.00 below this", TERMS.lt],
                     ].map(([l, v, s, info]) => (
-                      <div key={l} className="px-4">
+                      <div key={l} className="pr-3 md:px-4">
                         <div className="text-xs text-ink-3">{info ? <Term info={info}>{l}</Term> : l}</div>
                         <div className="mt-1 text-[16px] font-medium tabular-nums">{v}</div>
                         <div className="mt-0.5 text-xs text-ink-3">{s}</div>

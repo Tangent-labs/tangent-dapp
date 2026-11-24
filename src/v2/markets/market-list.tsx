@@ -591,12 +591,7 @@ function Row({ r }: { r: ListRowData }) {
       </span>
       <Vapr r={r} />
       <Two top={rate?.value ?? "-"} sub={r.isFixedRate ? "Fixed rate" : "Variable"} />
-      <Two
-        top={pct(lev)}
-        topClass={lev < 0 ? "text-negative" : undefined}
-        sub={Number.isNaN(levProj) ? "No projection" : `Proj. ${pct(levProj)}`}
-        subClass={levProj < 0 ? "text-negative" : undefined}
-      />
+      <Two top={pct(lev)} sub={Number.isNaN(levProj) ? "No projection" : `Proj. ${pct(levProj)}`} />
       <Two top={ind(r, "tvl")?.value ?? "-"} sub={`Max LTV ${(r.maxLTV * 100).toFixed(0)}%`} />
       <span className="min-w-0">
         <span className={cn("block text-[15px] tabular-nums leading-5", r.isBorrowCapReached && "text-warning")}>
@@ -665,7 +660,7 @@ function Card({ r }: { r: ListRowData }) {
           </div>
           <div className="text-right">
             <div className="text-xs text-ink-3">Max lev. vAPR</div>
-            <div className={cn("mt-1 text-[17px] font-medium tabular-nums leading-6", lev < 0 && "text-negative")}>
+            <div className="mt-1 text-[17px] font-medium tabular-nums leading-6">
               <Roll value={pct(lev)} />
             </div>
             <div className="mt-0.5 text-xs tabular-nums text-ink-3">{Number.isNaN(levProj) ? "No projection" : `Projected ${pct(levProj)}`}</div>
@@ -799,7 +794,7 @@ function MobileRow({ r }: { r: ListRowData }) {
         </span>
         <span className="min-w-0">
           <span className="block text-[11px] text-ink-3">Max lev.</span>
-          <span className={cn("block truncate font-medium tabular-nums", lev < 0 && "text-negative")}>{pct(lev)}</span>
+          <span className="block truncate font-medium tabular-nums">{pct(lev)}</span>
         </span>
         <span className="min-w-0 text-right">
           <span className="block text-[11px] text-ink-3">TVL · cap</span>

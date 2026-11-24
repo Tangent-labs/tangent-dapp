@@ -133,7 +133,7 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
                   </span>
                   {/* phones keep the two numbers that decide a borrow, with short labels; the rest from md up */}
                   <Mini label="Collateral vAPR" short="vAPR" value={`${currentTotalMarketApr?.toFixed(2)}%`} />
-                  <Mini label="Max lev. vAPR" value={maxLev} negative={maxLevNum < 0} className="hidden md:flex" />
+                  <Mini label="Max lev. vAPR" value={maxLev} className="hidden md:flex" />
                   <Mini label="Borrow rate" short="Borrow" value={computedBorrowRate.current} />
                   <Mini label="Capacity" value={maxBorrowCapReached ? "Cap reached" : `${Math.round(capRatio * 100)}%`} className="hidden md:flex" />
                 </motion.div>
@@ -190,7 +190,6 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
                       const proj = Number(maxLevIndicator?.subValue)
                       return Number.isFinite(proj) ? `Proj. ${proj.toFixed(2)}%` : undefined
                     })()}
-                    negative={maxLevNum < 0}
                   />
                   <Stat
                     loading={loading}

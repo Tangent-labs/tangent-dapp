@@ -62,7 +62,6 @@ function useCurve(data: Array<{ price: number; vAPR: number }> | undefined, usgP
 export function VAPRCalculatorV2(p: VAPRCalculatorV2Props) {
   const [open, setOpen] = useState(false)
   const net = p.metrics["Net vAPR"]
-  const netNumber = parseFloat(net)
   const { rows, breakEven, today } = useCurve(p.chartData, p.usgPrice)
   const health = parseFloat(p.metrics["Health"])
 
@@ -73,7 +72,7 @@ export function VAPRCalculatorV2(p: VAPRCalculatorV2Props) {
         <span className="hidden text-[13px] text-ink-2 sm:inline">Net vAPR of a position across USG prices</span>
         <span className="ml-auto flex items-center gap-3">
           <span className="text-[13px] tabular-nums text-ink-2">
-            At ${p.usgPrice?.toFixed(4) ?? "-"}: <span className={cn("font-medium", netNumber < 0 ? "text-negative" : "text-white")}>{net}</span>
+            At ${p.usgPrice?.toFixed(4) ?? "-"}: <span className="font-medium text-white">{net}</span>
           </span>
           <ChevronDown className={cn("h-4 w-4 text-ink-3 transition-transform duration-200", open && "rotate-180")} strokeWidth={2} />
         </span>
@@ -148,7 +147,6 @@ export function VAPRCalculatorV2(p: VAPRCalculatorV2Props) {
                           className={cn(
                             "mt-1 tabular-nums leading-9 tracking-[-0.02em]",
                             i === 0 ? "text-[28px] font-light" : "text-[17px] font-medium",
-                            i === 0 && netNumber < 0 && "text-negative",
                             isHealth && (health < 1.2 ? "text-negative" : health < 1.5 ? "text-warning" : "")
                           )}
                         >
@@ -225,9 +223,7 @@ export function VAPRCalculatorV2(p: VAPRCalculatorV2Props) {
                             active && payload?.length ? (
                               <div className="rounded-lg border border-white/10 bg-raised px-3 py-2 text-xs shadow-[0_12px_32px_rgba(0,0,0,0.5)]">
                                 <div className="text-ink-3">USG at ${Number(label).toFixed(4)}</div>
-                                <div className={cn("mt-0.5 font-medium tabular-nums", Number(payload[0]?.payload?.vAPR) < 0 && "text-negative")}>
-                                  {Number(payload[0]?.payload?.vAPR).toFixed(2)}% net vAPR
-                                </div>
+                                <div className="mt-0.5 font-medium tabular-nums">{Number(payload[0]?.payload?.vAPR).toFixed(2)}% net vAPR</div>
                               </div>
                             ) : null
                           }

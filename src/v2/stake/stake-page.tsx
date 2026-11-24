@@ -1,10 +1,10 @@
 "use client"
 
 import { Roll } from "@/v2/ui/roll"
-import { MobileActionBar } from "@/v2/ui/mobile-action-bar"
+import { ActionSheet, MobileActionBar, useIsDesktop } from "@/v2/ui/mobile-action-bar"
 import { VoidTexture } from "@/v2/ui/void-texture"
 import Link from "next/link"
-import { useMemo, useRef, useState } from "react"
+import { useMemo, useState } from "react"
 import { formatUnits } from "viem"
 import { ArrowDown, ArrowUpRight } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -61,7 +61,8 @@ export function StakePageV2() {
   const asset = vault.asset.symbol
   const { connect } = useWalletConnexionContext()
   const [tab, setTab] = useState(TABS[0])
-  const actionRef = useRef<HTMLDivElement>(null)
+  const isDesktop = useIsDesktop()
+  const [sheet, setSheet] = useState(false)
 
   const isStake = currentFeature === "stake"
   const inAsset = isStake ? asset : share
@@ -95,6 +96,67 @@ export function StakePageV2() {
       logo: vault.asset.logo,
     },
   ]
+
+  const form = (
+    <>
+      <div role="tablist" className="flex w-full gap-1 rounded-[10px] bg-white/[0.04] p-1">
+        <LargeButtonTab onClick={() => setCurrentFeature("stake")} active={isStake} label={vault.depositLabel} />
+        <LargeButtonTab onClick={() => setCurrentFeature("unstake")} active={!isStake} label={vault.withdrawLabel} />
+      </div>
+
+      <div className="mt-4 flex items-center justify-end text-xs text-ink-2">
+        Max {formatBigInt(currentAssetInfo?.balance, 18, 2)} {inAsset}
+      </div>
+      <div className="mt-1.5 flex flex-col gap-1">
+        <GenericInputAssetAmount
+          inputWeiValue={weiValue}
+          onValueChange={(value: bigint | undefined) => setWeiValue(value)}
+          depositSelect={<StaticCardAssetInput assetName={inAsset} logoKey={inLogo} />}
+          asset={currentAssetInfo?.asset}
+          label={isStake ? "You deposit" : `You ${vault.withdrawLabel.toLowerCase()}`}
+          maxAmountParams={{
+            maxWeiValue: currentAssetInfo?.balance || 0n,
+            setMaxAmount: () => {
+              setStakePercentage(100)
+              setWeiValue(currentAssetInfo?.balance)
+            },
+          }}
+          sliderParams={{ sliderPercentage: stakePercentage, setSliderPercentage: setStakePercentage }}
+        />
+        <button
+          type="button"
+          aria-label={`Switch to ${(isStake ? vault.withdrawLabel : vault.depositLabel).toLowerCase()}`}
+          onClick={() => setCurrentFeature(isStake ? "unstake" : "stake")}
+          className="z-10 -my-3 mx-auto grid h-8 w-8 place-items-center rounded-lg border border-hairline bg-surface text-ink-2 transition-colors hover:text-white"
+        >
+          <ArrowDown className="h-4 w-4" strokeWidth={1.75} />
+        </button>
+        <GenericInputAssetAmount
+          inputWeiValue={expected}
+          onValueChange={(value: bigint | undefined) => setWeiValue(value)}
+          depositSelect={<StaticCardAssetInput assetName={outAsset} logoKey={outLogo} />}
+          asset={receivedTokenInfo}
+          label="You receive"
+          disabled={true}
+        />
+      </div>
+
+      <div className="mt-3 flex flex-col gap-3">
+        {formState.errors
+          .filter((e) => e.type === "form-alert")
+          .map((error) => (
+            <FormAlert key={error.key} error={error} className="my-1" isLoading={isLoading} />
+          ))}
+        <FormButtons
+          actions={{ handleApprove: isStake ? actionApprove : undefined, handleProcess: isStake ? actionStake : actionUnstake }}
+          connect={connect}
+          formState={formState}
+          isLoading={isLoading}
+          labelProcess={isStake ? vault.depositLabel : vault.withdrawLabel}
+        />
+      </div>
+    </>
+  )
 
   return (
     <div className="w-full pb-20 pt-2 font-sans">
@@ -183,64 +245,7 @@ export function StakePageV2() {
 
         {/* right: the action, then what it changes */}
         <div className="flex flex-col gap-4">
-          <div ref={actionRef} className="scroll-mt-20 rounded-2xl border border-hairline bg-surface p-4 sm:p-5">
-            <div role="tablist" className="flex w-full gap-1 rounded-[10px] bg-white/[0.04] p-1">
-              <LargeButtonTab onClick={() => setCurrentFeature("stake")} active={isStake} label={vault.depositLabel} />
-              <LargeButtonTab onClick={() => setCurrentFeature("unstake")} active={!isStake} label={vault.withdrawLabel} />
-            </div>
-
-            <div className="mt-4 flex items-center justify-end text-xs text-ink-2">
-              Max {formatBigInt(currentAssetInfo?.balance, 18, 2)} {inAsset}
-            </div>
-            <div className="mt-1.5 flex flex-col gap-1">
-              <GenericInputAssetAmount
-                inputWeiValue={weiValue}
-                onValueChange={(value: bigint | undefined) => setWeiValue(value)}
-                depositSelect={<StaticCardAssetInput assetName={inAsset} logoKey={inLogo} />}
-                asset={currentAssetInfo?.asset}
-                label={isStake ? "You deposit" : `You ${vault.withdrawLabel.toLowerCase()}`}
-                maxAmountParams={{
-                  maxWeiValue: currentAssetInfo?.balance || 0n,
-                  setMaxAmount: () => {
-                    setStakePercentage(100)
-                    setWeiValue(currentAssetInfo?.balance)
-                  },
-                }}
-                sliderParams={{ sliderPercentage: stakePercentage, setSliderPercentage: setStakePercentage }}
-              />
-              <button
-                type="button"
-                aria-label={`Switch to ${(isStake ? vault.withdrawLabel : vault.depositLabel).toLowerCase()}`}
-                onClick={() => setCurrentFeature(isStake ? "unstake" : "stake")}
-                className="z-10 -my-3 mx-auto grid h-8 w-8 place-items-center rounded-lg border border-hairline bg-surface text-ink-2 transition-colors hover:text-white"
-              >
-                <ArrowDown className="h-4 w-4" strokeWidth={1.75} />
-              </button>
-              <GenericInputAssetAmount
-                inputWeiValue={expected}
-                onValueChange={(value: bigint | undefined) => setWeiValue(value)}
-                depositSelect={<StaticCardAssetInput assetName={outAsset} logoKey={outLogo} />}
-                asset={receivedTokenInfo}
-                label="You receive"
-                disabled={true}
-              />
-            </div>
-
-            <div className="mt-3 flex flex-col gap-3">
-              {formState.errors
-                .filter((e) => e.type === "form-alert")
-                .map((error) => (
-                  <FormAlert key={error.key} error={error} className="my-1" isLoading={isLoading} />
-                ))}
-              <FormButtons
-                actions={{ handleApprove: isStake ? actionApprove : undefined, handleProcess: isStake ? actionStake : actionUnstake }}
-                connect={connect}
-                formState={formState}
-                isLoading={isLoading}
-                labelProcess={isStake ? vault.depositLabel : vault.withdrawLabel}
-              />
-            </div>
-          </div>
+          {isDesktop && <div className="hidden rounded-2xl border border-hairline bg-surface p-5 xl:block">{form}</div>}
 
           {!!USGsUSGMetrics && !!sUSGCurrentAPY && sUSGCurrentAPY > 0 && (hasPosition || typing) && (
             <div className="rounded-2xl border border-hairline bg-surface p-5">
@@ -274,7 +279,34 @@ export function StakePageV2() {
           )}
         </div>
       </div>
-      <MobileActionBar target={actionRef} title={share} sub={sUSGCurrentAPY ? `APY ${sUSGCurrentAPY.toFixed(2)}%` : undefined} label={vault.depositLabel} />
+      {!isDesktop && (
+        <>
+          <MobileActionBar
+            title={share}
+            sub={sUSGCurrentAPY ? `APY ${sUSGCurrentAPY.toFixed(2)}%` : undefined}
+            actions={[
+              {
+                label: vault.withdrawLabel,
+                onClick: () => {
+                  setCurrentFeature("unstake")
+                  setSheet(true)
+                },
+              },
+              {
+                label: vault.depositLabel,
+                primary: true,
+                onClick: () => {
+                  setCurrentFeature("stake")
+                  setSheet(true)
+                },
+              },
+            ]}
+          />
+          <ActionSheet open={sheet} onClose={() => setSheet(false)} title={vault.title}>
+            {form}
+          </ActionSheet>
+        </>
+      )}
     </div>
   )
 }

@@ -253,7 +253,7 @@ function MobileTabBar({ path, onMore, moreOpen }: { path: string; onMore: () => 
   return (
     <nav
       aria-label="Main"
-      className="fixed inset-x-0 bottom-0 z-50 border-t border-hairline bg-[rgba(15,15,15,0.96)] pb-[env(safe-area-inset-bottom)] backdrop-blur-md lg:hidden"
+      className="fixed inset-x-0 bottom-0 z-[45] border-t border-hairline bg-[rgba(15,15,15,0.96)] pb-[env(safe-area-inset-bottom)] backdrop-blur-md lg:hidden"
     >
       <div className="mx-auto grid h-16 max-w-[560px] grid-cols-5">
         {TABS.map((it) => {

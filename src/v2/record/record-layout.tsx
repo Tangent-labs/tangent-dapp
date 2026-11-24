@@ -21,7 +21,8 @@ import { TokenImage } from "@/components/design_system/structure/token_image"
 import { YourLoanV2 } from "./your-loan"
 import { OracleV2 } from "./oracle"
 import { MarketSwitcherV2 } from "./market-switcher"
-import { MobileActionBar } from "@/v2/ui/mobile-action-bar"
+import { ActionSheet, MobileActionBar, useIsDesktop } from "@/v2/ui/mobile-action-bar"
+import { useRouter } from "next/navigation"
 
 /**
  * V2 market page. Same data and pieces as USGRecordLayout (record context, feature tabs, chart, calculator, contracts, history),
@@ -53,8 +54,22 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
     io.observe(el)
     return () => io.disconnect()
   }, [])
-  // phones and tablets: the action card sits under the page, so a bar keeps it one tap away until it is on screen
-  const actionRef = useRef<HTMLDivElement>(null)
+  const isDesktop = useIsDesktop()
+  const router = useRouter()
+  const [sheet, setSheet] = useState(false)
+  const hasDebt = (marketData?.debtInfos?.userDebt ?? 0n) > 0n
+  // the Borrow / Repay side follows the route, like the live feature tabs
+  const openSheet = (route: "deposit-borrow" | "repay-withdraw") => {
+    const onRepay = ["repay", "withdraw", "repay-withdraw", "liquidate"].includes(window.location.pathname.split("/").pop() ?? "")
+    if ((route === "repay-withdraw") !== onRepay) router.replace(`/${marketInfo?.marketAddress}/${route}`, { scroll: false })
+    setSheet(true)
+  }
+  const form = (
+    <>
+      {featureTabs}
+      <div className="mt-4 flex flex-col gap-3">{children}</div>
+    </>
+  )
 
   return (
     <div className="w-full pb-24 pt-2 font-sans xl:pb-20">
@@ -227,23 +242,35 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
         </div>
 
         {/* right column: Your loan scrolls away, the action card stays under the top bar */}
-        <div className="flex flex-col gap-4 self-stretch">
-          <div className="hidden xl:block">
-            <YourLoanV2 />
-          </div>
-          <div ref={actionRef} id="v2-action" className="scroll-mt-20 rounded-2xl border border-hairline bg-surface p-4 sm:p-5 xl:sticky xl:top-24">
-            {featureTabs}
-            <div className="mt-4 flex flex-col gap-3">{children}</div>
-          </div>
+        <div className="hidden flex-col gap-4 self-stretch xl:flex">
+          <YourLoanV2 />
+          {isDesktop && (
+            <div id="v2-action" className="sticky top-24 rounded-2xl border border-hairline bg-surface p-5">
+              {form}
+            </div>
+          )}
         </div>
       </div>
 
-      <MobileActionBar
-        target={actionRef}
-        title={name}
-        sub={`vAPR ${currentTotalMarketApr?.toFixed(2)}% · borrow ${computedBorrowRate.current}`}
-        label="Deposit & borrow"
-      />
+      {/* phones and tablets: the form opens in a bottom sheet from the action bar, like a mobile app */}
+      {!isDesktop && (
+        <>
+          <MobileActionBar
+            title={name}
+            sub={`vAPR ${currentTotalMarketApr?.toFixed(2)}% · borrow ${computedBorrowRate.current}`}
+            actions={[
+              ...(hasDebt ? [{ label: "Repay", onClick: () => openSheet("repay-withdraw") }] : []),
+              { label: hasDebt ? "Borrow" : "Deposit & borrow", primary: true, onClick: () => openSheet("deposit-borrow") },
+            ]}
+          />
+          <ActionSheet open={sheet} onClose={() => setSheet(false)} title={name}>
+            {form}
+            <div className="mt-4 empty:hidden">
+              <YourLoanV2 />
+            </div>
+          </ActionSheet>
+        </>
+      )}
     </div>
   )
 }

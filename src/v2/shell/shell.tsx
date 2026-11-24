@@ -168,7 +168,7 @@ export function ShellV2({ children }: { children: ReactNode }) {
 function Brand() {
   return (
     <Link href="/" className="flex items-center" aria-label="Tangent home">
-      <Image src="/medias/v2/tangent-logo-typo.svg" alt="Tangent" width={100} height={30} unoptimized priority />
+      <Image src="/medias/v2/tangent-logo-typo.svg" alt="Tangent" width={100} height={30} unoptimized priority className="v2-logo" />
     </Link>
   )
 }
@@ -205,11 +205,11 @@ function TangentMark({ width = 14, height = 24 }: { width?: number; height?: num
   return (
     <svg width={width} height={height} viewBox="0 0 47 80" aria-hidden>
       <path
-        fill="white"
+        fill="currentColor"
         d="M46.8381 39.9998C45.7493 40.0763 44.6894 40.191 43.6584 40.344C34.9094 41.6541 28.2319 46.0529 25.2064 59.8325C24.0501 65.0727 23.4335 71.6804 23.4238 79.9902V39.9902H46.8381V39.9998Z"
       />
       <path
-        fill="white"
+        fill="currentColor"
         d="M23.4143 0V40H0C1.08881 39.9235 2.14872 39.8087 3.17972 39.6557C11.9288 38.3457 18.6062 33.9469 21.6317 20.1673C22.788 14.9271 23.4047 8.31939 23.4143 0.00956251V0Z"
       />
     </svg>

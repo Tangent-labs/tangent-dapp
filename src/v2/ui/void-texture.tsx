@@ -1,3 +1,5 @@
+import { COLOR } from "@/v2/theme/colors"
+
 // Tangent signature texture: grid cells cut with the exact petals of tangent-logo.svg.
 // The void at every crossing draws the logo. Hero cards only, faded from the top-right corner.
 
@@ -85,7 +87,7 @@ export function VoidTexture({
         const base = Math.max(0, 0.05 * (1 - Math.hypot(dx, r) / (span * 0.8)))
         const lit = rand(i) < 0.22
         cells.push(
-          <path key={i} d={PATH} transform={`translate(${(c * pw).toFixed(2)} ${(r * ph).toFixed(2)})`} fill="white" opacity={base}>
+          <path key={i} d={PATH} transform={`translate(${(c * pw).toFixed(2)} ${(r * ph).toFixed(2)})`} fill={COLOR.fg} opacity={base}>
             {lit && (
               <animate
                 attributeName="opacity"
@@ -124,12 +126,12 @@ export function VoidTexture({
     <svg aria-hidden className="pointer-events-none absolute inset-0 h-full w-full">
       <defs>
         <pattern id={`${id}-p`} width={pw} height={ph} patternUnits="userSpaceOnUse">
-          <path d={PATH} fill="white" />
+          <path d={PATH} fill={COLOR.fg} />
         </pattern>
         <radialGradient id={`${id}-g`} cx={cx} cy="0" r="0.75">
-          <stop offset="0" stopColor="white" stopOpacity="0.075" />
-          <stop offset="0.55" stopColor="white" stopOpacity="0.02" />
-          <stop offset="1" stopColor="white" stopOpacity="0" />
+          <stop offset="0" stopColor={COLOR.fg} stopOpacity="0.075" />
+          <stop offset="0.55" stopColor={COLOR.fg} stopOpacity="0.02" />
+          <stop offset="1" stopColor={COLOR.fg} stopOpacity="0" />
         </radialGradient>
         <mask id={`${id}-m`}>
           <rect width="100%" height="100%" fill={`url(#${id}-g)`} />

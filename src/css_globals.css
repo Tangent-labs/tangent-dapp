@@ -491,3 +491,7 @@ html[data-ui="v2"][data-theme="light"] .v2-scroll {
 html[data-ui="v2"][data-theme="light"] .v2-scroll::-webkit-scrollbar-thumb {
   background: rgb(0 0 0 / 0.18);
 }
+/* the wordmark is a white SVG file: drawn in ink on the light theme */
+html[data-ui="v2"][data-theme="light"] .v2-logo {
+  filter: invert(1);
+}

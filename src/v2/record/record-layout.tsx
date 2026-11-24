@@ -118,7 +118,7 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
         </div>
 
         {/* market facts next to the title (they used to sit in a Borrowing block under the chart) */}
-        <div className="mt-6 grid grid-cols-2 gap-y-4 sm:flex sm:gap-y-0 xl:mt-0 xl:shrink-0">
+        <div className="mt-6 grid grid-cols-2 gap-y-4 md:flex md:gap-y-0 xl:mt-0 xl:shrink-0">
           {(
             [
               ["TVL", "$" + formatMillions(marketDisplayData?.tvlDollar), "Collateral deposited", undefined],
@@ -132,10 +132,10 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
               ["Liq. threshold", marketDisplayData.lt, "Liquidation point", TERMS.lt],
             ] as [string, string, string, string | undefined][]
           ).map(([l, v, s, info]) => (
-            // fixed width per fact (sm up) so the block does not slide left when the numbers arrive
+            // fixed width per fact (md up) so the block does not slide left when the numbers arrive
             <div
               key={l}
-              className="min-w-0 pr-4 sm:box-content sm:w-[124px] sm:shrink-0 sm:border-l sm:border-divider sm:px-6 sm:first:border-l-0 sm:first:pl-0 sm:last:pr-0 2xl:px-10"
+              className="min-w-0 pr-4 md:box-content md:w-[124px] md:shrink-0 md:border-l md:border-divider md:px-6 md:first:border-l-0 md:first:pl-0 md:last:pr-0 2xl:px-10"
             >
               <div className="whitespace-nowrap text-xs text-ink-3">{info ? <Term info={info}>{l}</Term> : l}</div>
               {loading ? (

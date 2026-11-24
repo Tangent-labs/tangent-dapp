@@ -415,7 +415,7 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
     let settles: number[] = []
     const settleChecks = () => {
       settles.forEach(window.clearTimeout)
-      settles = [60, 180, 360, 640].map((ms) => window.setTimeout(scheduleCheck, ms))
+      settles = [60, 180, 360, 640, 1000].map((ms) => window.setTimeout(scheduleCheck, ms))
     }
     settleChecks()
 
@@ -450,7 +450,11 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
       {showBackupBadge && !isPending && UI_V2 && liquidationPriceNumber > 0 && (
         <button
           type="button"
-          onClick={() => setFitRequest((n) => n + 1)}
+          onClick={() => {
+            // the refit frames the line: hide the chip now instead of waiting for the redraw
+            setShowBackupBadge(false)
+            setFitRequest((n) => n + 1)
+          }}
           title="Zoom out to show the liquidation price"
           className={cn(
             "absolute right-2 z-10 flex items-center gap-1.5 rounded-md border border-hairline bg-surface px-2 py-1 text-[11px] tabular-nums text-ink-2 shadow-pop transition-colors hover:text-white",

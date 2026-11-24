@@ -1,6 +1,7 @@
 "use client"
 
-import { ReactNode, useEffect, useSyncExternalStore } from "react"
+import { ReactNode, useEffect, useState, useSyncExternalStore } from "react"
+import { createPortal } from "react-dom"
 import { AnimatePresence, motion, useDragControls } from "framer-motion"
 import { cn } from "@/lib/utils"
 
@@ -17,6 +18,20 @@ export const useIsDesktop = () =>
     subscribe,
     () => window.matchMedia(DESKTOP).matches,
     () => true
+  )
+
+const PHONE = "(max-width: 767px)"
+const subscribePhone = (cb: () => void) => {
+  const mq = window.matchMedia(PHONE)
+  mq.addEventListener("change", cb)
+  return () => mq.removeEventListener("change", cb)
+}
+/** True on phones (under md). Server renders the desktop behavior. */
+export const useIsMobile = () =>
+  useSyncExternalStore(
+    subscribePhone,
+    () => window.matchMedia(PHONE).matches,
+    () => false
   )
 
 type BarAction = { label: string; onClick: () => void; primary?: boolean }
@@ -58,6 +73,9 @@ export function MobileActionBar({ title, sub, actions }: { title?: string; sub?:
  */
 export function ActionSheet({ open, onClose, title, children }: { open: boolean; onClose: () => void; title?: ReactNode; children: ReactNode }) {
   const drag = useDragControls()
+  // portal to body: a sheet opened from inside another sheet or a transformed card still covers the screen
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
   useEffect(() => {
     if (!open) return
     const onKey = (e: KeyboardEvent) => {
@@ -72,7 +90,8 @@ export function ActionSheet({ open, onClose, title, children }: { open: boolean;
     }
   }, [open, onClose])
 
-  return (
+  if (!mounted) return null
+  return createPortal(
     <AnimatePresence>
       {open && (
         <>
@@ -110,6 +129,7 @@ export function ActionSheet({ open, onClose, title, children }: { open: boolean;
           </motion.div>
         </>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   )
 }

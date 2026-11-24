@@ -5,6 +5,7 @@ import { Check, ChevronDown, Search } from "lucide-react"
 import * as DialogPrimitive from "@radix-ui/react-dialog"
 import { cn } from "@/lib/utils"
 import { formatAddress } from "@/lib/other_formatter"
+import { useIsMobile } from "./mobile-action-bar"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 
 /** Fields the live option objects carry (DepositReceiveAsset, plus AssetInfos balances when the caller has them). */
@@ -38,6 +39,8 @@ export function TokenDialogV2({
 }) {
   const [open, setOpen] = useState(false)
   const [q, setQ] = useState("")
+  // no autofocus on phones: the keyboard would cover half the list before the user asks to search
+  const mobile = useIsMobile()
   const [active, setActive] = useState(0)
   const listRef = useRef<HTMLDivElement>(null)
 
@@ -132,13 +135,18 @@ export function TokenDialogV2({
         <DialogPrimitive.Content
           aria-describedby={undefined}
           onKeyDown={onKey}
-          className="fixed left-1/2 top-[14vh] z-50 w-[440px] max-w-[calc(100vw-2rem)] -translate-x-1/2 overflow-hidden rounded-2xl border border-white/10 bg-raised font-sans text-white shadow-[0_24px_60px_rgba(0,0,0,0.55)] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-[0.98] data-[state=open]:zoom-in-[0.97]"
+          className="fixed z-50 overflow-hidden border border-white/10 bg-raised font-sans text-white shadow-[0_24px_60px_rgba(0,0,0,0.55)] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 max-md:inset-x-0 max-md:bottom-0 max-md:rounded-t-[20px] max-md:border-x-0 max-md:border-b-0 max-md:pb-[env(safe-area-inset-bottom)] max-md:duration-300 max-md:data-[state=closed]:slide-out-to-bottom max-md:data-[state=open]:slide-in-from-bottom md:left-1/2 md:top-[14vh] md:w-[440px] md:max-w-[calc(100vw-2rem)] md:-translate-x-1/2 md:rounded-2xl md:data-[state=closed]:zoom-out-[0.98] md:data-[state=open]:zoom-in-[0.97]"
         >
           <DialogPrimitive.Title className="sr-only">Select a token</DialogPrimitive.Title>
+          {/* phones: bottom sheet with a grab handle and a title, like the other mobile sheets */}
+          <div className="flex flex-col items-center px-4 pb-1 pt-3 md:hidden">
+            <span className="h-1 w-10 rounded-full bg-white/20" />
+            <span className="mt-3 w-full text-[15px] font-semibold">Select a token</span>
+          </div>
           <label className="flex items-center gap-2.5 border-b border-divider px-4 py-3">
             <Search className="h-4 w-4 text-ink-3" strokeWidth={1.75} />
             <input
-              autoFocus
+              autoFocus={!mobile}
               value={q}
               onChange={(e) => {
                 setQ(e.target.value)
@@ -149,7 +157,7 @@ export function TokenDialogV2({
             />
             <kbd className="rounded-[5px] border border-hairline px-1.5 text-[11px] text-ink-3">esc</kbd>
           </label>
-          <div ref={listRef} role="listbox" className="v2-scroll max-h-[min(440px,60vh)] overflow-y-auto p-1.5">
+          <div ref={listRef} role="listbox" className="v2-scroll max-h-[60dvh] overflow-y-auto p-1.5 md:max-h-[min(440px,60vh)]">
             {flat.length === 0 && <p className="px-3 py-8 text-center text-[13px] text-ink-2">No token matches “{q}”.</p>}
             {owned.length > 0 && (
               <>

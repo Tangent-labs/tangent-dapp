@@ -2,7 +2,7 @@
 
 import { ReactNode } from "react"
 import { cn } from "@/lib/utils"
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
+import { HoverInfo } from "./info-sheet"
 
 /** Texts of the live dapp indicators (usg_market_controller, market_details_parameters), reused as is. */
 export const TERMS = {
@@ -16,7 +16,7 @@ export const TERMS = {
   liquidationPrice: "Collateral price at which the position becomes eligible for liquidation.",
 } as const
 
-/** A label with a definition on hover: dotted underline, live Radix HoverCard. */
+/** A label with a definition: on hover on desktop, in a bottom sheet on tap on phones. Dotted underline. */
 export function Term({
   children,
   info,
@@ -29,18 +29,19 @@ export function Term({
   className?: string
 }) {
   return (
-    <HoverCard openDelay={150} closeDelay={80}>
-      <HoverCardTrigger asChild>
+    <HoverInfo
+      align={align}
+      title={children}
+      contentClassName="w-fit max-w-60 rounded-lg p-2 font-normal text-ink-2"
+      content={info}
+      trigger={
         <span
           tabIndex={0}
           className={cn("w-fit underline decoration-white/15 decoration-dotted underline-offset-4 outline-none focus-visible:text-white", className)}
         >
           {children}
         </span>
-      </HoverCardTrigger>
-      <HoverCardContent side="top" align={align} className="z-[9999] w-fit max-w-60 rounded-lg border-white/10 bg-raised p-2 text-xs font-normal text-ink-2">
-        {info}
-      </HoverCardContent>
-    </HoverCard>
+      }
+    />
   )
 }

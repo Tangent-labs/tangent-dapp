@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Check, ChevronDown } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { ActionSheet, useIsMobile } from "./mobile-action-bar"
 
 export type SelectMenuOption = { value: string; label: string; hint?: string; count?: number }
 
@@ -27,23 +28,67 @@ export function SelectMenu({
   const [open, setOpen] = useState(false)
   const current = options.find((o) => o.value === value)
   const filtered = allValue !== undefined && value !== allValue
+  const mobile = useIsMobile()
+
+  const trigger = (
+    <button
+      type="button"
+      onClick={mobile ? () => setOpen(true) : undefined}
+      className={cn(
+        "flex h-10 items-center gap-1.5 rounded-[10px] px-3.5 text-[13px] font-medium ring-1 ring-inset transition-colors",
+        filtered ? "bg-white/[0.08] text-white ring-white/15" : "bg-white/[0.03] text-ink-2 ring-hairline hover:text-white",
+        className
+      )}
+    >
+      <span className={filtered ? "text-ink-3" : undefined}>{label}</span>
+      {(allValue === undefined || filtered) && <span className="text-white">{current?.label}</span>}
+      <ChevronDown className={cn("h-3.5 w-3.5 text-ink-3 transition-transform duration-200", open && "rotate-180")} strokeWidth={2} />
+    </button>
+  )
+
+  // phones: the options open in a bottom sheet with full-width rows, like a native picker
+  if (mobile)
+    return (
+      <>
+        {trigger}
+        <ActionSheet open={open} onClose={() => setOpen(false)} title={label}>
+          <div role="listbox" aria-label={label} className="-mx-1">
+            {options.map((o) => {
+              const active = o.value === value
+              return (
+                <button
+                  key={o.value}
+                  type="button"
+                  role="option"
+                  aria-selected={active}
+                  onClick={() => {
+                    onChange(o.value)
+                    setOpen(false)
+                  }}
+                  className={cn(
+                    "flex min-h-12 w-full items-center gap-3 rounded-[10px] px-3 py-2.5 text-left transition-colors active:bg-white/[0.07]",
+                    active && "bg-white/[0.06]"
+                  )}
+                >
+                  <span className="min-w-0 flex-1">
+                    <span className="flex items-center justify-between gap-2 text-[15px] font-medium text-white">
+                      {o.label}
+                      {o.count !== undefined && <span className="text-[13px] tabular-nums text-ink-3">{o.count}</span>}
+                    </span>
+                    {o.hint && <span className="mt-0.5 block text-[13px] leading-snug text-ink-3">{o.hint}</span>}
+                  </span>
+                  <Check className={cn("h-4 w-4 shrink-0", active ? "text-white" : "text-transparent")} strokeWidth={2} />
+                </button>
+              )
+            })}
+          </div>
+        </ActionSheet>
+      </>
+    )
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <button
-          type="button"
-          className={cn(
-            "flex h-10 items-center gap-1.5 rounded-[10px] px-3.5 text-[13px] font-medium ring-1 ring-inset transition-colors",
-            filtered ? "bg-white/[0.08] text-white ring-white/15" : "bg-white/[0.03] text-ink-2 ring-hairline hover:text-white",
-            className
-          )}
-        >
-          <span className={filtered ? "text-ink-3" : undefined}>{label}</span>
-          {(allValue === undefined || filtered) && <span className="text-white">{current?.label}</span>}
-          <ChevronDown className={cn("h-3.5 w-3.5 text-ink-3 transition-transform duration-200", open && "rotate-180")} strokeWidth={2} />
-        </button>
-      </PopoverTrigger>
+      <PopoverTrigger asChild>{trigger}</PopoverTrigger>
       <PopoverContent
         align="start"
         sideOffset={6}

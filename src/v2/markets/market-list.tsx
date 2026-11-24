@@ -22,6 +22,7 @@ import { Venue } from "@/v2/ui/venue"
 import { SelectMenu } from "@/v2/ui/select-menu"
 import { Sparkline } from "@/v2/ui/sparkline"
 import { StatusChip } from "@/v2/ui/status-chip"
+import { HoverInfo } from "@/v2/ui/info-sheet"
 import { ActionSheet } from "@/v2/ui/mobile-action-bar"
 
 /** Market kinds as the docs define them (docs.tangent.finance, markets overview). */
@@ -155,14 +156,12 @@ export function MarketListV2() {
           <Inline
             label="Points"
             value={
-              <HoverCard openDelay={100} closeDelay={100}>
-                <HoverCardTrigger asChild>
-                  <span className="underline decoration-white/20 decoration-dotted underline-offset-4">{formatMillions(points)} pts</span>
-                </HoverCardTrigger>
-                <HoverCardContent side="top" className="z-[9999] w-fit rounded-lg border-white/10 bg-raised p-2 text-xs text-ink-2">
-                  LP points {formatMillions(lpUserPoints?.lpTotalPoints)}, vote points {formatMillions(voteUserPoints?.voteTotalPoints)}
-                </HoverCardContent>
-              </HoverCard>
+              <HoverInfo
+                title="Your points"
+                contentClassName="w-fit rounded-lg p-2 text-ink-2"
+                trigger={<span className="underline decoration-white/20 decoration-dotted underline-offset-4">{formatMillions(points)} pts</span>}
+                content={`LP points ${formatMillions(lpUserPoints?.lpTotalPoints)}, vote points ${formatMillions(voteUserPoints?.voteTotalPoints)}`}
+              />
             }
           />
         </div>

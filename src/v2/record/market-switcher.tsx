@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils"
 import { ListRowData } from "@/types"
 import { formatMillions } from "@/lib/number_formatter"
 import { TokenImage } from "@/components/design_system/structure/token_image"
+import { ActionSheet, useIsMobile } from "@/v2/ui/mobile-action-bar"
 import { USGMarketListProvider, useUSGMaketListContext } from "@/components/products/usg/list/usg_market_list_context"
 
 const kindOf = (r: ListRowData) => (r.isFixedRate ? "FIR" : r.type)
@@ -19,14 +20,16 @@ const kindOf = (r: ListRowData) => (r.isFixedRate ? "FIR" : r.type)
  */
 export function MarketSwitcherV2({ address, name, logoKey }: { address?: string; name?: string; logoKey?: string }) {
   const [open, setOpen] = useState(false)
+  const mobile = useIsMobile()
   const root = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (!open) return
+    // the phone sheet is portaled to the body and closes itself
+    if (!open || mobile) return
     const onDown = (e: PointerEvent) => !root.current?.contains(e.target as Node) && setOpen(false)
     document.addEventListener("pointerdown", onDown)
     return () => document.removeEventListener("pointerdown", onDown)
-  }, [open])
+  }, [open, mobile])
 
   return (
     <div ref={root} className="relative">
@@ -41,8 +44,18 @@ export function MarketSwitcherV2({ address, name, logoKey }: { address?: string;
         <span className="text-[32px] font-semibold tracking-[-0.02em]">{name}</span>
         <ChevronDown className={cn("h-5 w-5 text-ink-3 transition-transform duration-200 group-hover:text-ink-2", open && "rotate-180")} strokeWidth={2} />
       </button>
+      {/* phones: the switcher opens as a bottom sheet */}
+      {mobile && (
+        <ActionSheet open={open} onClose={() => setOpen(false)} title="Switch market">
+          <div className="-mx-4 -mt-3">
+            <USGMarketListProvider>
+              <Panel current={address} close={() => setOpen(false)} />
+            </USGMarketListProvider>
+          </div>
+        </ActionSheet>
+      )}
       <AnimatePresence>
-        {open && (
+        {open && !mobile && (
           <motion.div
             initial={{ opacity: 0, scale: 0.97, y: -6 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -70,7 +83,8 @@ function Panel({ current, close }: { current?: string; close: () => void }) {
   const loading = globalData.USGPrice === "-"
 
   useEffect(() => {
-    requestAnimationFrame(() => input.current?.focus())
+    // no keyboard on phones until the user taps the search
+    if (!window.matchMedia("(max-width: 767px)").matches) requestAnimationFrame(() => input.current?.focus())
   }, [])
 
   const groups = useMemo(() => {

@@ -4,7 +4,7 @@ import { ReactNode } from "react"
 import { cn } from "@/lib/utils"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { AprMark } from "./apr-mark"
-import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
+import { HoverInfo } from "./info-sheet"
 
 type Details = Record<string, number | undefined>
 
@@ -39,25 +39,33 @@ export function AprHover({
 }) {
   return (
     <span className={cn("min-w-0", className)}>
-      <HoverCard openDelay={120} closeDelay={80}>
-        <HoverCardTrigger asChild>
-          {children ? (
+      <HoverInfo
+        title={
+          <span className="flex items-center gap-1.5">
+            {logoKey && <TokenImage token={logoKey} size={20} className="h-5 w-auto" />} {name}
+          </span>
+        }
+        contentClassName="w-[240px]"
+        trigger={
+          children ? (
             <span className="group/apr inline-block w-fit">{children}</span>
           ) : (
             <span className="group/apr inline-flex w-fit items-center gap-1 text-[15px] font-semibold tabular-nums leading-5 transition-colors hover:text-action">
               {pct(current)}
               <AprMark />
             </span>
-          )}
-        </HoverCardTrigger>
-        <HoverCardContent side="top" align="start" className="z-[9999] w-[240px] rounded-[10px] border-white/10 bg-raised p-3 text-xs text-white">
-          <div className="flex items-center gap-1.5 font-semibold">
-            {logoKey && <TokenImage token={logoKey} size={16} className="h-4 w-auto" />} {name}
+          )
+        }
+        content={
+          <div className="text-[14px] text-white md:text-xs [&>div:first-child]:hidden md:[&>div:first-child]:flex">
+            <div className="items-center gap-1.5 font-semibold">
+              {logoKey && <TokenImage token={logoKey} size={16} className="h-4 w-auto" />} {name}
+            </div>
+            <Breakdown title="Current vAPR" total={current} details={currentDetails} />
+            {showProjected && hasProjection(projected) && <Breakdown title="Projected vAPR" total={projected} details={projectedDetails} />}
           </div>
-          <Breakdown title="Current vAPR" total={current} details={currentDetails} />
-          {showProjected && hasProjection(projected) && <Breakdown title="Projected vAPR" total={projected} details={projectedDetails} />}
-        </HoverCardContent>
-      </HoverCard>
+        }
+      />
       {!children && showProjected && (
         <span className="mt-1 block text-xs tabular-nums leading-4 text-ink-3">{hasProjection(projected) ? `Proj. ${pct(projected)}` : "No projection"}</span>
       )}

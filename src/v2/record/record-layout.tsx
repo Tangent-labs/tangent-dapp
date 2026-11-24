@@ -145,13 +145,7 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
                 className={cn("relative pb-3 text-[14px] font-medium capitalize transition-colors", tab === t ? "text-white" : "text-ink-3 hover:text-ink-2")}
               >
                 {t}
-                {tab === t && (
-                  <motion.span
-                    layoutId="v2-detail-tab"
-                    className="absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-white"
-                    transition={{ type: "spring", visualDuration: 0.35, bounce: 0.15 }}
-                  />
-                )}
+                {tab === t && <span className="absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-white" />}
               </button>
             ))}
           </div>

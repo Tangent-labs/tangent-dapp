@@ -296,13 +296,7 @@ function MobileTabBar({ path, onMore, moreOpen }: { path: string; onMore: () => 
                 active ? "text-white" : "text-ink-3 active:text-ink-2"
               )}
             >
-              {active && (
-                <motion.span
-                  layoutId="v2-tab-active"
-                  className="absolute top-0 h-0.5 w-8 rounded-full bg-white"
-                  transition={{ type: "spring", visualDuration: 0.3, bounce: 0.15 }}
-                />
-              )}
+              {active && <span className="absolute top-0 h-0.5 w-8 rounded-full bg-white" />}
               <Icon className="h-5 w-5" strokeWidth={1.75} />
               {it.label}
             </Link>

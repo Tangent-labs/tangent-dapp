@@ -188,13 +188,7 @@ export function MarketListV2() {
                 filteredBy === s.value ? "text-white" : "text-ink-3 hover:text-ink-2"
               )}
             >
-              {filteredBy === s.value && (
-                <motion.span
-                  layoutId="v2-market-show"
-                  className="absolute inset-0 rounded-[6px] bg-white/[0.09]"
-                  transition={{ type: "spring", visualDuration: 0.3, bounce: 0.15 }}
-                />
-              )}
+              {filteredBy === s.value && <span className="absolute inset-0 rounded-[6px] bg-white/[0.09]" />}
               <span className="relative">{s.label}</span>
             </button>
           ))}
@@ -249,13 +243,7 @@ export function MarketListV2() {
               onClick={() => setView(v)}
               className={cn("relative grid h-8 w-8 place-items-center rounded-[6px]", view === v ? "text-white" : "text-ink-3 hover:text-ink-2")}
             >
-              {view === v && (
-                <motion.span
-                  layoutId="v2-market-view"
-                  className="absolute inset-0 rounded-[6px] bg-white/[0.09]"
-                  transition={{ type: "spring", visualDuration: 0.3, bounce: 0.15 }}
-                />
-              )}
+              {view === v && <span className="absolute inset-0 rounded-[6px] bg-white/[0.09]" />}
               <Icon className="relative h-4 w-4" strokeWidth={1.75} />
             </button>
           ))}

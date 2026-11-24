@@ -1,7 +1,7 @@
 "use client"
 
 import { ReactNode, useId, useMemo } from "react"
-import { Area, AreaChart, CartesianGrid, ReferenceDot, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
+import { Area, AreaChart, ReferenceDot, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 import { cn } from "@/lib/utils"
 import { COLOR } from "@/v2/theme/colors"
 import { ChartTooltipV2 } from "./chart"
@@ -46,6 +46,13 @@ const DAY = 24 * 3600 * 1000
 /** a numeric field of a row (rows are plain objects with typed fields) */
 const val = (row: object | undefined, key: string) => Number((row as Record<string, unknown> | undefined)?.[key] ?? 0)
 
+/** 1, 2, 2.5 or 5 times a power of ten, the first step that splits the span in about three */
+const niceStep = (span: number) => {
+  const raw = span / 3
+  const pow = 10 ** Math.floor(Math.log10(raw))
+  return ([1, 2, 2.5, 5, 10].find((m) => m * pow >= raw) ?? 10) * pow
+}
+
 const fmtDay = (ts: number, withYear: boolean) =>
   new Date(ts).toLocaleDateString("en-US", withYear ? { month: "short", day: "numeric", year: "numeric" } : { day: "numeric", month: "short" })
 const fmtTime = (ts: number) => new Date(ts).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })
@@ -85,6 +92,29 @@ export function TimeChartV2<T extends object>({
     }
   }, [data, xKey, startLabel, endLabel])
 
+  // value scale: round steps from the data (or the caller's domain and ticks), drawn as dashed hairlines with the value
+  // sitting on the left of each line
+  const scale = useMemo(() => {
+    const values: number[] = []
+    for (const row of data) {
+      if (stacked) values.push(series.reduce((a, s) => a + val(row, s.key), 0))
+      else for (const s of series) values.push(val(row, s.key))
+    }
+    if (baseValue !== undefined) values.push(baseValue)
+    if (reference) values.push(reference.y)
+    const finite = values.filter(Number.isFinite)
+    const min = typeof domain?.[0] === "number" ? domain[0] : Math.min(...finite)
+    const max = typeof domain?.[1] === "number" ? domain[1] : Math.max(...finite)
+    const span = max - min || Math.abs(max) * 0.1 || 1
+    const step = niceStep(span)
+    const lo = typeof domain?.[0] === "number" ? domain[0] : Math.floor(min / step) * step
+    const hi = typeof domain?.[1] === "number" ? domain[1] : Math.ceil(max / step) * step
+    const lines =
+      ticks ?? Array.from({ length: Math.floor((hi - Math.ceil(lo / step) * step) / step + 1e-9) + 1 }, (_, i) => Math.ceil(lo / step) * step + i * step)
+    // the bottom line is the chart floor: no label there, the hover dates use that space
+    return { domain: [lo, hi] as [number, number], lines: lines.filter((t) => t > lo + step * 0.01) }
+  }, [data, series, stacked, baseValue, reference, domain, ticks])
+
   if (!data.length) return null
   const lastX = meta.lastRow ? val(meta.lastRow, xKey) : undefined
   // the halo marks the top of the stack (or each line when not stacked)
@@ -93,7 +123,7 @@ export function TimeChartV2<T extends object>({
   return (
     <div className={cn("group/chart relative w-full", className)} style={{ height }}>
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart data={data} margin={{ top: 12, right: 0, left: 0, bottom: 0 }}>
+        <AreaChart data={data} margin={{ top: 24, right: 16, left: 0, bottom: 0 }}>
           <defs>
             {series.map((s) => (
               <linearGradient key={s.key} id={`${id}-fill-${s.key}`} x1="0" y1="0" x2="0" y2="1">
@@ -110,23 +140,29 @@ export function TimeChartV2<T extends object>({
             ))}
           </defs>
 
-          <CartesianGrid vertical={false} strokeDasharray="3 3" stroke={COLOR.grid} />
           <XAxis dataKey={xKey} type="number" scale="time" domain={["dataMin", "dataMax"]} hide />
-          <YAxis
-            orientation="left"
-            mirror
-            width={0}
-            axisLine={false}
-            tickLine={false}
-            domain={domain ?? ["auto", "auto"]}
-            ticks={ticks}
-            tickCount={4}
-            tick={({ y, payload }: { y: number; payload: { value: number } }) => (
-              <text x={12} y={y - 6} fill={COLOR.ink3} fontSize={11} style={{ fontVariantNumeric: "tabular-nums" }}>
-                {format(payload.value)}
-              </text>
-            )}
-          />
+          <YAxis hide domain={scale.domain} allowDataOverflow />
+          {scale.lines.map((t) => (
+            <ReferenceLine
+              key={t}
+              y={t}
+              stroke={COLOR.grid}
+              strokeDasharray="3 3"
+              label={{
+                content: ({ viewBox }) => (
+                  <text
+                    x={12}
+                    y={((viewBox as { y?: number } | undefined)?.y ?? 0) - 6}
+                    fill={COLOR.ink3}
+                    fontSize={11}
+                    style={{ fontVariantNumeric: "tabular-nums" }}
+                  >
+                    {format(t)}
+                  </text>
+                ),
+              }}
+            />
+          ))}
 
           <Tooltip
             cursor={{ stroke: COLOR.cursor, strokeWidth: 1 }}

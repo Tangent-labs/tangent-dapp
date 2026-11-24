@@ -57,6 +57,12 @@ const formatPriceTick = (tick: number, step: number) => {
   return formatDollar(tick, 4)
 }
 
+/** V2 price ticks: as many decimals as the round step needs, at least two ($0.995, $0.9975, $1.00) */
+const priceTickV2 = (v: number) => {
+  const decimals = Math.max(2, Number(v.toFixed(4)).toString().split(".")[1]?.length ?? 0)
+  return formatDollar(v, decimals)
+}
+
 const PriceAxisTick = ({ x, y, value }: { x?: number; y?: number; value: string }) => (
   <text x={x ?? 0} y={y} dy={4} textAnchor="end" fill="rgba(255,255,255,0.45)" fontSize={11}>
     {value}
@@ -108,10 +114,9 @@ export const GraphTokenPrice = ({ token, title, selectedTab, data, fetchPriceHis
           data={data}
           xKey="date"
           series={[{ key: "uv", label: `${title} price`, color: accentColor }]}
-          format={(v) => formatPriceTick(v, yTickStep)}
+          format={priceTickV2}
           valueFormat={(v) => formatDollar(v, 4)}
           domain={[domainMin, domainMax]}
-          ticks={yTicks.slice(1)}
           baseValue={pegMode ? 1 : undefined}
           reference={pegMode ? { y: 1, label: "Peg $1.00" } : undefined}
         />

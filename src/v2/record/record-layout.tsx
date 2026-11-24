@@ -92,27 +92,66 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
   return (
     <div className="w-full pb-24 pt-2 font-sans xl:pb-20">
       {/* header: breadcrumb, market switcher (same dialog as the live CollateralCard), one sentence */}
-      <div className="text-[13px] text-ink-3">
-        <Link href="/" className="hover:text-white">
-          Markets
-        </Link>{" "}
-        / <span className="text-ink-2">{name}</span>
+      <div className="xl:flex xl:items-end xl:justify-between xl:gap-10">
+        <div className="min-w-0">
+          <div className="text-[13px] text-ink-3">
+            <Link href="/" className="hover:text-white">
+              Markets
+            </Link>{" "}
+            / <span className="text-ink-2">{name}</span>
+          </div>
+          <div ref={headRef} className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1">
+            <MarketSwitcherV2 address={marketInfo?.marketAddress} name={name} logoKey={collateralInfo?.logoKey} />
+            {marketData && (
+              <span className="flex items-center gap-1.5 text-[13px] text-ink-2">
+                {kind} market
+                {marketData?.marketType && <span className="opacity-50">·</span>}
+                <Venue type={marketData?.marketType ?? ""} />
+              </span>
+            )}
+          </div>
+          <p className={cn("mt-2 text-[14px] text-ink-2", loading && "v2-shimmer h-5 w-72 max-w-full rounded-md text-transparent")}>
+            {maxBorrowCapReached
+              ? `Borrow cap reached: ${formatMillions(marketDisplayData?.borrowed)} of ${formatMillions(marketDisplayData?.cap)} USG borrowed. Deposits stay open, and borrowing reopens as debt is repaid.`
+              : `${formatMillions(marketDisplayData?.available)} USG left to borrow out of a ${formatMillions(marketDisplayData?.cap)} USG cap.`}
+          </p>
+        </div>
+
+        {/* market facts next to the title (they used to sit in a Borrowing block under the chart) */}
+        <div className="mt-6 grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-4 xl:mt-0 xl:shrink-0">
+          {(
+            [
+              ["TVL", "$" + formatMillions(marketDisplayData?.tvlDollar), "Collateral deposited", undefined],
+              [
+                "Capacity",
+                maxBorrowCapReached ? "Cap reached" : Math.round(capRatio * 100) + "%",
+                formatMillions(marketDisplayData?.borrowed) + " / " + formatMillions(marketDisplayData?.cap),
+                undefined,
+              ],
+              [
+                "Max lev. vAPR",
+                maxLev ?? "-",
+                (() => {
+                  const proj = Number(maxLevIndicator?.subValue)
+                  return Number.isFinite(proj) ? "Proj. " + proj.toFixed(2) + "%" : "No projection"
+                })(),
+                TERMS.maxLevVapr,
+              ],
+              ["Rewards cut", marketDisplayData.rewardsCutCurrent, "Proj. " + marketDisplayData.rewardsCutNext, TERMS.rewardsCut],
+            ] as [string, string, string, string | undefined][]
+          ).map(([l, v, s, info]) => (
+            <div key={l} className="min-w-0">
+              <div className="text-xs text-ink-3">{info ? <Term info={info}>{l}</Term> : l}</div>
+              {loading ? (
+                <div className="v2-shimmer mt-1.5 h-5 w-16 rounded-md" />
+              ) : (
+                <div className={cn("mt-1 truncate text-[16px] font-medium tabular-nums", l === "Capacity" && maxBorrowCapReached && "text-warning")}>{v}</div>
+              )}
+              <div className="mt-0.5 truncate text-xs tabular-nums text-ink-3">{loading ? " " : s}</div>
+            </div>
+          ))}
+        </div>
       </div>
-      <div ref={headRef} className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1">
-        <MarketSwitcherV2 address={marketInfo?.marketAddress} name={name} logoKey={collateralInfo?.logoKey} />
-        {marketData && (
-          <span className="flex items-center gap-1.5 text-[13px] text-ink-2">
-            {kind} market
-            {marketData?.marketType && <span className="opacity-50">·</span>}
-            <Venue type={marketData?.marketType ?? ""} />
-          </span>
-        )}
-      </div>
-      <p className={cn("mt-2 text-[14px] text-ink-2", loading && "v2-shimmer h-5 w-72 max-w-full rounded-md text-transparent")}>
-        {maxBorrowCapReached
-          ? `Borrow cap reached: ${formatMillions(marketDisplayData?.borrowed)} of ${formatMillions(marketDisplayData?.cap)} USG borrowed. Deposits stay open, and borrowing reopens as debt is repaid.`
-          : `${formatMillions(marketDisplayData?.available)} USG left to borrow out of a ${formatMillions(marketDisplayData?.cap)} USG cap.`}
-      </p>
 
       <div className="mt-10 grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_392px]">
         <div className="min-w-0">
@@ -189,13 +228,6 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
                   />
                   <Stat loading={loading} label="Max LTV" info={TERMS.maxLtv} value={marketDisplayData.maxLtv} sub="Borrow limit" />
                   <Stat loading={loading} label="Liq. threshold" info={TERMS.lt} value={marketDisplayData.lt} sub="Liquidation point" />
-                  <Stat
-                    loading={loading}
-                    label="Capacity"
-                    value={maxBorrowCapReached ? "Cap reached" : `${Math.round(capRatio * 100)}%`}
-                    sub={`${formatMillions(marketDisplayData?.borrowed)} / ${formatMillions(marketDisplayData?.cap)}`}
-                    warn={maxBorrowCapReached}
-                  />
                 </div>
 
                 {/* the live chart card carries its own title and range tabs */}
@@ -203,35 +235,7 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
                   <USGCollateralPrice />
 
                   <div className="mt-10 space-y-10">
-                    <Section
-                      title="Borrowing"
-                      note={`Borrow rate and rewards cut both depend on the USG price.${maxBorrowCapReached ? " Borrowing is paused while the cap is reached." : ""}`}
-                    >
-                      <div className="grid grid-cols-2 gap-y-4 divide-divider border-y border-hairline py-4 md:grid-cols-3 md:gap-y-0 md:divide-x [&>*:first-child]:pl-0">
-                        {[
-                          ["TVL", "$" + formatMillions(marketDisplayData?.tvlDollar), "Collateral deposited"],
-                          [
-                            "Max lev. vAPR",
-                            maxLev ?? "-",
-                            (() => {
-                              const proj = Number(maxLevIndicator?.subValue)
-                              return Number.isFinite(proj) ? "Proj. " + proj.toFixed(2) + "%" : "No projection"
-                            })(),
-                            TERMS.maxLevVapr,
-                          ],
-                          ["Rewards cut", marketDisplayData.rewardsCutCurrent, "Proj. " + marketDisplayData.rewardsCutNext, TERMS.rewardsCut],
-                        ].map(([l, v, s, info]) => (
-                          <div key={l} className="pr-3 md:px-4">
-                            <div className="text-xs text-ink-3">{info ? <Term info={info}>{l}</Term> : l}</div>
-                            <div className="mt-1 text-[16px] font-medium tabular-nums">{v}</div>
-                            <div className="mt-0.5 text-xs text-ink-3">{s}</div>
-                          </div>
-                        ))}
-                      </div>
-                      <div className="mt-4">
-                        <VAPRCalculator />
-                      </div>
-                    </Section>
+                    <VAPRCalculator />
 
                     <Section title="Market" note="Rate model, borrow history, platform and contracts. Every transaction is under Activity.">
                       <div className="space-y-4">

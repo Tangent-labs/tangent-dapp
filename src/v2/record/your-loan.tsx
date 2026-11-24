@@ -4,7 +4,7 @@ import { Roll } from "@/v2/ui/roll"
 import { useMemo } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { cn } from "@/lib/utils"
-import { ArrowRight, CircleCheck } from "lucide-react"
+import { ArrowRight, CircleCheck, TriangleAlert } from "lucide-react"
 import { StatusChip } from "@/v2/ui/status-chip"
 import { formatBigIntAsNumber } from "@/lib/number_formatter"
 import { getLTVColor, isVolatileCollateral } from "@/lib/risk_color"
@@ -28,6 +28,9 @@ export function YourLoanV2() {
   const debt = marketData?.debtInfos?.userDebt ?? 0n
   const hasLoan = collateral > 0n || debt > 0n
   const typing = Object.values(currentAmounts ?? {}).some((v) => !!v && v > 0n)
+  // same health the context already formats; under 1.10 the position is one move from liquidation
+  const healthNow = parseFloat(String(marketDisplayData.health).replace(/,/g, ""))
+  const atRisk = debt > 0n && Number.isFinite(healthNow) && healthNow > 0 && healthNow < 1.1
 
   const maxLtv = useMemo(() => parseFloat(marketDisplayData.maxLtv), [marketDisplayData.maxLtv])
   const volatile = useMemo(() => isVolatileCollateral(collateralInfo?.symbol ?? ""), [collateralInfo?.symbol])
@@ -79,8 +82,18 @@ export function YourLoanV2() {
           <div className="rounded-2xl border border-hairline bg-surface p-5">
             <div className="flex items-center justify-between">
               <span className="text-[15px] font-semibold">Your loan</span>
-              <StatusChip icon={typing ? <ArrowRight className="text-action" strokeWidth={2} /> : <CircleCheck strokeWidth={2} />}>
-                {typing ? (hasLoan ? "Today → after this action" : "After this action") : "Open"}
+              <StatusChip
+                icon={
+                  typing ? (
+                    <ArrowRight className="text-action" strokeWidth={2} />
+                  ) : atRisk ? (
+                    <TriangleAlert className="text-warning" strokeWidth={2} />
+                  ) : (
+                    <CircleCheck strokeWidth={2} />
+                  )
+                }
+              >
+                {typing ? (hasLoan ? "Today → after this action" : "After this action") : atRisk ? "At risk" : "Open"}
               </StatusChip>
             </div>
 

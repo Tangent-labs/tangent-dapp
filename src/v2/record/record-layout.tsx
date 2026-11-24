@@ -5,6 +5,7 @@ import Link from "next/link"
 import { ReactNode, useEffect, useRef, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { cn } from "@/lib/utils"
+import { TriangleAlert } from "lucide-react"
 import { formatMillions } from "@/lib/number_formatter"
 import { useUSGRecordContext } from "@/components/products/usg/record/usg_record_context"
 import { MarketDetails } from "@/components/products/usg/record/header/market_details"
@@ -46,6 +47,8 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
   const borrowed = parseFloat(String(marketDisplayData?.borrowed ?? "0").replace(/,/g, ""))
   const cap = parseFloat(String(marketDisplayData?.cap ?? "0").replace(/,/g, ""))
   const capRatio = cap > 0 ? Math.min(1, borrowed / cap) : 0
+  // until the market data arrives the context reports zeros: show skeletons, never "0 USG cap"
+  const loading = !marketData || !(cap > 0)
   // same "Max lev. vAPR" indicator as the live market list row
   const { displayRows } = useUSGMaketListContext()
   const listRow = displayRows?.find((row) => row.address?.toLowerCase() === marketInfo?.marketAddress?.toLowerCase())
@@ -77,6 +80,7 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
   const form = (
     <>
       {featureTabs}
+      <RiskNotice />
       <div className="mt-4 flex flex-col gap-3">{children}</div>
     </>
   )
@@ -100,7 +104,7 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
           </span>
         )}
       </div>
-      <p className="mt-2 text-[14px] text-ink-2">
+      <p className={cn("mt-2 text-[14px] text-ink-2", loading && "v2-shimmer h-5 w-72 max-w-full rounded-md text-transparent")}>
         {maxBorrowCapReached
           ? `Borrow cap reached: ${formatMillions(marketDisplayData?.borrowed)} of ${formatMillions(marketDisplayData?.cap)} USG borrowed. Deposits stay open, and borrowing reopens as debt is repaid.`
           : `${formatMillions(marketDisplayData?.available)} USG left to borrow out of a ${formatMillions(marketDisplayData?.cap)} USG cap.`}
@@ -171,8 +175,9 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
               >
                 {/* stat strip: the decision metric first and biggest */}
                 <div className="v2-kpis flex items-stretch">
-                  <Stat label="Collateral vAPR" info={TERMS.vapr} value={`${currentTotalMarketApr?.toFixed(2)}%`} hero />
+                  <Stat loading={loading} label="Collateral vAPR" info={TERMS.vapr} value={`${currentTotalMarketApr?.toFixed(2)}%`} hero />
                   <Stat
+                    loading={loading}
                     label="Max lev. vAPR"
                     info={TERMS.maxLevVapr}
                     value={maxLev ?? "-"}
@@ -183,18 +188,21 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
                     negative={maxLevNum < 0}
                   />
                   <Stat
+                    loading={loading}
                     label="Borrow rate"
                     info={TERMS.borrowRate}
                     value={computedBorrowRate.current}
                     sub={fixed ? "Fixed" : `Proj. ${computedBorrowRate.next}`}
                   />
                   <Stat
+                    loading={loading}
                     label="Rewards cut"
                     info={TERMS.rewardsCut}
                     value={marketDisplayData.rewardsCutCurrent}
                     sub={`Proj. ${marketDisplayData.rewardsCutNext}`}
                   />
                   <Stat
+                    loading={loading}
                     label="Capacity"
                     value={maxBorrowCapReached ? "Cap reached" : `${Math.round(capRatio * 100)}%`}
                     sub={`${formatMillions(marketDisplayData?.borrowed)} / ${formatMillions(marketDisplayData?.cap)}`}
@@ -297,6 +305,7 @@ function Mini({ label, short, value, negative, className }: { label: string; sho
 }
 
 function Stat({
+  loading,
   label,
   value,
   sub,
@@ -305,6 +314,7 @@ function Stat({
   info,
   negative,
 }: {
+  loading?: boolean
   label: string
   value: string
   sub?: string
@@ -324,9 +334,9 @@ function Stat({
           negative && "text-negative"
         )}
       >
-        <Roll value={value} />
+        {loading ? <span className={cn("v2-shimmer inline-block rounded-md align-middle", hero ? "h-11 w-32" : "h-6 w-20")} /> : <Roll value={value} />}
       </div>
-      {sub && <div className="mt-1.5 text-xs tabular-nums text-ink-2">{sub}</div>}
+      {sub && (loading ? <div className="v2-shimmer mt-2 h-3 w-16 rounded" /> : <div className="mt-1.5 text-xs tabular-nums text-ink-2">{sub}</div>)}
     </div>
   )
 }
@@ -338,5 +348,28 @@ function Section({ title, note, children }: { title: string; note: string; child
       <p className="mb-4 mt-1 text-[13px] text-ink-2">{note}</p>
       {children}
     </section>
+  )
+}
+
+/**
+ * Shown in the action card while the user types an amount that leaves the position close to liquidation.
+ * Reads only what the record context already computes (futureMarketDisplayData, liquidationPrice); it does not block the action.
+ */
+function RiskNotice() {
+  const { futureMarketDisplayData, marketData, currentAmounts, liquidationPrice } = useUSGRecordContext()
+  const typing = Object.values(currentAmounts ?? {}).some((v) => !!v && v > 0n)
+  const after = parseFloat(String(futureMarketDisplayData.health).replace(/,/g, ""))
+  const debtAfter = parseFloat(String(futureMarketDisplayData.debt).replace(/,/g, ""))
+  const show = typing && debtAfter > 0 && Number.isFinite(after) && after > 0 && after < 1.05
+  if (!show || !marketData) return null
+  const liq = Number(Number(liquidationPrice / 10n ** 15n).toFixed(4)) / 1000
+  return (
+    <div role="status" className="mt-4 flex gap-2.5 rounded-[10px] border border-hairline bg-white/[0.04] p-3 text-[13px] leading-snug">
+      <TriangleAlert className="mt-0.5 h-4 w-4 shrink-0 text-warning" strokeWidth={2} />
+      <span className="text-ink-2">
+        <span className="font-medium text-white">Health {futureMarketDisplayData.health} after this action.</span> The position could be liquidated if the
+        collateral price falls{liq > 0 ? ` to $${liq.toFixed(4)}` : ""}. Borrow less or add collateral to stay safer.
+      </span>
+    </div>
   )
 }

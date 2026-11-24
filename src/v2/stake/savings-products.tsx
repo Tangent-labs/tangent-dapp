@@ -43,9 +43,11 @@ export function SavingsProductsV2({
       <div className="v2-kpis mt-8 flex flex-wrap items-stretch gap-y-4">
         <div className="min-w-[220px] flex-[1.6] pr-8">
           <div className="text-xs text-ink-3">Best APY</div>
-          <div className="mt-1 text-[48px] font-light tabular-nums leading-[1.05] tracking-[-0.02em]">{bestApy > 0 ? `${bestApy.toFixed(2)}%` : "-"}</div>
+          <div className="mt-1 text-[48px] font-light tabular-nums leading-[1.05] tracking-[-0.02em]">
+            {bestApy > 0 ? `${bestApy.toFixed(2)}%` : <span className="v2-shimmer inline-block h-11 w-36 rounded-md align-middle" />}
+          </div>
         </div>
-        <Stat label="Total TVL" value={`$${formatMillions(totalTvl)}`} sub={`${rows.length} products`} />
+        <Stat label="Total TVL" value={totalTvl > 0 ? `${formatMillions(totalTvl)}` : "–"} sub={`${rows.length} products`} />
         <Stat label="Your deposits" value={formatDollar(deposits)} sub="Across all products" />
       </div>
 
@@ -86,7 +88,9 @@ function ProductCard({ vault, apy, tvl, deposit }: SavingsRowV2) {
         </span>
         <span className="rounded-xl bg-white/[0.04] px-3.5 py-3">
           <span className="block text-xs text-ink-3">TVL</span>
-          <span className="mt-1.5 block text-[18px] font-medium tabular-nums leading-none">${formatMillions(tvl)}</span>
+          <span className="mt-1.5 block text-[18px] font-medium tabular-nums leading-none">
+            {tvl > 0 ? `${formatMillions(tvl)}` : <span className="text-ink-3">–</span>}
+          </span>
         </span>
       </span>
 

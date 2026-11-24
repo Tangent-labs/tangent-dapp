@@ -289,7 +289,7 @@ export function GenericInputAssetAmount({
         <div className="mt-2 flex items-center justify-between gap-2">
           <span className="select-none text-xs tabular-nums text-ink-3">{isLoading ? "$-" : dollarDepositDisplay.slice(1, -1)}</span>
           {!isMultiplier && (isSliderDisplay || isMaxButtonDisplay) && (
-            <span className="stop-focus flex gap-1">
+            <span className="stop-focus flex gap-1.5 md:gap-1">
               {isSliderDisplay &&
                 [25, 50, 75].map((pct) => (
                   <button
@@ -298,7 +298,7 @@ export function GenericInputAssetAmount({
                     disabled={disabled}
                     onClick={() => applyPercentage(pct)}
                     className={cn(
-                      "rounded-md px-2 py-0.5 text-[11px] transition-colors",
+                      "h-8 rounded-md px-3 text-[12px] transition-colors md:h-auto md:px-2 md:py-0.5 md:text-[11px]",
                       Math.round(sliderPercentage) === pct ? "bg-white/[0.12] text-white" : "bg-white/[0.07] text-ink-2 hover:text-white"
                     )}
                   >
@@ -310,7 +310,7 @@ export function GenericInputAssetAmount({
                   type="button"
                   disabled={disabled}
                   onClick={handleMaxClick}
-                  className="rounded-md bg-white/[0.07] px-2 py-0.5 text-[11px] text-ink-2 transition-colors hover:text-white"
+                  className="h-8 rounded-md bg-white/[0.07] px-3 text-[12px] text-ink-2 transition-colors hover:text-white md:h-auto md:px-2 md:py-0.5 md:text-[11px]"
                 >
                   Max
                 </button>

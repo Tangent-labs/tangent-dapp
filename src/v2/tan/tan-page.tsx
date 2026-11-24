@@ -13,6 +13,7 @@ import { Button } from "@/components/design_system/inputs/button"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { IconInfinity } from "@/components/icons/icon_infinity"
 import { useVsTanContext } from "@/components/products/vs_tan/vstan_layout_context"
+import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { isPermaLocked } from "@/components/products/vs_tan/vstan_layout_controller"
 import { useNextEndLockTime } from "@/components/products/vs_tan/use_next_end_lock_time"
 
@@ -91,6 +92,7 @@ export function TanLayoutV2({ children }: { children: ReactNode }) {
 }
 
 function Positions() {
+  const { isConnected } = useWalletConnexionContext()
   const router = useRouter()
   const { lockData, selectedPosition, setSelectedPosition, extendToPermaLock, onClickExtend, setExtendToPermaLock, onClickRemovePermaLock, feature } =
     useVsTanContext()
@@ -137,7 +139,11 @@ function Positions() {
           )}
         </div>
       ) : !lockData ? (
-        <p className="px-6 py-14 text-center text-[13px] text-ink-2">Connect your wallet to see your locked positions.</p>
+        <p className="px-6 py-14 text-center text-[13px] text-ink-2">
+          {isConnected
+            ? "Your locked positions could not be loaded right now. Refresh the page to try again."
+            : "Connect your wallet to see your locked positions."}
+        </p>
       ) : (
         <div className="overflow-x-auto">
           <div className="sm:min-w-[520px]">

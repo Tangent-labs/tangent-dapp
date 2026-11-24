@@ -45,7 +45,8 @@ export function HoverInfo({
               setOpen(true)
             }
           }}
-          className={cn("cursor-pointer", triggerClassName)}
+          // a 44px tall hit area around small inline labels, without moving the layout
+          className={cn("relative cursor-pointer after:absolute after:-inset-x-1 after:-inset-y-3 after:content-['']", triggerClassName)}
         >
           {trigger}
         </span>

@@ -130,7 +130,7 @@ export function FeatureTabsV2({
                 t.go()
               }}
               className={cn(
-                "relative shrink-0 whitespace-nowrap px-1 pb-2.5 pt-1 text-[13px] font-medium transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-40",
+                "relative shrink-0 whitespace-nowrap px-1 pb-3 pt-2.5 text-[13px] font-medium transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-40 md:pb-2.5 md:pt-1",
                 active ? "text-white" : "text-ink-3 hover:text-ink-2"
               )}
             >

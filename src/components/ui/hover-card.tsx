@@ -4,6 +4,7 @@ import * as React from "react"
 import * as HoverCardPrimitive from "@radix-ui/react-hover-card"
 
 import { cn } from "@/lib/utils"
+import { UI_V2 } from "@/v2/ui"
 
 const HoverCard = HoverCardPrimitive.Root
 
@@ -12,41 +13,59 @@ const HoverCardTrigger = HoverCardPrimitive.Trigger
 const HoverCardContent = React.forwardRef<
   React.ElementRef<typeof HoverCardPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof HoverCardPrimitive.Content>
->(({ className, align = "center", sideOffset = 6, ...props }, ref) => (
-  <HoverCardPrimitive.Portal>
-    <HoverCardPrimitive.Content
-      ref={ref}
-      align={align}
-      sideOffset={sideOffset}
-      className={cn(
-        "relative z-50 max-h-96 min-w-[10rem] max-w-[min(90vw,20rem)] rounded-lg",
-        "overflow-visible bg-overlay-panel p-0 backdrop-blur-[60px] backdrop-filter",
-        "data-[state=open]:animate-in data-[state=closed]:animate-out",
-        "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
-        "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
-        "data-[side=bottom]:slide-in-from-top-2",
-        "data-[side=left]:slide-in-from-right-2",
-        "data-[side=right]:slide-in-from-left-2",
-        "data-[side=top]:slide-in-from-bottom-2",
-        className
-      )}
-      {...props}
-    >
-      <div
-        className="pointer-events-none absolute inset-0 rounded-lg p-2"
-        style={{
-          border: "1px solid transparent",
-          background: "linear-gradient(0deg, rgba(255, 255, 255, 0) 68.33%, rgba(255, 255, 255, 0.1) 100%) border-box",
-          WebkitMask: "linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0)",
-          WebkitMaskComposite: "xor",
-          maskComposite: "exclude",
-        }}
+>(({ className, align = "center", sideOffset = 6, ...props }, ref) =>
+  UI_V2 ? (
+    // V2: one tooltip surface everywhere, a full 1px hairline border all around (no V1 top-fading gradient border)
+    <HoverCardPrimitive.Portal>
+      <HoverCardPrimitive.Content
+        ref={ref}
+        align={align}
+        sideOffset={sideOffset}
+        className={cn(
+          "relative z-50 max-h-96 min-w-[10rem] max-w-[min(90vw,20rem)] rounded-[10px] border border-white/10 bg-raised p-3 text-xs text-white shadow-[0_12px_32px_rgba(0,0,0,0.5)]",
+          "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+          "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=top]:slide-in-from-bottom-2",
+          className
+        )}
+        {...props}
       />
+    </HoverCardPrimitive.Portal>
+  ) : (
+    <HoverCardPrimitive.Portal>
+      <HoverCardPrimitive.Content
+        ref={ref}
+        align={align}
+        sideOffset={sideOffset}
+        className={cn(
+          "relative z-50 max-h-96 min-w-[10rem] max-w-[min(90vw,20rem)] rounded-lg",
+          "overflow-visible bg-overlay-panel p-0 backdrop-blur-[60px] backdrop-filter",
+          "data-[state=open]:animate-in data-[state=closed]:animate-out",
+          "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+          "data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
+          "data-[side=bottom]:slide-in-from-top-2",
+          "data-[side=left]:slide-in-from-right-2",
+          "data-[side=right]:slide-in-from-left-2",
+          "data-[side=top]:slide-in-from-bottom-2",
+          className
+        )}
+        {...props}
+      >
+        <div
+          className="pointer-events-none absolute inset-0 rounded-lg p-2"
+          style={{
+            border: "1px solid transparent",
+            background: "linear-gradient(0deg, rgba(255, 255, 255, 0) 68.33%, rgba(255, 255, 255, 0.1) 100%) border-box",
+            WebkitMask: "linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0)",
+            WebkitMaskComposite: "xor",
+            maskComposite: "exclude",
+          }}
+        />
 
-      {props?.children}
-    </HoverCardPrimitive.Content>
-  </HoverCardPrimitive.Portal>
-))
+        {props?.children}
+      </HoverCardPrimitive.Content>
+    </HoverCardPrimitive.Portal>
+  )
+)
 HoverCardContent.displayName = HoverCardPrimitive.Content.displayName
 
 export { HoverCard, HoverCardTrigger, HoverCardContent }

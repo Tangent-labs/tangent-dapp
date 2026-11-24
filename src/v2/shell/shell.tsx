@@ -3,7 +3,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { ReactNode, useEffect, useState, useSyncExternalStore } from "react"
+import { ReactNode, useEffect, useRef, useState, useSyncExternalStore } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { ArrowUpRight, ChevronLeft, Ellipsis } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -117,8 +117,8 @@ export function ShellV2({ children }: { children: ReactNode }) {
           {/* same width and side padding as <main>; the hairline stops at the content edges, like Aave Pro */}
           <div className="mx-auto w-full max-w-[1520px] px-4 md:px-6 lg:px-8">
             <div className="flex h-16 items-center gap-3 border-b border-hairline lg:h-[72px]">
-              <span className="lg:hidden">
-                <Brand />
+              <span className="min-w-0 flex-1 lg:hidden">
+                <FitBrand />
               </span>
               <div
                 className={cn(
@@ -145,6 +145,33 @@ function Brand() {
     <Link href="/" className="flex items-center" aria-label="Tangent home">
       <Image src="/medias/v2/tangent-logo-typo.svg" alt="Tangent" width={100} height={30} unoptimized priority />
     </Link>
+  )
+}
+
+/**
+ * Top bar brand on phones and tablets: the full logo when it fits, otherwise the mark alone.
+ * The logo is never scaled down: the mark is drawn at the exact size it has inside the full logo.
+ */
+function FitBrand() {
+  const ref = useRef<HTMLSpanElement>(null)
+  const [full, setFull] = useState(true)
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const ro = new ResizeObserver(([e]) => setFull(e.contentRect.width >= 100))
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
+  return (
+    <span ref={ref} className="block w-full">
+      {full ? (
+        <Brand />
+      ) : (
+        <Link href="/" aria-label="Tangent home" className="flex w-fit items-center">
+          <TangentMark width={17.6} height={30} />
+        </Link>
+      )}
+    </span>
   )
 }
 

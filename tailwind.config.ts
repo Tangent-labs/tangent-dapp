@@ -54,7 +54,13 @@ const config: Config = {
         hairline: "var(--tgt-v2-border-hairline)",
         divider: "var(--tgt-v2-border-divider)",
         ink: { DEFAULT: "var(--tgt-v2-text-primary)", 2: "var(--tgt-v2-text-secondary)", 3: "var(--tgt-v2-text-tertiary)" },
-        action: { DEFAULT: "var(--tgt-v2-action-primary)", hover: "var(--tgt-v2-action-hover)" },
+        action: {
+          DEFAULT: "var(--tgt-v2-action-primary)",
+          hover: "var(--tgt-v2-action-hover)",
+          // button fill with white text: a step darker than the brand blue so labels pass WCAG AA (5.2:1, hover 4.6:1)
+          fill: "var(--tgt-v2-action-fill)",
+          "fill-hover": "var(--tgt-v2-action-fill-hover)",
+        },
         "data-primary": "var(--tgt-v2-data-primary)",
         projected: "var(--tgt-v2-data-projected)",
         negative: "var(--tgt-v2-data-negative)",

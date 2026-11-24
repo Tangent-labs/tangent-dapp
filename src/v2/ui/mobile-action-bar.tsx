@@ -55,7 +55,7 @@ export function MobileActionBar({ title, sub, actions }: { title?: string; sub?:
             onClick={a.onClick}
             className={cn(
               "h-11 shrink-0 rounded-[10px] px-4 text-[14px] font-semibold transition-colors",
-              a.primary ? "bg-action text-white hover:bg-action-hover" : "bg-white/[0.07] text-white hover:bg-white/10"
+              a.primary ? "bg-action-fill text-white hover:bg-action-fill-hover" : "bg-white/[0.07] text-white hover:bg-white/10"
             )}
           >
             {a.label}

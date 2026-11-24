@@ -48,7 +48,7 @@ export function WalletConnexionContent({ className }: WalletConnexionContentProp
         type="button"
         onClick={() => (isConnected ? setPopoverOpen((v) => !v) : connect())}
         className={cn(
-          "h-10 shrink-0 rounded-[10px] bg-action px-5 text-[14px] font-semibold text-white transition-colors hover:bg-action-hover active:scale-[0.98]",
+          "h-10 shrink-0 rounded-[10px] bg-action-fill px-5 text-[14px] font-semibold text-white transition-colors hover:bg-action-fill-hover active:scale-[0.98]",
           className
         )}
       >

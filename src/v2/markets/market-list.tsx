@@ -217,7 +217,7 @@ export function MarketListV2() {
           >
             <SlidersHorizontal className="h-4 w-4" strokeWidth={1.75} />
             {activeFilters > 0 && (
-              <span className="absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-action px-1 text-[10px] font-semibold tabular-nums text-white">
+              <span className="absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-action-fill px-1 text-[10px] font-semibold tabular-nums text-white">
                 {activeFilters}
               </span>
             )}
@@ -370,7 +370,7 @@ export function MarketListV2() {
           <button
             type="button"
             onClick={() => setFiltersOpen(false)}
-            className="h-11 flex-[2] rounded-[10px] bg-action text-[14px] font-semibold text-white transition-colors hover:bg-action-hover"
+            className="h-11 flex-[2] rounded-[10px] bg-action-fill text-[14px] font-semibold text-white transition-colors hover:bg-action-fill-hover"
           >
             Show {sorted.length} {sorted.length === 1 ? "market" : "markets"}
           </button>

@@ -95,7 +95,7 @@ export function ClaimPageV2() {
                 {!isWellConnected && (
                   <button
                     onClick={connect}
-                    className="mt-4 h-9 rounded-[9px] bg-action px-4 text-[13px] font-semibold text-white transition-colors hover:bg-action-hover"
+                    className="mt-4 h-9 rounded-[9px] bg-action-fill px-4 text-[13px] font-semibold text-white transition-colors hover:bg-action-fill-hover"
                   >
                     Connect wallet
                   </button>

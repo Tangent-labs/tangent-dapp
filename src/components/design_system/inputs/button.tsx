@@ -61,7 +61,7 @@ export const Button = ({
           }}
           className={cn(
             "flex h-11 w-full items-center justify-center gap-2 rounded-[10px] px-4 font-sans text-sm font-semibold transition-[background-color,color,transform] duration-150 active:scale-[0.98] disabled:cursor-not-allowed",
-            effectiveState === "active" ? "bg-action text-white hover:bg-action-hover" : "bg-white/[0.07] text-ink-3",
+            effectiveState === "active" ? "bg-action-fill text-white hover:bg-action-fill-hover" : "bg-white/[0.07] text-ink-3",
             classNameChild
           )}
         >

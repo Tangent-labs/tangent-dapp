@@ -50,7 +50,7 @@ export function ReferralPageV2() {
                 <span className="truncate text-[20px] font-medium tracking-[-0.01em]">{code}</span>
                 <button
                   onClick={() => copy(`${process.env.NEXT_PUBLIC_REFERAL_BASE_LINK}/referral?code=${code}`)}
-                  className="h-9 shrink-0 rounded-[9px] bg-action px-4 text-[13px] font-semibold text-white transition-colors hover:bg-action-hover"
+                  className="h-9 shrink-0 rounded-[9px] bg-action-fill px-4 text-[13px] font-semibold text-white transition-colors hover:bg-action-fill-hover"
                 >
                   {copied ? "Copied" : "Share link"}
                 </button>
@@ -61,7 +61,7 @@ export function ReferralPageV2() {
                 <span className="text-[13px] text-ink-2">Get a referral code for a friend.</span>
                 <button
                   onClick={generateReferralCode}
-                  className="h-9 shrink-0 rounded-[9px] bg-action px-4 text-[13px] font-semibold text-white transition-colors hover:bg-action-hover"
+                  className="h-9 shrink-0 rounded-[9px] bg-action-fill px-4 text-[13px] font-semibold text-white transition-colors hover:bg-action-fill-hover"
                 >
                   Generate
                 </button>

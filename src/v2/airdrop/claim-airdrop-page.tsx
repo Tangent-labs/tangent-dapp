@@ -87,7 +87,7 @@ export function ClaimAirdropPageV2() {
                   <button
                     onClick={signMessage}
                     disabled={airdropDataIsLoading || !isConnected}
-                    className="h-9 rounded-[9px] bg-action px-4 text-[13px] font-semibold text-white transition-colors hover:bg-action-hover disabled:opacity-40"
+                    className="h-9 rounded-[9px] bg-action-fill px-4 text-[13px] font-semibold text-white transition-colors hover:bg-action-fill-hover disabled:opacity-40"
                   >
                     Apply
                   </button>

@@ -10,13 +10,13 @@ import { ListRowData } from "@/types"
 import { formatMillions } from "@/lib/number_formatter"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { ActionSheet, useIsMobile } from "@/v2/ui/mobile-action-bar"
-import { USGMarketListProvider, useUSGMaketListContext } from "@/components/products/usg/list/usg_market_list_context"
+import { useUSGMaketListContext } from "@/components/products/usg/list/usg_market_list_context"
 
 const kindOf = (r: ListRowData) => (r.isFixedRate ? "FIR" : r.type)
 
 /**
  * Market name that opens a searchable switcher (command palette feel): type to filter, arrows, Enter, Escape.
- * Rows come from the live USGMarketListProvider, mounted only while open (same data and route as the live switch dialog).
+ * Rows come from the USGMarketListProvider the market route layout already mounts, so the list is ready the moment it opens.
  */
 export function MarketSwitcherV2({ address, name, logoKey }: { address?: string; name?: string; logoKey?: string }) {
   const [open, setOpen] = useState(false)
@@ -48,9 +48,7 @@ export function MarketSwitcherV2({ address, name, logoKey }: { address?: string;
       {mobile && (
         <ActionSheet open={open} onClose={() => setOpen(false)} title="Switch market">
           <div className="-mx-4 -mt-3">
-            <USGMarketListProvider>
-              <Panel current={address} close={() => setOpen(false)} />
-            </USGMarketListProvider>
+            <Panel current={address} close={() => setOpen(false)} />
           </div>
         </ActionSheet>
       )}
@@ -64,9 +62,7 @@ export function MarketSwitcherV2({ address, name, logoKey }: { address?: string;
             style={{ transformOrigin: "top left" }}
             className="absolute left-0 top-[calc(100%+8px)] z-50 w-[440px] max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-white/10 bg-raised shadow-[0_24px_60px_rgba(0,0,0,0.55)]"
           >
-            <USGMarketListProvider>
-              <Panel current={address} close={() => setOpen(false)} />
-            </USGMarketListProvider>
+            <Panel current={address} close={() => setOpen(false)} />
           </motion.div>
         )}
       </AnimatePresence>

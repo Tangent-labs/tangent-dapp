@@ -57,7 +57,7 @@ export const NAV: NavGroup[] = [
   {
     group: "Protocol",
     items: [
-      { href: "/dashboard", label: "Protocol", icon: Activity },
+      { href: "/dashboard", label: "Insights", icon: Activity },
       { href: "/tan/lock", label: "TAN", icon: Coins, isActive: (p) => p.startsWith("/tan") },
       { href: "https://snapshot.box/#/s:tangent-finance.eth", label: "Governance", icon: Vote, external: true },
       { href: "https://docs.tangent.finance/docs/overview", label: "Docs", icon: BookOpen, external: true },

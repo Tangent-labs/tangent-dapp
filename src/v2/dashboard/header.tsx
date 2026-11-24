@@ -19,10 +19,8 @@ export function DashboardHeaderV2() {
 
   return (
     <div className="w-full">
-      <h1 className="text-[32px] font-semibold tracking-[-0.02em]">Protocol</h1>
-      <p className="mt-1 max-w-[720px] text-[14px] text-ink-2">
-        How Tangent is doing: the USG peg, what is locked, what is borrowed and what the protocol earns. Pick a period on any chart.
-      </p>
+      <h1 className="text-[32px] font-semibold tracking-[-0.02em]">Insights</h1>
+      <p className="mt-1 max-w-[720px] text-[14px] text-ink-2">Overview of protocol activity and performance.</p>
       <div className="v2-kpis mt-8 flex flex-wrap items-stretch gap-y-4">
         <div className="min-w-[220px] flex-[1.6] pr-8">
           <div className="text-xs text-ink-3">Total value locked</div>

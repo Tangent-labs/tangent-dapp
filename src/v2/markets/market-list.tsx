@@ -166,8 +166,8 @@ export function MarketListV2() {
 
       {/* toolbar: same filters as the live list (single select), plus sort and view */}
       {/* toolbar stays under the top bar while the table scrolls (Aave Pro) */}
-      <div className="sticky top-16 z-20 -mx-4 mb-4 mt-12 flex flex-wrap items-center gap-2 border-b border-transparent bg-page px-4 py-3 md:-mx-6 md:px-6 lg:top-[72px] lg:-mx-8 lg:px-8">
-        <div role="tablist" className="flex h-10 items-center gap-0.5 rounded-[10px] bg-white/[0.03] p-1 ring-1 ring-inset ring-hairline">
+      <div className="z-20 -mx-4 mb-4 mt-10 flex flex-wrap items-center gap-2 bg-page px-4 py-3 md:sticky md:top-16 md:-mx-6 md:mt-12 md:px-6 lg:top-[72px] lg:-mx-8 lg:px-8">
+        <div role="tablist" className="flex h-10 w-full items-center gap-0.5 rounded-[10px] bg-white/[0.03] p-1 ring-1 ring-inset ring-hairline sm:w-auto">
           {SHOW.map((s) => (
             <button
               key={s.value}
@@ -175,7 +175,7 @@ export function MarketListV2() {
               aria-selected={filteredBy === s.value}
               onClick={() => setFilteredBy(s.value)}
               className={cn(
-                "relative h-8 rounded-[6px] px-3 text-[13px] font-medium transition-colors",
+                "relative h-8 flex-1 whitespace-nowrap rounded-[6px] px-3 text-[13px] font-medium transition-colors sm:flex-none",
                 filteredBy === s.value ? "text-white" : "text-ink-3 hover:text-ink-2"
               )}
             >
@@ -202,7 +202,11 @@ export function MarketListV2() {
           />
         </label>
         <SelectMenu label="Sort" value={sort.key} options={SORTS} onChange={setSort} />
-        <div role="radiogroup" aria-label="View" className="flex h-10 items-center gap-0.5 rounded-[10px] bg-white/[0.03] p-1 ring-1 ring-inset ring-hairline">
+        <div
+          role="radiogroup"
+          aria-label="View"
+          className="hidden h-10 items-center gap-0.5 rounded-[10px] bg-white/[0.03] p-1 ring-1 ring-inset ring-hairline md:flex"
+        >
           {(
             [
               ["list", List],
@@ -256,62 +260,80 @@ export function MarketListV2() {
             Show all markets
           </button>
         </div>
-      ) : view === "list" ? (
-        <div className="overflow-x-auto rounded-2xl border border-hairline bg-surface px-2 pb-3">
-          <div className="min-w-[900px]">
-            <div className="grid grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,0.85fr))_minmax(0,0.9fr)_minmax(0,1.25fr)_24px] gap-4 px-4 pb-2 pt-4 text-xs text-ink-3">
-              <SortHead k="collateral" sort={sort} onSort={toggleSort}>
-                Collateral
-              </SortHead>
-              <SortHead k="vapr" sort={sort} onSort={toggleSort} info="vAPR of the collateral. Hover a value for its breakdown.">
-                Collateral vAPR
-              </SortHead>
-              <SortHead k="borrowRate" sort={sort} onSort={toggleSort} info="Interest rate that borrowers pay on their outstanding debt.">
-                Borrow rate
-              </SortHead>
-              <SortHead k="maxvapr" sort={sort} onSort={toggleSort} info="Net vAPR at max leverage.">
-                Max lev. vAPR
-              </SortHead>
-              <SortHead k="tvl" sort={sort} onSort={toggleSort} info="Value of the collateral deposited in the market.">
-                TVL
-              </SortHead>
-              <SortHead
-                k="borrowed"
-                sort={sort}
-                onSort={toggleSort}
-                info="USG borrowed out of the market's borrow cap. At the cap, borrowing pauses until debt is repaid."
-              >
-                Borrow capacity
-              </SortHead>
-              <span />
-            </div>
-            {grouped
-              ? groups.map((g) => (
-                  <div key={g.k}>
-                    <GroupHead kind={g.k} rows={g.rows} />
-                    {g.rows.map((r) => (
-                      <Row key={r.address} r={r} />
-                    ))}
-                  </div>
-                ))
-              : sorted.map((r) => <Row key={r.address} r={r} />)}
-          </div>
-        </div>
       ) : (
-        <div className="space-y-6">
-          {(grouped ? groups : [{ k: "", rows: sorted }]).map((g) => (
-            <div key={g.k || "all"}>
-              {g.k && <GroupHead kind={g.k} rows={g.rows} flush />}
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-                <AnimatePresence initial={false}>
+        <>
+          <div className="space-y-6 md:hidden">
+            {(grouped ? groups : [{ k: "", rows: sorted }]).map((g) => (
+              <div key={g.k || "all"}>
+                {g.k && <GroupHead kind={g.k} rows={g.rows} flush />}
+                <div className="space-y-2">
                   {g.rows.map((r) => (
-                    <Card key={r.address} r={r} />
+                    <MobileRow key={r.address} r={r} />
                   ))}
-                </AnimatePresence>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+          <div className="hidden md:block">
+            {view === "list" ? (
+              <div className="overflow-x-auto rounded-2xl border border-hairline bg-surface px-2 pb-3">
+                <div className="min-w-[900px]">
+                  <div className="grid grid-cols-[minmax(0,1.6fr)_repeat(3,minmax(0,0.85fr))_minmax(0,0.9fr)_minmax(0,1.25fr)_24px] gap-4 px-4 pb-2 pt-4 text-xs text-ink-3">
+                    <SortHead k="collateral" sort={sort} onSort={toggleSort}>
+                      Collateral
+                    </SortHead>
+                    <SortHead k="vapr" sort={sort} onSort={toggleSort} info="vAPR of the collateral. Hover a value for its breakdown.">
+                      Collateral vAPR
+                    </SortHead>
+                    <SortHead k="borrowRate" sort={sort} onSort={toggleSort} info="Interest rate that borrowers pay on their outstanding debt.">
+                      Borrow rate
+                    </SortHead>
+                    <SortHead k="maxvapr" sort={sort} onSort={toggleSort} info="Net vAPR at max leverage.">
+                      Max lev. vAPR
+                    </SortHead>
+                    <SortHead k="tvl" sort={sort} onSort={toggleSort} info="Value of the collateral deposited in the market.">
+                      TVL
+                    </SortHead>
+                    <SortHead
+                      k="borrowed"
+                      sort={sort}
+                      onSort={toggleSort}
+                      info="USG borrowed out of the market's borrow cap. At the cap, borrowing pauses until debt is repaid."
+                    >
+                      Borrow capacity
+                    </SortHead>
+                    <span />
+                  </div>
+                  {grouped
+                    ? groups.map((g) => (
+                        <div key={g.k}>
+                          <GroupHead kind={g.k} rows={g.rows} />
+                          {g.rows.map((r) => (
+                            <Row key={r.address} r={r} />
+                          ))}
+                        </div>
+                      ))
+                    : sorted.map((r) => <Row key={r.address} r={r} />)}
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {(grouped ? groups : [{ k: "", rows: sorted }]).map((g) => (
+                  <div key={g.k || "all"}>
+                    {g.k && <GroupHead kind={g.k} rows={g.rows} flush />}
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+                      <AnimatePresence initial={false}>
+                        {g.rows.map((r) => (
+                          <Card key={r.address} r={r} />
+                        ))}
+                      </AnimatePresence>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </>
       )}
     </div>
   )
@@ -604,5 +626,51 @@ function Breakdown({ title, total, details }: { title: string; total?: number; d
         </div>
       ))}
     </div>
+  )
+}
+
+/** Phone row: one tap target per market. Name and venue on the left, the collateral vAPR on the right, then the three numbers that decide a borrow. */
+function MobileRow({ r }: { r: ListRowData }) {
+  const { ratio } = capacity(r)
+  const lev = Number(ind(r, "maxvapr")?.value)
+  return (
+    <Link
+      href={`/${r.address}/deposit-borrow`}
+      className="block rounded-2xl border border-hairline bg-surface p-4 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[rgba(0,117,255,0.6)] active:bg-raised"
+    >
+      <div className="flex items-center gap-3">
+        <TokenImage token={r.logoKey} size={48} className="h-9 w-auto shrink-0" />
+        <span className="min-w-0 flex-1">
+          <span className="block truncate text-[15px] font-semibold leading-5">{r.name}</span>
+          <Venue type={r.protocol} className="text-xs leading-4 text-ink-3" />
+        </span>
+        <span className="text-right">
+          <span className="flex items-center justify-end gap-1 text-[17px] font-semibold tabular-nums leading-6">
+            {pct(r.apr.current)}
+            <AprMark className="h-3.5 w-3.5" />
+          </span>
+          <span className="block text-[11px] text-ink-3">Collateral vAPR</span>
+        </span>
+      </div>
+      <div className="mt-2 empty:hidden">
+        <Status r={r} />
+      </div>
+      <div className="mt-3 grid grid-cols-3 gap-2 border-t border-divider pt-3 text-[13px]">
+        <span className="min-w-0">
+          <span className="block text-[11px] text-ink-3">Borrow rate</span>
+          <span className="block truncate font-medium tabular-nums">{ind(r, "borrowRate")?.value ?? "-"}</span>
+        </span>
+        <span className="min-w-0">
+          <span className="block text-[11px] text-ink-3">Max lev.</span>
+          <span className={cn("block truncate font-medium tabular-nums", lev < 0 && "text-negative")}>{pct(lev)}</span>
+        </span>
+        <span className="min-w-0 text-right">
+          <span className="block text-[11px] text-ink-3">TVL · cap</span>
+          <span className={cn("block truncate font-medium tabular-nums", r.isBorrowCapReached && "text-warning")}>
+            {ind(r, "tvl")?.value ?? "-"} · {r.isBorrowCapReached ? "full" : `${Math.round(ratio * 100)}%`}
+          </span>
+        </span>
+      </div>
+    </Link>
   )
 }

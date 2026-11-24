@@ -1,7 +1,6 @@
 "use client"
 
-import { Check, Minus } from "lucide-react"
-import { StatusChip } from "@/v2/ui/status-chip"
+import { Check } from "lucide-react"
 import { useState } from "react"
 import { useUSGContext } from "@/components/products/usg/usg_context"
 import { useUsgAirdropContext } from "@/components/products/usg/airdrop/usg_airdrop_context"
@@ -84,15 +83,19 @@ function Stat({ label, value, sub, first }: { label: string; value: string; sub?
   )
 }
 
-/** Status as a neutral chip: a check when on, a dash when off (same chip as the market statuses). */
+/** Status as a checklist mark: a filled blue circle with a check when earned, an empty dashed circle to fill otherwise. */
 export function StatusDot({ on, onLabel = "Active", offLabel = "Inactive" }: { on: boolean; onLabel?: string; offLabel?: string }) {
   return on ? (
-    <StatusChip className="justify-self-start" icon={<Check className="text-action" strokeWidth={2.5} />}>
+    <span className="inline-flex items-center gap-2 justify-self-start whitespace-nowrap text-[13px] font-medium text-white">
+      <span className="grid h-[18px] w-[18px] shrink-0 place-items-center rounded-full bg-action-fill">
+        <Check className="h-3 w-3 text-white" strokeWidth={3} />
+      </span>
       {onLabel}
-    </StatusChip>
+    </span>
   ) : (
-    <StatusChip muted className="justify-self-start" icon={<Minus strokeWidth={2} />}>
+    <span className="inline-flex items-center gap-2 justify-self-start whitespace-nowrap text-[13px] text-ink-3">
+      <span className="h-[18px] w-[18px] shrink-0 rounded-full border-[1.5px] border-dashed border-white/25" />
       {offLabel}
-    </StatusChip>
+    </span>
   )
 }

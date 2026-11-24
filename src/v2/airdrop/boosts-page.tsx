@@ -58,7 +58,7 @@ export function BoostsPageV2() {
                 ) : (
                   <Image className="h-7 w-7 shrink-0 object-contain" src={`/medias/logos/${b.logo}.webp`} alt={b.logo} height={28} width={28} />
                 )}
-                <span className="truncate text-[14px] font-semibold">{b.type}</span>
+                <span className="line-clamp-2 text-[14px] font-semibold leading-5 md:truncate">{b.type}</span>
               </span>
               <span className="text-[15px] tabular-nums">+{b.boost}</span>
               <StatusDot on={b.status} onLabel="Active" offLabel="Not active" />

@@ -130,7 +130,7 @@ function Panel({ current, close }: { current?: string; close: () => void }) {
           placeholder="Switch market"
           className="w-full bg-transparent text-[14px] outline-none placeholder:text-ink-3"
         />
-        <kbd className="rounded-[5px] border border-hairline px-1.5 text-[11px] text-ink-3">esc</kbd>
+        <kbd className="hidden rounded-[5px] border border-hairline px-1.5 text-[11px] text-ink-3 md:inline">esc</kbd>
       </label>
       <div role="listbox" className="v2-scroll max-h-[380px] overflow-y-auto p-1.5">
         {loading && Array.from({ length: 6 }, (_, i) => <div key={i} className="v2-shimmer mx-1.5 my-1 h-9 rounded-[8px]" />)}
@@ -167,7 +167,7 @@ function Panel({ current, close }: { current?: string; close: () => void }) {
           ))}
       </div>
       <div className="flex justify-between border-t border-divider px-4 py-2 text-[11px] text-ink-3">
-        <span>↑ ↓ to move, enter to open</span>
+        <span className="hidden md:inline">↑ ↓ to move, enter to open</span>
         <span>vAPR · TVL</span>
       </div>
     </div>

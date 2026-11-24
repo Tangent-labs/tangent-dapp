@@ -155,7 +155,7 @@ export function TokenDialogV2({
               placeholder="Search a token or paste an address"
               className="w-full bg-transparent text-[14px] outline-none placeholder:text-ink-3"
             />
-            <kbd className="rounded-[5px] border border-hairline px-1.5 text-[11px] text-ink-3">esc</kbd>
+            <kbd className="hidden rounded-[5px] border border-hairline px-1.5 text-[11px] text-ink-3 md:inline">esc</kbd>
           </label>
           <div ref={listRef} role="listbox" className="v2-scroll max-h-[60dvh] overflow-y-auto p-1.5 md:max-h-[min(440px,60vh)]">
             {flat.length === 0 && <p className="px-3 py-8 text-center text-[13px] text-ink-2">No token matches “{q}”.</p>}
@@ -173,7 +173,7 @@ export function TokenDialogV2({
             )}
           </div>
           <div className="flex justify-between border-t border-divider px-4 py-2 text-[11px] text-ink-3">
-            <span>↑ ↓ to move, enter to select</span>
+            <span className="hidden md:inline">↑ ↓ to move, enter to select</span>
             <span>{options.length} tokens</span>
           </div>
         </DialogPrimitive.Content>

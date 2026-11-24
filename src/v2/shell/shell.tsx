@@ -45,6 +45,15 @@ export function ShellV2({ children }: { children: ReactNode }) {
 
   useEffect(() => setDrawer(false), [path])
 
+  // a new page always opens at the top (a market picked low in the list included); switching tabs inside one market
+  // (/0x…/deposit → /0x…/borrow) keeps the scroll position
+  const prevPath = useRef(path)
+  useEffect(() => {
+    const pageKey = (p: string) => (p.startsWith("/0x") ? p.split("/")[1].toLowerCase() : p)
+    if (pageKey(prevPath.current) !== pageKey(path)) window.scrollTo({ top: 0, left: 0, behavior: "instant" })
+    prevPath.current = path
+  }, [path])
+
   // "[" toggles the sidebar, like the prototype
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {

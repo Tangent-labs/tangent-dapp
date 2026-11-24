@@ -6,7 +6,7 @@ import Link from "next/link"
 import { ReactNode, useMemo, useState } from "react"
 import { formatUnits } from "viem"
 import { AnimatePresence, motion } from "framer-motion"
-import { ChevronDown, ChevronRight, LayoutGrid, List, Pause, Search, Wallet } from "lucide-react"
+import { ChevronDown, ChevronRight, LayoutGrid, List, Pause, Search, SlidersHorizontal, Wallet } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { ListRowData } from "@/types"
 import { formatMillions } from "@/lib/number_formatter"
@@ -22,6 +22,7 @@ import { Venue } from "@/v2/ui/venue"
 import { SelectMenu } from "@/v2/ui/select-menu"
 import { Sparkline } from "@/v2/ui/sparkline"
 import { StatusChip } from "@/v2/ui/status-chip"
+import { ActionSheet } from "@/v2/ui/mobile-action-bar"
 
 /** Market kinds as the docs define them (docs.tangent.finance, markets overview). */
 const KINDS: Record<string, { title: string; rule: string }> = {
@@ -72,6 +73,8 @@ export function MarketListV2() {
   const setSort = (key: string) => setSortState({ key, dir: defaultDir(key) })
   const toggleSort = (key: string) => setSortState((s) => (s.key === key ? { key, dir: s.dir === "asc" ? "desc" : "asc" } : { key, dir: defaultDir(key) }))
   const [view, setView] = useState<"list" | "cards">("list")
+  const [filtersOpen, setFiltersOpen] = useState(false)
+  const activeFilters = (marketType !== "All" ? 1 : 0) + (protocol !== "All" ? 1 : 0) + (sort.key !== "default" ? 1 : 0)
 
   const loading = globalData.USGPrice === "-"
   const sorted = useMemo(() => {
@@ -191,18 +194,37 @@ export function MarketListV2() {
             </button>
           ))}
         </div>
-        <SelectMenu label="Type" value={marketType} options={typeOptions} onChange={setMarketType} allValue="All" />
-        <SelectMenu label="Protocol" value={protocol} options={protocolOpts} onChange={setProtocol} allValue="All" />
-        <label className="ml-auto flex h-10 w-full items-center gap-2 rounded-[10px] bg-white/[0.03] px-3.5 text-[13px] ring-1 ring-inset ring-hairline focus-within:ring-white/20 sm:w-[220px]">
-          <Search className="h-3.5 w-3.5 text-ink-3" strokeWidth={1.75} />
-          <input
-            value={searchValue ?? ""}
-            onChange={(e) => setSearchValue(e.target.value)}
-            placeholder="Filter markets"
-            className="w-full bg-transparent outline-none placeholder:text-ink-3"
-          />
-        </label>
-        <SelectMenu label="Sort" value={sort.key} options={SORTS} onChange={setSort} />
+        <SelectMenu label="Type" value={marketType} options={typeOptions} onChange={setMarketType} allValue="All" className="hidden md:flex" />
+        <SelectMenu label="Protocol" value={protocol} options={protocolOpts} onChange={setProtocol} allValue="All" className="hidden md:flex" />
+        {/* phones: search and one Filters button on the same row; the filters open in a sheet */}
+        <div className="flex w-full gap-2 md:contents">
+          <label className="flex h-10 min-w-0 flex-1 items-center gap-2 rounded-[10px] bg-white/[0.03] px-3.5 text-[13px] ring-1 ring-inset ring-hairline focus-within:ring-white/20 md:ml-auto md:w-[220px] md:flex-none">
+            <Search className="h-3.5 w-3.5 text-ink-3" strokeWidth={1.75} />
+            <input
+              value={searchValue ?? ""}
+              onChange={(e) => setSearchValue(e.target.value)}
+              placeholder="Filter markets"
+              className="w-full bg-transparent outline-none placeholder:text-ink-3"
+            />
+          </label>
+          <button
+            type="button"
+            onClick={() => setFiltersOpen(true)}
+            aria-label="Filters and sort"
+            className={cn(
+              "relative grid h-10 w-10 shrink-0 place-items-center rounded-[10px] ring-1 ring-inset transition-colors md:hidden",
+              activeFilters ? "bg-white/[0.08] text-white ring-white/15" : "bg-white/[0.03] text-ink-2 ring-hairline"
+            )}
+          >
+            <SlidersHorizontal className="h-4 w-4" strokeWidth={1.75} />
+            {activeFilters > 0 && (
+              <span className="absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-action px-1 text-[10px] font-semibold tabular-nums text-white">
+                {activeFilters}
+              </span>
+            )}
+          </button>
+        </div>
+        <SelectMenu label="Sort" value={sort.key} options={SORTS} onChange={setSort} className="hidden md:flex" />
         <div
           role="radiogroup"
           aria-label="View"
@@ -336,6 +358,69 @@ export function MarketListV2() {
           </div>
         </>
       )}
+      <ActionSheet open={filtersOpen} onClose={() => setFiltersOpen(false)} title="Filters">
+        <FilterGroup title="Type" options={typeOptions} value={marketType} onChange={setMarketType} />
+        <FilterGroup title="Protocol" options={protocolOpts} value={protocol} onChange={setProtocol} />
+        <FilterGroup title="Sort by" options={SORTS} value={sort.key} onChange={setSort} />
+        <div className="mt-2 flex gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              setMarketType("All")
+              setProtocol("All")
+              setSort("default")
+            }}
+            className="h-11 flex-1 rounded-[10px] bg-white/[0.07] text-[14px] font-semibold transition-colors hover:bg-white/10"
+          >
+            Reset
+          </button>
+          <button
+            type="button"
+            onClick={() => setFiltersOpen(false)}
+            className="h-11 flex-[2] rounded-[10px] bg-action text-[14px] font-semibold text-white transition-colors hover:bg-action-hover"
+          >
+            Show {sorted.length} {sorted.length === 1 ? "market" : "markets"}
+          </button>
+        </div>
+      </ActionSheet>
+    </div>
+  )
+}
+
+/** Phone filter group: every option visible as a tap target, the selected one filled. */
+function FilterGroup({
+  title,
+  options,
+  value,
+  onChange,
+}: {
+  title: string
+  options: { value: string; label: string }[]
+  value: string
+  onChange: (v: string) => void
+}) {
+  return (
+    <div className="mb-5">
+      <div className="mb-2 text-[12px] font-medium text-ink-3">{title}</div>
+      <div className="flex flex-wrap gap-2">
+        {options.map((o) => {
+          const on = o.value === value
+          return (
+            <button
+              key={o.value}
+              type="button"
+              aria-pressed={on}
+              onClick={() => onChange(o.value)}
+              className={cn(
+                "h-9 rounded-[8px] px-3 text-[13px] font-medium ring-1 ring-inset transition-colors",
+                on ? "bg-white text-black ring-white" : "bg-white/[0.03] text-ink-2 ring-hairline active:bg-white/[0.07]"
+              )}
+            >
+              {o.label}
+            </button>
+          )
+        })}
+      </div>
     </div>
   )
 }

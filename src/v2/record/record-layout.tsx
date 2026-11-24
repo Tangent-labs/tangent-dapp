@@ -270,7 +270,7 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
         <>
           <MobileActionBar
             title={name}
-            sub={`vAPR ${currentTotalMarketApr?.toFixed(2)}% · borrow ${computedBorrowRate.current}`}
+            sub={loading ? undefined : `vAPR ${currentTotalMarketApr?.toFixed(2)}% · borrow ${computedBorrowRate.current}`}
             actions={[
               ...(hasDebt ? [{ label: "Repay", onClick: () => openSheet("repay-withdraw") }] : []),
               { label: hasDebt ? "Borrow" : "Deposit & borrow", primary: true, onClick: () => openSheet("deposit-borrow") },

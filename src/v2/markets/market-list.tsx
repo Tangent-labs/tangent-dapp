@@ -149,21 +149,27 @@ export function MarketListV2() {
 
       {/* your numbers, only when there is something to show */}
       {(userDeposit > 0 || userDebt > 0 || points > 0) && (
-        <div className="mt-6 flex flex-wrap items-center gap-x-8 gap-y-2 border-t border-hairline pt-5 text-[13px]">
-          <span className="font-semibold">You</span>
-          <Inline label="Collateral" value={`$${formatMillions(userDeposit)}`} />
-          <Inline label="Debt" value={`${formatMillions(userDebt)} USG`} />
-          <Inline
-            label="Points"
-            value={
-              <HoverInfo
-                title="Your points"
-                contentClassName="w-fit rounded-lg p-2 text-ink-2"
-                trigger={<span className="underline decoration-white/20 decoration-dotted underline-offset-4">{formatMillions(points)} pts</span>}
-                content={`LP points ${formatMillions(lpUserPoints?.lpTotalPoints)}, vote points ${formatMillions(voteUserPoints?.voteTotalPoints)}`}
-              />
-            }
-          />
+        <div className="mt-6 border-t border-hairline pt-5 text-[13px] md:flex md:flex-wrap md:items-center md:gap-x-8 md:gap-y-2">
+          {/* phones: a titled row of three numbers; desktop: one inline line */}
+          <span className="mb-3 block font-semibold md:mb-0">
+            <span className="md:hidden">Your position</span>
+            <span className="hidden md:inline">You</span>
+          </span>
+          <div className="grid grid-cols-3 gap-3 md:contents">
+            <Inline label="Collateral" value={`$${formatMillions(userDeposit)}`} />
+            <Inline label="Debt" value={`${formatMillions(userDebt)} USG`} />
+            <Inline
+              label="Points"
+              value={
+                <HoverInfo
+                  title="Your points"
+                  contentClassName="w-fit rounded-lg p-2 text-ink-2"
+                  trigger={<span className="underline decoration-white/20 decoration-dotted underline-offset-4">{formatMillions(points)} pts</span>}
+                  content={`LP points ${formatMillions(lpUserPoints?.lpTotalPoints)}, vote points ${formatMillions(voteUserPoints?.voteTotalPoints)}`}
+                />
+              }
+            />
+          </div>
         </div>
       )}
 
@@ -439,9 +445,9 @@ function Tile({ label, value, foot }: { label: string; value: string; foot: stri
 
 function Inline({ label, value }: { label: string; value: ReactNode }) {
   return (
-    <span className="flex items-baseline gap-2">
-      <span className="text-ink-3">{label}</span>
-      <span className="font-medium tabular-nums">{value}</span>
+    <span className="flex min-w-0 flex-col gap-1 md:flex-row md:items-baseline md:gap-2">
+      <span className="text-[12px] text-ink-3 md:text-[13px]">{label}</span>
+      <span className="truncate text-[16px] font-medium tabular-nums md:text-[13px]">{value}</span>
     </span>
   )
 }

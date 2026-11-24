@@ -163,19 +163,29 @@ export function MarketListV2() {
             <div className="text-[14px] font-semibold">
               {atRisk.length} {atRisk.length > 1 ? "positions" : "position"} near liquidation
             </div>
-            <div className="mt-0.5 text-[13px] text-ink-2">{atRisk.map(({ r, pos }) => `${r.name}, health ${pos.label}`).join(" · ")}</div>
+            <div className="mt-0.5 text-[13px] text-ink-2">
+              {atRisk.map(({ r, pos }, i) => (
+                <span key={r.address}>
+                  {i > 0 && " · "}
+                  <Link href={`/${r.address}/deposit-borrow`} className="underline decoration-white/25 underline-offset-4 hover:text-white">
+                    {r.name}
+                  </Link>
+                  , health {pos.label}
+                </span>
+              ))}
+            </div>
             <div className="mt-3 flex flex-wrap gap-2">
               <Link
                 href={`/${atRisk[0].r.address}/deposit`}
                 className="flex h-9 items-center rounded-[8px] bg-white/[0.08] px-3.5 text-[13px] font-medium transition-colors hover:bg-white/[0.12]"
               >
-                Add collateral
+                Add collateral{atRisk.length > 1 ? ` to ${atRisk[0].r.name}` : ""}
               </Link>
               <Link
                 href={`/${atRisk[0].r.address}/repay`}
                 className="flex h-9 items-center rounded-[8px] bg-white/[0.08] px-3.5 text-[13px] font-medium transition-colors hover:bg-white/[0.12]"
               >
-                Repay
+                Repay{atRisk.length > 1 ? ` on ${atRisk[0].r.name}` : ""}
               </Link>
             </div>
           </div>

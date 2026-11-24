@@ -1,9 +1,10 @@
 "use client"
 
 import { Roll } from "@/v2/ui/roll"
+import { MobileActionBar } from "@/v2/ui/mobile-action-bar"
 import { VoidTexture } from "@/v2/ui/void-texture"
 import Link from "next/link"
-import { useMemo, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 import { formatUnits } from "viem"
 import { ArrowDown, ArrowUpRight } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -60,6 +61,7 @@ export function StakePageV2() {
   const asset = vault.asset.symbol
   const { connect } = useWalletConnexionContext()
   const [tab, setTab] = useState(TABS[0])
+  const actionRef = useRef<HTMLDivElement>(null)
 
   const isStake = currentFeature === "stake"
   const inAsset = isStake ? asset : share
@@ -181,7 +183,7 @@ export function StakePageV2() {
 
         {/* right: the action, then what it changes */}
         <div className="flex flex-col gap-4">
-          <div className="rounded-2xl border border-hairline bg-surface p-5">
+          <div ref={actionRef} className="scroll-mt-20 rounded-2xl border border-hairline bg-surface p-4 sm:p-5">
             <div role="tablist" className="flex w-full gap-1 rounded-[10px] bg-white/[0.04] p-1">
               <LargeButtonTab onClick={() => setCurrentFeature("stake")} active={isStake} label={vault.depositLabel} />
               <LargeButtonTab onClick={() => setCurrentFeature("unstake")} active={!isStake} label={vault.withdrawLabel} />
@@ -272,6 +274,7 @@ export function StakePageV2() {
           )}
         </div>
       </div>
+      <MobileActionBar target={actionRef} title={share} sub={sUSGCurrentAPY ? `APY ${sUSGCurrentAPY.toFixed(2)}%` : undefined} label={vault.depositLabel} />
     </div>
   )
 }

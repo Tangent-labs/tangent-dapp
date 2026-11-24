@@ -21,6 +21,7 @@ import { TokenImage } from "@/components/design_system/structure/token_image"
 import { YourLoanV2 } from "./your-loan"
 import { OracleV2 } from "./oracle"
 import { MarketSwitcherV2 } from "./market-switcher"
+import { MobileActionBar } from "@/v2/ui/mobile-action-bar"
 
 /**
  * V2 market page. Same data and pieces as USGRecordLayout (record context, feature tabs, chart, calculator, contracts, history),
@@ -52,9 +53,11 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
     io.observe(el)
     return () => io.disconnect()
   }, [])
+  // phones and tablets: the action card sits under the page, so a bar keeps it one tap away until it is on screen
+  const actionRef = useRef<HTMLDivElement>(null)
 
   return (
-    <div className="w-full pb-20 pt-2 font-sans">
+    <div className="w-full pb-24 pt-2 font-sans xl:pb-20">
       {/* header: breadcrumb, market switcher (same dialog as the live CollateralCard), one sentence */}
       <div className="text-[13px] text-ink-3">
         <Link href="/" className="hover:text-white">
@@ -143,7 +146,7 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
                 transition={{ duration: 0.2 }}
               >
                 {/* stat strip: the decision metric first and biggest */}
-                <div className="flex items-stretch">
+                <div className="v2-kpis flex items-stretch">
                   <Stat label="Collateral vAPR" info={TERMS.vapr} value={`${currentTotalMarketApr?.toFixed(2)}%`} hero />
                   <Stat
                     label="Max lev. vAPR"
@@ -222,12 +225,19 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
         {/* right column: Your loan scrolls away, the action card stays under the top bar */}
         <div className="flex flex-col gap-4 self-stretch">
           <YourLoanV2 />
-          <div className="sticky top-24 rounded-2xl border border-hairline bg-surface p-5">
+          <div ref={actionRef} id="v2-action" className="scroll-mt-20 rounded-2xl border border-hairline bg-surface p-4 sm:p-5 xl:sticky xl:top-24">
             {featureTabs}
             <div className="mt-4 flex flex-col gap-3">{children}</div>
           </div>
         </div>
       </div>
+
+      <MobileActionBar
+        target={actionRef}
+        title={name}
+        sub={`vAPR ${currentTotalMarketApr?.toFixed(2)}% · borrow ${computedBorrowRate.current}`}
+        label="Deposit & borrow"
+      />
     </div>
   )
 }

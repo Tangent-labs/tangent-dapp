@@ -71,9 +71,12 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
   const [sheet, setSheet] = useState(false)
   const hasDebt = (marketData?.debtInfos?.userDebt ?? 0n) > 0n
   // the Borrow / Repay side follows the route, like the live feature tabs
-  const openSheet = (route: "deposit-borrow" | "repay-withdraw") => {
+  const openSheet = (route: "deposit-borrow" | "borrow" | "repay-withdraw") => {
     const onRepay = ["repay", "withdraw", "repay-withdraw", "liquidate"].includes(window.location.pathname.split("/").pop() ?? "")
-    if ((route === "repay-withdraw") !== onRepay) router.replace(`/${marketInfo?.marketAddress}/${route}`, { scroll: false })
+    const current = window.location.pathname.split("/").pop()
+    // keep the sub tab the user is on when it already matches the side; "borrow" always lands on the Borrow tab
+    const go = route === "borrow" ? current !== "borrow" : (route === "repay-withdraw") !== onRepay
+    if (go) router.replace(`/${marketInfo?.marketAddress}/${route}`, { scroll: false })
     setActiveTab(route === "repay-withdraw" ? "Repay" : "Borrow")
     setSheet(true)
   }
@@ -273,7 +276,7 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
             sub={loading ? undefined : `vAPR ${currentTotalMarketApr?.toFixed(2)}% · borrow ${computedBorrowRate.current}`}
             actions={[
               ...(hasDebt ? [{ label: "Repay", onClick: () => openSheet("repay-withdraw") }] : []),
-              { label: hasDebt ? "Borrow" : "Deposit & borrow", primary: true, onClick: () => openSheet("deposit-borrow") },
+              { label: hasDebt ? "Borrow" : "Deposit & borrow", primary: true, onClick: () => openSheet(hasDebt ? "borrow" : "deposit-borrow") },
             ]}
           />
           <ActionSheet open={sheet} onClose={() => setSheet(false)} title={name}>

@@ -116,8 +116,44 @@ export function MarketListV2() {
         </Link>
       </p>
 
-      {/* overview: the peg first, then the four protocol numbers */}
-      <div className="mt-10 grid grid-cols-1 gap-4 xl:grid-cols-2">
+      {/* phones: one compact card (price vs peg with the month line, then the four protocol numbers on one row) */}
+      <div className="mt-6 rounded-2xl border border-hairline bg-surface p-4 md:hidden">
+        <div className="flex items-center gap-3">
+          <div className="min-w-0 flex-1">
+            <div className="text-[12px] font-medium text-ink-2">USG price</div>
+            <div className={cn("mt-0.5 text-[26px] font-light tabular-nums leading-8 tracking-[-0.02em]", loading && "animate-pulse text-ink-3")}>
+              <Roll value={loading ? "$-" : "$" + globalData.USGPrice} />
+            </div>
+            {!loading && (
+              <div className="text-[12px] tabular-nums text-ink-3">
+                {(() => {
+                  const gap = (Number(globalData.USGPrice) - 1) * 100
+                  return `${gap >= 0 ? "+" : "−"}${Math.abs(gap).toFixed(2)}% vs $1.00 peg`
+                })()}
+              </div>
+            )}
+          </div>
+          <div className="w-28 shrink-0">
+            <Sparkline values={(priceHistory?.USG ?? []).map((p) => p.uv)} height={40} reference={1} />
+          </div>
+        </div>
+        <div className="mt-3 grid grid-cols-4 gap-2 border-t border-divider pt-3">
+          {[
+            ["TVL", loading ? "-" : `$${formatMillions(globalData.globalTvl)}`],
+            ["Debt", loading ? "-" : formatMillions(globalData.globalDebt)],
+            ["Coll. ratio", globalData.globalCr],
+            ["sUSG APY", sUSGCurrentAPY ? `${sUSGCurrentAPY.toFixed(2)}%` : "-"],
+          ].map(([label, value]) => (
+            <div key={label} className="min-w-0">
+              <div className="truncate text-[11px] text-ink-3">{label}</div>
+              <div className={cn("truncate text-[14px] font-medium tabular-nums", value === "-" && "animate-pulse text-ink-3")}>{value}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* tablet and desktop: the peg first, then the four protocol numbers */}
+      <div className="mt-10 hidden grid-cols-1 gap-4 md:grid xl:grid-cols-2">
         <div className="relative isolate flex flex-col overflow-hidden rounded-2xl border border-hairline bg-surface p-6">
           <span aria-hidden className="pointer-events-none absolute inset-0 -z-10">
             <VoidTexture id="peg-hero" />

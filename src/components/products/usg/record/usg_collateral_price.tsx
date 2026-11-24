@@ -38,10 +38,10 @@ const V2_CHART_THEMES = {
     grid: "rgba(255,255,255,0.04)",
   },
   light: {
-    up: "#13a87a",
-    down: "#e0505f",
+    up: "#34c499",
+    down: "#ef6f7c",
     oracle: "#0062d6",
-    liquidation: "#b26b00",
+    liquidation: "#e3a33b",
     text: "rgba(0,0,0,0.5)",
     grid: "rgba(0,0,0,0.06)",
   },
@@ -143,6 +143,8 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
 
   const [showBackupBadge, setShowBackupBadge] = useState(false)
   const [isAboveView, setIsAboveView] = useState(false)
+  // V2: the liquidation chip zooms the price scale out to frame the candles and the liquidation price together
+  const [fitLiquidation, setFitLiquidation] = useState(false)
   const [oracleLabelTop, setOracleLabelTop] = useState<number | null>(null)
 
   const liquidationPriceNumber = useMemo(() => {
@@ -270,9 +272,18 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
 
     seriesRef.current.applyOptions({
       autoscaleInfoProvider: (original: () => AutoscaleInfo | null) => {
+        // framed with the liquidation price: same range, stretched to reach it, with the same padding
+        const withLiquidation = (r: { minValue: number; maxValue: number }) => {
+          if (!fitLiquidation || !(liquidationPriceNumber > 0)) return r
+          const minValue = Math.min(r.minValue, liquidationPriceNumber)
+          const maxValue = Math.max(r.maxValue, liquidationPriceNumber)
+          const pad = Math.max((maxValue - minValue) * PRICE_RANGE_PADDING_RATIO, 0.0001)
+          return { minValue: minValue - pad, maxValue: maxValue + pad }
+        }
+
         if (clampedVisiblePriceRange) {
           return {
-            priceRange: clampedVisiblePriceRange,
+            priceRange: withLiquidation(clampedVisiblePriceRange),
           }
         }
 
@@ -284,14 +295,16 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
 
         return {
           ...autoscaleInfo,
-          priceRange: {
+          priceRange: withLiquidation({
             minValue: autoscaleInfo.priceRange.minValue - padding,
             maxValue: autoscaleInfo.priceRange.maxValue + padding,
-          },
+          }),
         }
       },
     })
-  }, [clampedVisiblePriceRange])
+    // hand the scale back to autoscale so the new range applies even after a manual drag
+    chartRef.current?.priceScale("right").applyOptions({ autoScale: true })
+  }, [clampedVisiblePriceRange, fitLiquidation, liquidationPriceNumber])
 
   useEffect(() => {
     if (!oracleSeriesRef.current) return
@@ -394,7 +407,7 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
       ro.disconnect()
       if (animationFrame) cancelAnimationFrame(animationFrame)
     }
-  }, [liquidationPriceNumber, isPending, graphData?.data?.length, lastVisibleOracleValue])
+  }, [liquidationPriceNumber, isPending, graphData?.data?.length, lastVisibleOracleValue, fitLiquidation])
 
   return (
     <div ref={chartShellRef} className={cn("relative min-h-80 w-full", UI_V2 ? "rounded-xl" : "rounded-[10px] bg-[#0a0a0a] ring-1 ring-white/5")}>
@@ -409,16 +422,34 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
         </div>
       )}
 
-      {showBackupBadge && !isPending && (!UI_V2 || liquidationPriceNumber > 0) && (
-        <div
+      {showBackupBadge && !isPending && UI_V2 && liquidationPriceNumber > 0 && (
+        <button
+          type="button"
+          onClick={() => setFitLiquidation(true)}
+          title="Zoom out to show the liquidation price"
           className={cn(
-            "absolute right-2 z-10 px-1 py-0.5 text-xs",
-            UI_V2 ? "rounded bg-warning tabular-nums text-black" : "rounded-[2px] bg-[#ff0300] text-white",
-            UI_V2 ? (isAboveView ? "top-2" : "bottom-9") : isAboveView ? "top-2" : "bottom-2"
+            "absolute right-2 z-10 flex items-center gap-1.5 rounded-md border border-hairline bg-surface px-2 py-1 text-[11px] tabular-nums text-ink-2 shadow-pop transition-colors hover:text-white",
+            isAboveView ? "top-2" : "bottom-9"
           )}
         >
-          {UI_V2 && (isAboveView ? "↑ " : "↓ ")}Liquidation price ${formatNumber(liquidationPriceNumber, 3)}
+          <span className="h-1.5 w-1.5 rounded-full bg-warning" />
+          Liquidation ${formatNumber(liquidationPriceNumber, 3)}
+          <span className="text-ink-3">{isAboveView ? "↑" : "↓"}</span>
+        </button>
+      )}
+      {showBackupBadge && !isPending && !UI_V2 && (
+        <div className={cn("absolute right-2 z-10 rounded-[2px] bg-[#ff0300] px-1 py-0.5 text-xs text-white", isAboveView ? "top-2" : "bottom-2")}>
+          Liquidation price ${formatNumber(liquidationPriceNumber, 3)}
         </div>
+      )}
+      {UI_V2 && fitLiquidation && !isPending && (
+        <button
+          type="button"
+          onClick={() => setFitLiquidation(false)}
+          className="absolute left-2 top-2 z-10 rounded-md border border-hairline bg-surface px-2 py-1 text-[11px] text-ink-2 shadow-pop transition-colors hover:text-white"
+        >
+          Zoom to price
+        </button>
       )}
     </div>
   )

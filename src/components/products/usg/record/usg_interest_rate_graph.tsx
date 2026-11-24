@@ -7,11 +7,12 @@ import { useUSGRecordContext } from "./usg_record_context"
 import { ResponsiveContainer, AreaChart, XAxis, YAxis, CartesianGrid, Area, Tooltip, ReferenceLine } from "recharts"
 import { isVolatileCollateral } from "@/lib/risk_color"
 import { UI_V2 } from "@/v2/ui"
+import { ChartTooltipV2, V2_CURSOR, V2_GRID, V2_TICK, v2ActiveDot } from "@/v2/ui/chart"
 
-const TICK = UI_V2 ? "rgba(255,255,255,0.45)" : "rgba(255,255,255,0.6)"
+const TICK = UI_V2 ? V2_TICK.fill : "rgba(255,255,255,0.6)"
 const IR_COLOR = UI_V2 ? "#EDEDEF" : "#95FF00"
 const IR_FILL = UI_V2 ? "237,237,239" : "149,255,0"
-const GRID = UI_V2 ? "rgba(255,255,255,0.05)" : "#FFFFFF1A"
+const GRID = UI_V2 ? V2_GRID : "#FFFFFF1A"
 
 const CustomTooltip = ({
   active,
@@ -23,6 +24,13 @@ const CustomTooltip = ({
   label?: number
 }) => {
   if (!active || !payload?.length) return null
+  if (UI_V2)
+    return (
+      <ChartTooltipV2
+        title={"USG at $" + (label ?? 0).toFixed(4)}
+        rows={payload.map((e) => ({ color: e.color, label: e.dataKey === "rewardsCut" ? "Rewards cut" : "Interest rate", value: e.value.toFixed(2) + "%" }))}
+      />
+    )
   return (
     <div className="flex flex-col items-start justify-center gap-1 rounded-[10px] border border-white border-opacity-10 bg-input p-2 text-xs text-white backdrop-blur-[60px]">
       <span className="text-xs text-white">Price: ${(label ?? 0).toFixed(5)}</span>
@@ -159,7 +167,7 @@ export function InterestRateGraph() {
 
         <CartesianGrid horizontal={true} vertical={false} stroke={GRID} />
 
-        <Tooltip content={<CustomTooltip />} />
+        <Tooltip cursor={UI_V2 ? V2_CURSOR : undefined} content={<CustomTooltip />} />
 
         <ReferenceLine
           yAxisId="right"
@@ -174,7 +182,16 @@ export function InterestRateGraph() {
           }}
         />
 
-        <Area yAxisId="left" type="stepAfter" dataKey="rewardsCut" stroke="#0075FF" strokeWidth={1.5} fill="url(#gradiant-blue)" fillOpacity={1} />
+        <Area
+          yAxisId="left"
+          type="stepAfter"
+          dataKey="rewardsCut"
+          stroke="#0075FF"
+          strokeWidth={1.5}
+          fill="url(#gradiant-blue)"
+          fillOpacity={1}
+          activeDot={UI_V2 ? v2ActiveDot("#0075FF") : undefined}
+        />
 
         <Area
           yAxisId="right"
@@ -184,6 +201,7 @@ export function InterestRateGraph() {
           strokeWidth={1.5}
           fill="url(#gradiant-yellow)"
           fillOpacity={1}
+          activeDot={UI_V2 ? v2ActiveDot(IR_COLOR) : undefined}
           animationDuration={1000}
         />
       </AreaChart>

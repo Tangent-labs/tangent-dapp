@@ -18,10 +18,13 @@ export const v2ActiveDot = (color: string) => ({ r: 4, fill: color, stroke: "#1a
 /** Axis tick style: small, quiet, tabular. */
 export const V2_TICK = { fontSize: 11, fill: "#8f8f8f" }
 
+/** Horizontal grid hairline. */
+export const V2_GRID = "rgba(255,255,255,0.06)"
+
 export type TooltipRow = { color?: string; label: string; value: string }
 
 /** Hover card: date on top, one row per series (dot, label, value), optional total. */
-export function ChartTooltipV2({ title, rows, total }: { title: string; rows: TooltipRow[]; total?: TooltipRow }) {
+export function ChartTooltipV2({ title, rows, total }: { title: ReactNode; rows: TooltipRow[]; total?: TooltipRow }) {
   return (
     <div className="min-w-[180px] rounded-[10px] border border-white/[0.08] bg-raised px-3 py-2.5 font-sans text-xs shadow-[0_12px_32px_rgba(0,0,0,0.5)]">
       <div className="mb-2 text-[11px] tabular-nums text-ink-3">{title}</div>
@@ -110,7 +113,7 @@ export function ChartLegendV2({ items }: { items: { color: string; label: ReactN
   )
 }
 
-/** Dashed average across the bars (complete periods only), labelled on the left. For the HTML bar charts. */
+/** Dashed average across the bars (complete periods only), labelled at the right end. For the HTML bar charts. */
 export function AverageLine({ values, axisMax }: { values: number[]; axisMax: number }) {
   const list = values.filter((v) => Number.isFinite(v))
   if (!list.length || !axisMax) return null
@@ -119,7 +122,7 @@ export function AverageLine({ values, axisMax }: { values: number[]; axisMax: nu
   return (
     <div className="pointer-events-none absolute inset-x-0 z-10" style={{ bottom: `${Math.min(100, (avg / axisMax) * 100)}%` }}>
       <div className="w-full border-t border-dashed border-white/35" />
-      <span className="absolute -top-[18px] left-0 rounded bg-raised px-1.5 py-px text-[10px] tabular-nums text-ink-2">avg ${label}</span>
+      <span className="absolute -top-[24px] right-0 rounded-[5px] bg-raised px-2 py-0.5 text-[12px] font-medium tabular-nums text-ink-2">avg ${label}</span>
     </div>
   )
 }

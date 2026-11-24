@@ -10,6 +10,7 @@ import { Switch } from "@/components/ui/switch"
 import { Button } from "@/components/design_system/inputs/button"
 import { SliderInput } from "@/components/design_system/inputs/SliderInput"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card"
+import { ChartTooltipV2, V2_CURSOR, V2_GRID, V2_TICK, v2ActiveDot } from "@/v2/ui/chart"
 
 /** Everything comes from VAPRCalculator (record context + its own save logic). This file is markup only. */
 export type VAPRCalculatorV2Props = {
@@ -31,7 +32,7 @@ export type VAPRCalculatorV2Props = {
   onSave: () => void
 }
 
-const TICK = { fontSize: 11, fill: "rgba(255,255,255,0.45)" }
+const TICK = V2_TICK
 const clampPct = (v: number) => Math.min(100, Math.max(0, v))
 const NEG = "#ff5c5c"
 const X_MIN = 0.9897
@@ -188,7 +189,7 @@ export function VAPRCalculatorV2(p: VAPRCalculatorV2Props) {
                             <stop offset="100%" stopColor={NEG} stopOpacity={0} />
                           </linearGradient>
                         </defs>
-                        <CartesianGrid horizontal vertical={false} stroke="rgba(255,255,255,0.05)" />
+                        <CartesianGrid horizontal vertical={false} stroke={V2_GRID} />
                         <XAxis
                           dataKey="price"
                           type="number"
@@ -218,13 +219,19 @@ export function VAPRCalculatorV2(p: VAPRCalculatorV2Props) {
                           />
                         )}
                         <Tooltip
-                          cursor={{ stroke: "rgba(255,255,255,0.15)" }}
+                          cursor={V2_CURSOR}
                           content={({ active, payload, label }) =>
                             active && payload?.length ? (
-                              <div className="rounded-lg border border-white/10 bg-raised px-3 py-2 text-xs shadow-[0_12px_32px_rgba(0,0,0,0.5)]">
-                                <div className="text-ink-3">USG at ${Number(label).toFixed(4)}</div>
-                                <div className="mt-0.5 font-medium tabular-nums">{Number(payload[0]?.payload?.vAPR).toFixed(2)}% net vAPR</div>
-                              </div>
+                              <ChartTooltipV2
+                                title={"USG at $" + Number(label).toFixed(4)}
+                                rows={[
+                                  {
+                                    color: Number(payload[0]?.payload?.vAPR) < 0 ? NEG : "#0075FF",
+                                    label: "Net vAPR",
+                                    value: Number(payload[0]?.payload?.vAPR).toFixed(2) + "%",
+                                  },
+                                ]}
+                              />
                             ) : null
                           }
                         />
@@ -234,22 +241,14 @@ export function VAPRCalculatorV2(p: VAPRCalculatorV2Props) {
                           type="monotone"
                           dataKey="pos"
                           stroke="#0075FF"
-                          strokeWidth={2}
+                          strokeWidth={1.5}
                           dot={false}
-                          activeDot={{ r: 3.5, fill: "#0075FF", stroke: "#fff" }}
+                          activeDot={v2ActiveDot("#0075FF")}
                           animationDuration={700}
                         />
-                        <Line
-                          type="monotone"
-                          dataKey="neg"
-                          stroke={NEG}
-                          strokeWidth={2}
-                          dot={false}
-                          activeDot={{ r: 3.5, fill: NEG, stroke: "#fff" }}
-                          animationDuration={700}
-                        />
+                        <Line type="monotone" dataKey="neg" stroke={NEG} strokeWidth={1.5} dot={false} activeDot={v2ActiveDot(NEG)} animationDuration={700} />
                         {today && (
-                          <ReferenceDot x={today.price} y={today.vAPR} r={4.5} fill={today.vAPR < 0 ? NEG : "#0075FF"} stroke="#fff" strokeWidth={1.5} />
+                          <ReferenceDot x={today.price} y={today.vAPR} r={4} fill={today.vAPR < 0 ? NEG : "#0075FF"} stroke="#1a1a1a" strokeWidth={2} />
                         )}
                       </ComposedChart>
                     </ResponsiveContainer>

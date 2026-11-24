@@ -3,8 +3,9 @@
 import { formatDollar, formatMillions } from "@/lib/number_formatter"
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts"
 import { UI_V2 } from "@/v2/ui"
+import { ChartTooltipV2, V2_CURSOR, V2_GRID, V2_TICK, v2ActiveDot } from "@/v2/ui/chart"
 
-const TICK = UI_V2 ? "rgba(255,255,255,0.45)" : "rgba(255,255,255,0.6)"
+const TICK = UI_V2 ? V2_TICK.fill : "rgba(255,255,255,0.6)"
 
 type UsgTotalBorrowProps = {
   totalBorrow: Array<{
@@ -90,7 +91,7 @@ export default function UsgTotalBorrow({ totalBorrow }: UsgTotalBorrowProps) {
             <stop offset="100%" stopColor={UI_V2 ? "#0075FF" : "#3b82f6"} stopOpacity={0} />
           </linearGradient>
         </defs>
-        <CartesianGrid horizontal={true} vertical={false} stroke={UI_V2 ? "rgba(255,255,255,0.05)" : "#FFFFFF1A"} />
+        <CartesianGrid horizontal={true} vertical={false} stroke={UI_V2 ? V2_GRID : "#FFFFFF1A"} />
         <XAxis
           dataKey="timestamp"
           ticks={xAxisTicks}
@@ -115,7 +116,15 @@ export default function UsgTotalBorrow({ totalBorrow }: UsgTotalBorrowProps) {
         />
 
         <Tooltip
+          cursor={UI_V2 ? V2_CURSOR : undefined}
           content={({ active, payload, label }) => {
+            if (UI_V2 && active && payload?.length)
+              return (
+                <ChartTooltipV2
+                  title={new Date(label).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                  rows={[{ color: "#0075FF", label: "Total borrow", value: formatDollar(Number(payload[0]?.value || 0).toFixed(0), 0) }]}
+                />
+              )
             if (active && payload && payload.length) {
               const formattedValue = formatDollar(Number(payload[0]?.value || 0).toFixed(0), 0)
               const formattedDate = new Date(label).toISOString().slice(0, 16).replace("T", " ")
@@ -137,7 +146,15 @@ export default function UsgTotalBorrow({ totalBorrow }: UsgTotalBorrowProps) {
             return null
           }}
         />
-        <Area type="monotone" dataKey="value" stroke={UI_V2 ? "#0075FF" : "#1568ed"} strokeWidth={1.5} fill="url(#borrowGradient)" dot={false} />
+        <Area
+          type="monotone"
+          dataKey="value"
+          stroke={UI_V2 ? "#0075FF" : "#1568ed"}
+          strokeWidth={1.5}
+          fill="url(#borrowGradient)"
+          dot={false}
+          activeDot={UI_V2 ? v2ActiveDot("#0075FF") : undefined}
+        />
       </AreaChart>
     </ResponsiveContainer>
   )

@@ -1,7 +1,7 @@
 import { ReactNode, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { APRDisplay } from "./apr_display"
 import { UI_V2 } from "@/v2/ui"
-import { ChartTooltipV2, V2_CURSOR, tooltipDate, v2ActiveDot } from "@/v2/ui/chart"
+import { ChartTooltipV2, V2_CURSOR, V2_GRID, V2_TICK, v2ActiveDot } from "@/v2/ui/chart"
 
 const LINE = UI_V2 ? "#0075FF" : "#95FF00"
 import { ButtonTab } from "@/components/design_system/inputs/button_tab"
@@ -18,7 +18,7 @@ const AVERAGE_LABEL_ESTIMATED_CHAR_WIDTH = 7.5
 const CHART_MARGIN = { top: 20, right: -50, left: 0, bottom: 0 }
 const X_AXIS_PADDING = { left: 0, right: 35 }
 const AXIS_LINE_STYLE = { stroke: "rgba(255,255,255,0.08)" }
-const TICK_STYLE = { fontSize: 12, fill: "rgba(255,255,255,0.5)" }
+const TICK_STYLE = UI_V2 ? V2_TICK : { fontSize: 12, fill: "rgba(255,255,255,0.5)" }
 
 type RangeKey = "1m" | "3m" | "1y"
 type ApyHistoryPoint = {
@@ -123,7 +123,7 @@ const ApyTooltip = (props: {
 
   if (!Number.isFinite(props.label) || !Number.isFinite(value)) return null
 
-  if (UI_V2) return <ChartTooltipV2 title={tooltipDate(props.label)} rows={[{ color: LINE, label: "APY", value: value.toFixed(2) + "%" }]} />
+  if (UI_V2) return <ChartTooltipV2 title={props.fmtLabel(props.label)} rows={[{ color: LINE, label: "APY", value: value.toFixed(2) + "%" }]} />
 
   return (
     <div className="pointer-events-none flex flex-col items-start justify-between gap-3 rounded-[10px] bg-dark px-3 py-2 text-[10px]">
@@ -204,7 +204,7 @@ export const PositionAPR = ({ apy, token, fetchsUSGHistoryAPY, sUSGSelectedTab, 
                 </linearGradient>
               </defs>
 
-              <CartesianGrid horizontal={true} vertical={false} stroke="rgba(255,255,255,0.05)" />
+              <CartesianGrid horizontal={true} vertical={false} stroke={UI_V2 ? V2_GRID : "rgba(255,255,255,0.05)"} />
 
               <XAxis
                 padding={X_AXIS_PADDING}
@@ -226,7 +226,7 @@ export const PositionAPR = ({ apy, token, fetchsUSGHistoryAPY, sUSGSelectedTab, 
                 width={CHART_Y_AXIS_WIDTH}
                 axisLine={false}
                 tick={({ x, y, payload }) => (
-                  <text x={x - 10} y={y - 7} dy={4} textAnchor="end" fill="rgba(255,255,255,0.5)" fontSize={11}>
+                  <text x={x - 10} y={y - 7} dy={4} textAnchor="end" fill={TICK_STYLE.fill} fontSize={11}>
                     {formatYAxis(payload.value)}
                   </text>
                 )}

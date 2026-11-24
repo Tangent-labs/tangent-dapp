@@ -6,7 +6,7 @@ import Link from "next/link"
 import { ReactNode, useMemo, useState } from "react"
 import { formatUnits } from "viem"
 import { AnimatePresence, motion } from "framer-motion"
-import { ChevronDown, ChevronRight, LayoutGrid, List, Search } from "lucide-react"
+import { ChevronDown, ChevronRight, LayoutGrid, List, Pause, Search, Wallet } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { ListRowData } from "@/types"
 import { formatMillions } from "@/lib/number_formatter"
@@ -416,18 +416,23 @@ function Status({ r }: { r: ListRowData }) {
   const paused = r.isDepositPaused || r.isBorrowPaused || r.isLeveragePaused
   if (!paused && !r.userHasDeposited) return null
   return (
-    <span className="inline-flex shrink-0 items-center gap-3 text-[11px] font-normal text-ink-2">
-      {r.userHasDeposited && (
-        <span className="inline-flex items-center gap-1">
-          <span className="h-1.5 w-1.5 rounded-full bg-action" /> Your deposit
-        </span>
-      )}
+    <span className="inline-flex shrink-0 items-center gap-1.5">
+      {r.userHasDeposited && <StatusChip icon={<Wallet className="h-3 w-3" strokeWidth={2} />}>Your deposit</StatusChip>}
       {paused && (
-        <span className="inline-flex items-center gap-1">
-          <span className="h-1.5 w-1.5 rounded-full bg-warning" />{" "}
+        <StatusChip icon={<Pause className="h-3 w-3 fill-current text-warning" strokeWidth={0} />}>
           {r.isDepositPaused ? "Deposits paused" : r.isBorrowPaused ? "Borrowing paused" : "Leverage paused"}
-        </span>
+        </StatusChip>
       )}
+    </span>
+  )
+}
+
+/** Neutral status chip: hairline, quiet fill, an icon that carries the meaning (color only on the warning glyph). */
+function StatusChip({ icon, children }: { icon: ReactNode; children: ReactNode }) {
+  return (
+    <span className="inline-flex h-5 items-center gap-1 whitespace-nowrap rounded-[6px] bg-white/[0.05] px-1.5 text-[11px] font-medium leading-none text-ink-2 ring-1 ring-inset ring-hairline">
+      {icon}
+      {children}
     </span>
   )
 }

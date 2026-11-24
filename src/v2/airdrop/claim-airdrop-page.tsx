@@ -49,7 +49,7 @@ export function ClaimAirdropPageV2() {
       <h1 className="text-[32px] font-semibold tracking-[-0.02em]">Airdrop</h1>
       <p className="mt-1 text-[14px] text-ink-2">Check and claim your TAN allocation.</p>
 
-      <div className="mt-8 flex flex-wrap items-stretch gap-y-4">
+      <div className="v2-kpis mt-8 flex flex-wrap items-stretch gap-y-4">
         <div className="min-w-[260px] flex-[1.6] pr-8">
           <div className="text-xs text-ink-3">{isClaimed ? "Claimed" : "Total allocation"}</div>
           <div className="mt-1 flex items-center gap-3">

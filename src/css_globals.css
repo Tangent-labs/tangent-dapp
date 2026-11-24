@@ -329,3 +329,68 @@ html:has(.v2-shell)::-webkit-scrollbar-thumb,
 .v2-scroll::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.24);
 }
+
+/* V2 mobile: the header number strips (hero + stats behind hairlines) become a 2-column grid under 768px.
+   The hero takes the full row, the stats sit two by two, separated by a top hairline instead of a left one. */
+@media (max-width: 767px) {
+  .v2-kpis {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 16px;
+    row-gap: 0 !important;
+  }
+  .v2-kpis > * {
+    min-width: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    padding-top: 14px;
+    padding-bottom: 14px;
+    border-left: 0 !important;
+    border-top: 1px solid var(--tgt-v2-border-divider);
+  }
+  .v2-kpis > :first-child {
+    grid-column: 1 / -1;
+    padding-top: 0;
+    border-top: 0;
+  }
+  /* the hero number stays big but fits a phone */
+  .v2-kpis > :first-child .text-\[48px\] {
+    font-size: 40px;
+  }
+  .v2-kpis .text-\[24px\] {
+    font-size: 20px;
+  }
+}
+/* no horizontal scrollbar on chip rows (range tabs, filters) on touch screens */
+.v2-chips {
+  scrollbar-width: none;
+}
+.v2-chips::-webkit-scrollbar {
+  display: none;
+}
+/* V2 phone tables: keep the select box, the name and the one number that matters, hide the rest (it stays in the hover/summary) */
+@media (max-width: 767px) {
+  .v2-m3 {
+    grid-template-columns: 28px minmax(0, 1fr) auto !important;
+  }
+  .v2-m3 > :nth-child(n + 4) {
+    display: none !important;
+  }
+  .v2-m-claim {
+    grid-template-columns: 28px minmax(0, 1fr) auto !important;
+  }
+  .v2-m-claim > :nth-child(3),
+  .v2-m-claim > :nth-child(5) {
+    display: none !important;
+  }
+}
+/* phone task lists: the task and its points per day */
+@media (max-width: 767px) {
+  .v2-m-13 {
+    grid-template-columns: minmax(0, 1fr) auto !important;
+  }
+  .v2-m-13 > :nth-child(2),
+  .v2-m-13 > :nth-child(n + 4) {
+    display: none !important;
+  }
+}

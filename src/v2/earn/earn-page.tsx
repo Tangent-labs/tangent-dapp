@@ -74,7 +74,7 @@ export function EarnPageV2() {
         markets.
       </p>
 
-      <div className="mt-8 grid grid-cols-1 md:grid-cols-[1.6fr_1fr_1fr]">
+      <div className="v2-kpis mt-8 grid grid-cols-1 md:grid-cols-[1.6fr_1fr_1fr]">
         <Tile
           hero
           label="Best vAPR"
@@ -111,16 +111,18 @@ export function EarnPageV2() {
       </div>
 
       <div className="overflow-x-auto rounded-2xl border border-hairline bg-surface px-2 pb-3">
-        <div className="min-w-[760px]">
-          <div className="grid grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,0.9fr)_28px] gap-4 px-4 pb-2 pt-4 text-xs text-ink-3">
+        <div className="md:min-w-[760px]">
+          <div className="grid grid-cols-[minmax(0,1fr)_auto_20px] gap-4 px-4 pb-2 pt-4 text-xs text-ink-3 md:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,0.9fr)_28px]">
             <span>Pool</span>
-            <span>Protocols</span>
+            <span className="hidden md:block">Protocols</span>
             <SortHead active={sort.key === "currentAPR"} dir={sort.direction} onClick={() => toggleSort("currentAPR")}>
               Best vAPR
             </SortHead>
-            <SortHead active={sort.key === "points"} dir={sort.direction} onClick={() => toggleSort("points")}>
-              Points / day / $
-            </SortHead>
+            <span className="hidden md:block">
+              <SortHead active={sort.key === "points"} dir={sort.direction} onClick={() => toggleSort("points")}>
+                Points / day / $
+              </SortHead>
+            </span>
             <span />
           </div>
 
@@ -140,7 +142,7 @@ export function EarnPageV2() {
                     type="button"
                     onClick={() => setOpen(isOpen ? null : p.asset)}
                     aria-expanded={isOpen}
-                    className="grid w-full grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,0.9fr)_28px] items-center gap-4 px-4 py-3 text-left"
+                    className="grid w-full grid-cols-[minmax(0,1fr)_auto_20px] items-center gap-4 px-4 py-3 text-left md:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,0.9fr)_28px]"
                   >
                     <span className="flex min-w-0 items-center gap-3">
                       <TokenImage token={p.top.asset} size={32} className="h-8 w-auto shrink-0" />
@@ -151,7 +153,7 @@ export function EarnPageV2() {
                         </span>
                       </span>
                     </span>
-                    <span className="flex items-center">
+                    <span className="hidden items-center md:flex">
                       {p.rows.slice(0, 4).map((r, i) => (
                         <ProtocolDot key={r.protocolName + i} name={r.protocolName} className={i ? "-ml-1.5" : ""} />
                       ))}
@@ -165,7 +167,7 @@ export function EarnPageV2() {
                       currentDetails={p.top.currentAPRDetails}
                       projectedDetails={p.top.projectedAPRDetails}
                     />
-                    <span className="text-[15px] tabular-nums">{p.points ? p.points : "-"}</span>
+                    <span className="hidden text-[15px] tabular-nums md:block">{p.points ? p.points : "-"}</span>
                     <ChevronDown className={cn("h-4 w-4 text-ink-3 transition-transform duration-200", isOpen && "rotate-180")} strokeWidth={1.75} />
                   </button>
                   <AnimatePresence initial={false}>
@@ -184,10 +186,15 @@ export function EarnPageV2() {
                               href={r.link}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="group grid grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,0.9fr)_28px] items-center gap-4 rounded-lg px-2 py-2.5 transition-colors hover:bg-white/[0.05]"
+                              className="group grid grid-cols-[minmax(0,1fr)_auto_20px] items-center gap-4 rounded-lg px-2 py-2.5 transition-colors hover:bg-white/[0.05] md:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,0.9fr)_28px]"
                             >
-                              <span className="pl-11 text-[13px] text-ink-2">{r.name}</span>
-                              <span className="flex items-center gap-2 text-[13px]">
+                              <span className="flex min-w-0 items-center gap-2 text-[13px] text-ink-2 md:block md:pl-11">
+                                <span className="md:hidden">
+                                  <ProtocolDot name={r.protocolName} />
+                                </span>
+                                <span className="truncate">{r.name}</span>
+                              </span>
+                              <span className="hidden items-center gap-2 text-[13px] md:flex">
                                 <ProtocolDot name={r.protocolName} />
                                 {r.protocolName}
                               </span>
@@ -199,7 +206,7 @@ export function EarnPageV2() {
                                 currentDetails={r.currentAPRDetails}
                                 projectedDetails={r.projectedAPRDetails}
                               />
-                              <span className="text-[14px] tabular-nums">{r.points ? r.points : "-"}</span>
+                              <span className="hidden text-[14px] tabular-nums md:block">{r.points ? r.points : "-"}</span>
                               <ArrowUpRight className="h-4 w-4 text-ink-3 opacity-0 transition-opacity group-hover:opacity-100" strokeWidth={1.75} />
                             </a>
                           ))}

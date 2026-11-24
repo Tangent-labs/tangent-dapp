@@ -23,7 +23,7 @@ export function DashboardHeaderV2() {
       <p className="mt-1 max-w-[720px] text-[14px] text-ink-2">
         How Tangent is doing: the USG peg, what is locked, what is borrowed and what the protocol earns. Pick a period on any chart.
       </p>
-      <div className="mt-8 flex flex-wrap items-stretch gap-y-4">
+      <div className="v2-kpis mt-8 flex flex-wrap items-stretch gap-y-4">
         <div className="min-w-[220px] flex-[1.6] pr-8">
           <div className="text-xs text-ink-3">Total value locked</div>
           <div className="mt-1 text-[48px] font-light tabular-nums leading-[1.05] tracking-[-0.02em]">{tvl ? `$${formatMillions(tvl)}` : "-"}</div>

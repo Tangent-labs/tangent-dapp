@@ -74,7 +74,7 @@ export function ChartHeadV2({
   className?: string
 }) {
   return (
-    <div className={cn("flex w-full items-start justify-between gap-4", className)}>
+    <div className={cn("flex w-full flex-wrap items-start justify-between gap-x-4 gap-y-3", className)}>
       <div className="min-w-0">
         <div className="text-[13px] font-medium text-ink-2">{label}</div>
         <div className="mt-1 flex items-baseline gap-2">

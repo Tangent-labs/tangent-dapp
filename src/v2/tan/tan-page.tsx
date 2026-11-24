@@ -40,7 +40,7 @@ export function TanHeaderV2() {
         Learn more about vsTAN <ExternalLink className="h-3 w-3" strokeWidth={2} />
       </Link>
 
-      <div className="mt-8 flex flex-wrap items-stretch gap-y-4">
+      <div className="v2-kpis mt-8 flex flex-wrap items-stretch gap-y-4">
         <div className="min-w-[220px] flex-[1.6] pr-8">
           <div className="text-xs text-ink-3">Your vsTAN</div>
           <div className="mt-1 flex items-center gap-3">
@@ -140,7 +140,7 @@ function Positions() {
         <p className="px-6 py-14 text-center text-[13px] text-ink-2">Connect your wallet to see your locked positions.</p>
       ) : (
         <div className="overflow-x-auto">
-          <div className="min-w-[520px]">
+          <div className="sm:min-w-[520px]">
             <div className="grid grid-cols-[0.6fr_1fr_1fr_1fr_24px] items-center gap-3 px-4 pb-2 pt-2 text-xs text-ink-3">
               {th("id", "Position")}
               {th("amount", "vsTAN")}
@@ -158,7 +158,7 @@ function Positions() {
                     type="button"
                     onClick={() => setSelectedPosition(open ? undefined : p)}
                     className={cn(
-                      "grid w-full grid-cols-[0.6fr_1fr_1fr_1fr_24px] items-center gap-3 border-b border-white/[0.06] px-4 py-3.5 text-left text-[14px] tabular-nums transition-colors last:border-b-0",
+                      "grid w-full grid-cols-[0.6fr_1fr_1fr_1fr_24px] items-center gap-3 border-b border-white/[0.06] px-3 py-3.5 text-left text-[13px] tabular-nums transition-colors last:border-b-0 sm:px-4 sm:text-[14px]",
                       open ? "bg-white/[0.06]" : "hover:bg-white/[0.035]"
                     )}
                   >

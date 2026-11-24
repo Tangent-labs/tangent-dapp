@@ -119,7 +119,7 @@ export function TasksPageV2() {
 
       <div className="mt-4 overflow-x-auto rounded-2xl border border-hairline bg-surface px-2 pb-3">
         {isLp ? (
-          <div className="min-w-[860px]">
+          <div className="md:min-w-[860px]">
             <Head
               cols={LP_GRID}
               headers={lpListHeaders}
@@ -142,7 +142,7 @@ export function TasksPageV2() {
                 <span className="flex min-w-0 items-center gap-3">
                   <LpTaskCustomAssetDisplay token={t.asset.replaceAll("_", "-")} />
                   <span className="flex min-w-0 flex-col items-start gap-1">
-                    <span className="truncate text-[14px] font-semibold">{t.description}</span>
+                    <span className="line-clamp-2 text-[14px] font-semibold leading-5 md:truncate">{t.description}</span>
                     {t.canZap && (
                       <button
                         type="button"
@@ -167,7 +167,7 @@ export function TasksPageV2() {
             {lpRows.length === 0 && <Empty />}
           </div>
         ) : (
-          <div className="min-w-[760px]">
+          <div className="md:min-w-[760px]">
             <Head
               cols={VOTE_GRID}
               headers={voteListHeaders}
@@ -191,7 +191,7 @@ export function TasksPageV2() {
                   {t.protocol === "sdcrv.eth" && <TokenImage token="sdCRV" size={32} className="h-8 w-auto shrink-0" />}
                   {t.protocol === "cvx.eth" && <TokenImage token="vlCVX" size={32} className="h-8 w-auto shrink-0" />}
                   {t.protocol === "CRV" && <TokenImage token="veCRV" size={32} className="h-8 w-auto shrink-0" />}
-                  <span className="truncate text-[14px] font-semibold">{t.description}</span>
+                  <span className="line-clamp-2 text-[14px] font-semibold leading-5 md:truncate">{t.description}</span>
                 </span>
                 <Protocol name={t.organisation} />
                 <span className="text-[15px] tabular-nums">{t.pointRate}</span>
@@ -207,8 +207,8 @@ export function TasksPageV2() {
   )
 }
 
-const LP_GRID = "grid-cols-[minmax(0,2.2fr)_minmax(0,1fr)_minmax(0,0.9fr)_minmax(0,0.9fr)_minmax(0,0.9fr)_minmax(0,0.8fr)]"
-const VOTE_GRID = "grid-cols-[minmax(0,2.2fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,0.9fr)_minmax(0,1fr)]"
+const LP_GRID = "v2-m-13 grid-cols-[minmax(0,2.2fr)_minmax(0,1fr)_minmax(0,0.9fr)_minmax(0,0.9fr)_minmax(0,0.9fr)_minmax(0,0.8fr)]"
+const VOTE_GRID = "v2-m-13 grid-cols-[minmax(0,2.2fr)_minmax(0,1fr)_minmax(0,1fr)_minmax(0,0.9fr)_minmax(0,1fr)]"
 
 function Head({
   cols,

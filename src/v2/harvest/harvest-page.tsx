@@ -15,7 +15,7 @@ import { TokenImage } from "@/components/design_system/structure/token_image"
 import { formatDollar, formatPercent } from "@/lib/number_formatter"
 
 type SortKey = (typeof harvestListHeaders)[number]["key"]
-const GRID = "grid-cols-[28px_minmax(0,1.5fr)_minmax(0,1fr)_minmax(0,0.8fr)_minmax(0,1fr)_minmax(0,1fr)]"
+const GRID = "v2-m3 grid-cols-[28px_minmax(0,1.5fr)_minmax(0,1fr)_minmax(0,0.8fr)_minmax(0,1fr)_minmax(0,1fr)]"
 
 /**
  * V2 Harvest page. Same context (USGHarvestContext: rows, selection, select all, harvest handler, loading flags) as USGHarvestContent.
@@ -45,7 +45,7 @@ export function HarvestPageV2() {
         Harvest the rewards of Tangent markets. Harvester rewards are the share of a market&apos;s rewards that goes to whoever harvests it.
       </p>
 
-      <div className="mt-8 flex flex-wrap items-stretch gap-y-4">
+      <div className="v2-kpis mt-8 flex flex-wrap items-stretch gap-y-4">
         <div className="min-w-[220px] flex-[1.6] pr-8">
           <div className="text-xs text-ink-3">Rewards waiting</div>
           <div className="mt-1 text-[48px] font-light tabular-nums leading-[1.05] tracking-[-0.02em]">
@@ -58,7 +58,7 @@ export function HarvestPageV2() {
 
       <div className="mt-10 grid grid-cols-1 items-start gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
         <div className="overflow-x-auto rounded-2xl border border-hairline bg-surface px-2 pb-3">
-          <div className="min-w-[760px]">
+          <div className="md:min-w-[760px]">
             <div className={cn("grid items-center gap-4 px-4 pb-2 pt-4 text-xs text-ink-3", GRID)}>
               <span />
               {harvestListHeaders.map((h) => (
@@ -140,7 +140,7 @@ export function HarvestPageV2() {
           </div>
         </div>
 
-        <div className="sticky top-24 rounded-2xl border border-hairline bg-surface p-5">
+        <div className="rounded-2xl border border-hairline bg-surface p-4 sm:p-5 xl:sticky xl:top-24">
           <div className="flex items-center justify-between">
             <span className="text-[15px] font-semibold">Harvest summary</span>
             <label className="flex cursor-pointer items-center gap-2 text-xs text-ink-2">

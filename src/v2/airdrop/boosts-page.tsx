@@ -24,7 +24,7 @@ export function BoostsPageV2() {
       <AirdropHeaderV2 title="Boosts" description="Boost your points by holding eligible assets or by belonging to selected communities." />
 
       <div className="mt-10 overflow-x-auto rounded-2xl border border-hairline bg-surface px-2 pb-3">
-        <div className="min-w-[520px]">
+        <div className="sm:min-w-[520px]">
           <div className="grid grid-cols-[minmax(0,1.6fr)_minmax(0,0.6fr)_minmax(0,0.8fr)] items-center gap-4 px-4 pb-2 pt-4 text-xs text-ink-3">
             {boostHeaders.map((h) =>
               sortable(h.key as string) ? (

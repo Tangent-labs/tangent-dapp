@@ -40,7 +40,7 @@ export function SavingsProductsV2({
         </Link>
       </p>
 
-      <div className="mt-8 flex flex-wrap items-stretch gap-y-4">
+      <div className="v2-kpis mt-8 flex flex-wrap items-stretch gap-y-4">
         <div className="min-w-[220px] flex-[1.6] pr-8">
           <div className="text-xs text-ink-3">Best APY</div>
           <div className="mt-1 text-[48px] font-light tabular-nums leading-[1.05] tracking-[-0.02em]">{bestApy > 0 ? `${bestApy.toFixed(2)}%` : "-"}</div>
@@ -49,7 +49,7 @@ export function SavingsProductsV2({
         <Stat label="Your deposits" value={formatDollar(deposits)} sub="Across all products" />
       </div>
 
-      <div className="mt-10 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+      <div className="mt-8 grid grid-cols-1 gap-3 md:mt-10 md:grid-cols-2 md:gap-4 xl:grid-cols-3">
         {rows.map((row) => (
           <ProductCard key={row.vault.key} {...row} />
         ))}
@@ -63,7 +63,7 @@ function ProductCard({ vault, apy, tvl, deposit }: SavingsRowV2) {
   return (
     <Link
       href={`/stake/${vault.key}`}
-      className="focus-visible:border-action/60 group relative flex flex-col overflow-hidden rounded-2xl border border-hairline bg-surface p-5 outline-none transition-colors duration-200 hover:border-white/[0.12] hover:bg-raised"
+      className="focus-visible:border-action/60 group relative flex flex-col overflow-hidden rounded-2xl border border-hairline bg-surface p-4 outline-none transition-colors duration-200 hover:border-white/[0.12] hover:bg-raised sm:p-5"
     >
       <span className="relative flex items-center gap-3">
         <TokenImage token={vault.share.logo} size={48} className="h-10 w-auto shrink-0" />
@@ -75,12 +75,12 @@ function ProductCard({ vault, apy, tvl, deposit }: SavingsRowV2) {
         </span>
       </span>
 
-      <p className="relative mt-4 min-h-10 text-[13px] leading-5 text-ink-2">{vault.summary}</p>
+      <p className="relative mt-4 hidden min-h-10 text-[13px] leading-5 text-ink-2 md:block">{vault.summary}</p>
 
       <span className="relative mt-4 grid grid-cols-2 gap-2">
         <span className="rounded-xl bg-white/[0.04] px-3.5 py-3">
           <span className="block text-xs text-ink-3">APY</span>
-          <span className="mt-1 block text-[26px] font-light tabular-nums leading-none tracking-[-0.02em]">
+          <span className="mt-1 block text-[22px] font-light tabular-nums leading-none tracking-[-0.02em] sm:text-[26px]">
             {apy === undefined ? <span className="text-ink-3">-</span> : `${apy.toFixed(2)}%`}
           </span>
         </span>

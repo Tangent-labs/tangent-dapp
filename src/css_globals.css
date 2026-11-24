@@ -428,6 +428,16 @@ html:has(.v2-shell) {
 html[data-ui="v2"][data-theme="light"] {
   color-scheme: light;
   --tgt-fg: 11 11 11;
+  /* default text colour of the page (body) and the shadcn text tokens: everything that does not set its own colour */
+  --tgt-foreground: var(--tgt-v2-text-primary);
+  --foreground: 0 0% 4%;
+  --card-foreground: 0 0% 4%;
+  --popover-foreground: 0 0% 4%;
+  --secondary-foreground: 0 0% 4%;
+  --accent-foreground: 0 0% 4%;
+  --muted-foreground: 0 0% 40%;
+  --input: 0 0% 88%;
+  --ring: 0 0% 30%;
   --tgt-v2-bg-page: #fcfcfc;
   --tgt-v2-bg-sidebar: #fcfcfc;
   --tgt-v2-bg-surface: #ffffff;
@@ -495,8 +505,10 @@ html[data-ui="v2"][data-theme="light"] .v2-scroll::-webkit-scrollbar-thumb {
 html[data-ui="v2"][data-theme="light"] img[src$="/medias/v2/tangent-logo-typo.svg"] {
   filter: invert(1);
 }
-/* round logos (data-disc, set by markDisc) get a hairline ring on the light theme, like Aave Pro; other shapes stay bare */
-html[data-ui="v2"][data-theme="light"] img[data-disc="1"] {
-  border-radius: 9999px;
-  box-shadow: 0 0 0 1px rgb(0 0 0 / 0.08);
+/* every token and protocol logo gets a hairline outline on the light theme, like Aave Pro. It follows the logo's own
+   shape (four 0.5px shadows on its alpha), so pairs, Curve and other non-round logos are outlined without being cropped.
+   TokenImage and the boosts list mark their images with data-logo. */
+html[data-ui="v2"][data-theme="light"] img[data-logo] {
+  filter: drop-shadow(0.5px 0 0 rgb(0 0 0 / 0.1)) drop-shadow(-0.5px 0 0 rgb(0 0 0 / 0.1)) drop-shadow(0 0.5px 0 rgb(0 0 0 / 0.1))
+    drop-shadow(0 -0.5px 0 rgb(0 0 0 / 0.1));
 }

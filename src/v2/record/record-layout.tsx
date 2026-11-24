@@ -178,19 +178,9 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
                 exit={{ opacity: 0, y: -4 }}
                 transition={{ duration: 0.2 }}
               >
-                {/* stat strip: the decision metric first and biggest */}
+                {/* stat strip: what decides a borrow, the yield first and biggest */}
                 <div className="v2-kpis flex items-stretch">
                   <Stat loading={loading} label="Collateral vAPR" info={TERMS.vapr} value={`${currentTotalMarketApr?.toFixed(2)}%`} hero />
-                  <Stat
-                    loading={loading}
-                    label="Max lev. vAPR"
-                    info={TERMS.maxLevVapr}
-                    value={maxLev ?? "-"}
-                    sub={(() => {
-                      const proj = Number(maxLevIndicator?.subValue)
-                      return Number.isFinite(proj) ? `Proj. ${proj.toFixed(2)}%` : undefined
-                    })()}
-                  />
                   <Stat
                     loading={loading}
                     label="Borrow rate"
@@ -198,13 +188,8 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
                     value={computedBorrowRate.current}
                     sub={fixed ? "Fixed" : `Proj. ${computedBorrowRate.next}`}
                   />
-                  <Stat
-                    loading={loading}
-                    label="Rewards cut"
-                    info={TERMS.rewardsCut}
-                    value={marketDisplayData.rewardsCutCurrent}
-                    sub={`Proj. ${marketDisplayData.rewardsCutNext}`}
-                  />
+                  <Stat loading={loading} label="Max LTV" info={TERMS.maxLtv} value={marketDisplayData.maxLtv} sub="Max borrow vs collateral" />
+                  <Stat loading={loading} label="Liquidation threshold" info={TERMS.lt} value={marketDisplayData.lt} sub="Health 1.00 below this" />
                   <Stat
                     loading={loading}
                     label="Capacity"
@@ -214,45 +199,53 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
                   />
                 </div>
 
-                {/* the live chart card carries its own title and range tabs */}
+                {/* the live chart card carries its own title and range tabs; the oracle (technical) sits at the end of the page */}
                 <CollateralPriceProvider>
                   <USGCollateralPrice />
-                  <div className="mt-10">
+
+                  <div className="mt-10 space-y-10">
+                    <Section
+                      title="Borrowing"
+                      note={`Borrow rate and rewards cut both depend on the USG price.${maxBorrowCapReached ? " Borrowing is paused while the cap is reached." : ""}`}
+                    >
+                      <div className="grid grid-cols-2 gap-y-4 divide-divider border-y border-hairline py-4 md:grid-cols-3 md:gap-y-0 md:divide-x [&>*:first-child]:pl-0">
+                        {[
+                          ["TVL", "$" + formatMillions(marketDisplayData?.tvlDollar), "Collateral deposited"],
+                          [
+                            "Max lev. vAPR",
+                            maxLev ?? "-",
+                            (() => {
+                              const proj = Number(maxLevIndicator?.subValue)
+                              return Number.isFinite(proj) ? "Proj. " + proj.toFixed(2) + "%" : "No projection"
+                            })(),
+                            TERMS.maxLevVapr,
+                          ],
+                          ["Rewards cut", marketDisplayData.rewardsCutCurrent, "Proj. " + marketDisplayData.rewardsCutNext, TERMS.rewardsCut],
+                        ].map(([l, v, s, info]) => (
+                          <div key={l} className="pr-3 md:px-4">
+                            <div className="text-xs text-ink-3">{info ? <Term info={info}>{l}</Term> : l}</div>
+                            <div className="mt-1 text-[16px] font-medium tabular-nums">{v}</div>
+                            <div className="mt-0.5 text-xs text-ink-3">{s}</div>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="mt-4">
+                        <VAPRCalculator />
+                      </div>
+                    </Section>
+
+                    <Section title="Market" note="Rate model, borrow history, platform and contracts. Every transaction is under Activity.">
+                      <div className="space-y-4">
+                        <MarketDetails />
+                        <MarketDetailsContracts marketContracts={marketContracts} />
+                      </div>
+                    </Section>
+
                     <Section title="Oracle" note="The price feed this market uses to value the collateral.">
                       <OracleV2 />
                     </Section>
                   </div>
                 </CollateralPriceProvider>
-
-                <Section
-                  title="Borrowing"
-                  note={`Borrow rate and rewards cut both depend on the USG price.${maxBorrowCapReached ? " Borrowing is paused while the cap is reached." : ""}`}
-                >
-                  <div className="grid grid-cols-2 gap-y-4 divide-divider border-y border-hairline py-4 md:grid-cols-4 md:gap-y-0 md:divide-x [&>*:first-child]:pl-0">
-                    {[
-                      ["TVL", `$${formatMillions(marketDisplayData?.tvlDollar)}`, "Collateral deposited"],
-                      ["Available", `${formatMillions(marketDisplayData?.available)} USG`, "Left to borrow"],
-                      ["Max LTV", marketDisplayData.maxLtv, "Max borrow vs collateral", TERMS.maxLtv],
-                      ["Liquidation threshold", marketDisplayData.lt, "Health 1.00 below this", TERMS.lt],
-                    ].map(([l, v, s, info]) => (
-                      <div key={l} className="pr-3 md:px-4">
-                        <div className="text-xs text-ink-3">{info ? <Term info={info}>{l}</Term> : l}</div>
-                        <div className="mt-1 text-[16px] font-medium tabular-nums">{v}</div>
-                        <div className="mt-0.5 text-xs text-ink-3">{s}</div>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="mt-4">
-                    <VAPRCalculator />
-                  </div>
-                </Section>
-
-                <Section title="Market" note="Rate model, borrow history, platform and contracts. Every transaction is under Activity.">
-                  <div className="space-y-4">
-                    <MarketDetails />
-                    <MarketDetailsContracts marketContracts={marketContracts} />
-                  </div>
-                </Section>
               </motion.div>
             )}
           </AnimatePresence>

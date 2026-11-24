@@ -594,7 +594,7 @@ function Row({ r }: { r: ListRowData }) {
             <span className="truncate text-[14px] font-semibold">{r.name}</span>
             <Status r={r} iconOnly />
           </span>
-          <Venue type={r.protocol} className="mt-1 text-xs leading-4 text-ink-3" />
+          <Venue type={r.protocol} dense className="mt-1 text-xs leading-4 text-ink-3" />
         </span>
       </span>
       <Vapr r={r} />
@@ -782,7 +782,7 @@ function MobileRow({ r }: { r: ListRowData }) {
         <TokenImage token={r.logoKey} size={48} className="h-9 w-auto shrink-0" />
         <span className="min-w-0 flex-1">
           <span className="block truncate text-[15px] font-semibold leading-5">{r.name}</span>
-          <Venue type={r.protocol} className="mt-1 text-xs leading-4 text-ink-3" />
+          <Venue type={r.protocol} dense className="mt-1 text-xs leading-4 text-ink-3" />
         </span>
         <span className="text-right">
           <span className="flex items-center justify-end gap-1 text-[17px] font-semibold tabular-nums leading-6">

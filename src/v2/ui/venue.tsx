@@ -26,15 +26,18 @@ export const VENUE: Record<string, [string, string][]> = {
   Pendle_PT: [["PENDLE", "Pendle"]],
 }
 
-/** "(Curve) Curve · (Convex) Convex": each protocol logo before its name. Falls back to the raw type. */
-export function Venue({ type, className }: { type: string; className?: string }) {
+/**
+ * "(Curve) Curve · (Convex) Convex": each protocol logo before its name. Falls back to the raw type.
+ * `dense` (list rows): no dot separators, the logos already split the names, so three venues fit the name column.
+ */
+export function Venue({ type, className, dense }: { type: string; className?: string; dense?: boolean }) {
   const parts = VENUE[type]
   if (!parts) return type ? <span className={cn("truncate", className)}>{type}</span> : null
   return (
-    <span className={cn("flex min-w-0 items-center gap-1.5 overflow-hidden whitespace-nowrap", className)}>
+    <span className={cn("flex min-w-0 items-center overflow-hidden whitespace-nowrap", dense ? "gap-2" : "gap-1.5", className)}>
       {parts.map(([logo, label], i) => (
-        <span key={label} className="flex items-center gap-1.5">
-          {i > 0 && <span className="opacity-50">·</span>}
+        <span key={label} className={cn("flex items-center", dense ? "gap-1" : "gap-1.5")}>
+          {i > 0 && !dense && <span className="opacity-50">·</span>}
           <TokenImage token={logo} size={12} className="h-3 w-3 shrink-0 rounded-full" />
           {label}
         </span>

@@ -92,69 +92,69 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
   return (
     <div className="w-full pb-24 pt-2 font-sans xl:pb-20">
       {/* header: breadcrumb, market switcher (same dialog as the live CollateralCard), one sentence */}
-      <div className="xl:flex xl:items-end xl:justify-between xl:gap-10">
+      <div className="grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_392px]">
         <div className="min-w-0">
-          <div className="text-[13px] text-ink-3">
-            <Link href="/" className="hover:text-white">
-              Markets
-            </Link>{" "}
-            / <span className="text-ink-2">{name}</span>
-          </div>
-          <div ref={headRef} className="mt-2 flex flex-col items-start gap-1.5">
-            <MarketSwitcherV2 address={marketInfo?.marketAddress} name={name} logoKey={collateralInfo?.logoKey} />
-            {marketData && (
-              <span className="flex items-center gap-1.5 text-[13px] text-ink-2">
-                {kind} market
-                {marketData?.marketType && <span className="opacity-50">·</span>}
-                <Venue type={marketData?.marketType ?? ""} />
-              </span>
-            )}
-          </div>
-          <p className={cn("mt-2 text-[14px] text-ink-2", loading && "v2-shimmer h-5 w-72 max-w-full rounded-md text-transparent")}>
-            {maxBorrowCapReached
-              ? `Borrow cap reached: ${formatMillions(marketDisplayData?.borrowed)} of ${formatMillions(marketDisplayData?.cap)} USG borrowed. Deposits stay open, and borrowing reopens as debt is repaid.`
-              : `${formatMillions(marketDisplayData?.available)} USG left to borrow out of a ${formatMillions(marketDisplayData?.cap)} USG cap.`}
-          </p>
-        </div>
-
-        {/* market facts next to the title (they used to sit in a Borrowing block under the chart) */}
-        <div className="mt-6 grid grid-cols-2 gap-y-4 md:flex md:gap-y-0 xl:mt-0 xl:shrink-0">
-          {(
-            [
-              ["TVL", "$" + formatMillions(marketDisplayData?.tvlDollar), "Collateral deposited", undefined],
-              [
-                "Capacity",
-                maxBorrowCapReached ? "Cap reached" : Math.round(capRatio * 100) + "%",
-                formatMillions(marketDisplayData?.borrowed) + " / " + formatMillions(marketDisplayData?.cap),
-                undefined,
-              ],
-              ["Max LTV", marketDisplayData.maxLtv, "Borrow limit", TERMS.maxLtv],
-              ["Liq. threshold", marketDisplayData.lt, "Liquidation point", TERMS.lt],
-            ] as [string, string, string, string | undefined][]
-          ).map(([l, v, s, info]) => (
-            // fixed width per fact (md up) so the block does not slide left when the numbers arrive
-            <div
-              key={l}
-              className="min-w-0 pr-4 md:box-content md:w-[124px] md:shrink-0 md:border-l md:border-divider md:px-6 md:first:border-l-0 md:first:pl-0 md:last:pr-0 2xl:px-10"
-            >
-              <div className="whitespace-nowrap text-xs text-ink-3">{info ? <Term info={info}>{l}</Term> : l}</div>
-              {loading ? (
-                <div className="v2-shimmer mt-1.5 h-5 w-16 rounded-md" />
-              ) : (
-                <div
-                  className={cn("mt-1 truncate text-[16px] font-medium tabular-nums xl:text-[18px]", l === "Capacity" && maxBorrowCapReached && "text-warning")}
-                >
-                  {v}
-                </div>
-              )}
-              <div className="mt-0.5 truncate text-xs tabular-nums text-ink-3">{loading ? " " : s}</div>
+          <div className="2xl:flex 2xl:items-end 2xl:justify-between 2xl:gap-8">
+            <div className="min-w-0">
+              <div className="text-[13px] text-ink-3">
+                <Link href="/" className="hover:text-white">
+                  Markets
+                </Link>{" "}
+                / <span className="text-ink-2">{name}</span>
+              </div>
+              <div ref={headRef} className="mt-2 flex flex-col items-start gap-1.5">
+                <MarketSwitcherV2 address={marketInfo?.marketAddress} name={name} logoKey={collateralInfo?.logoKey} />
+                {marketData && (
+                  <span className="flex items-center gap-1.5 text-[13px] text-ink-2">
+                    {kind} market
+                    {marketData?.marketType && <span className="opacity-50">·</span>}
+                    <Venue type={marketData?.marketType ?? ""} />
+                  </span>
+                )}
+              </div>
+              <p className={cn("mt-2 text-[14px] text-ink-2", loading && "v2-shimmer h-5 w-72 max-w-full rounded-md text-transparent")}>
+                {maxBorrowCapReached
+                  ? `Borrow cap reached: ${formatMillions(marketDisplayData?.borrowed)} of ${formatMillions(marketDisplayData?.cap)} USG borrowed. Deposits stay open, and borrowing reopens as debt is repaid.`
+                  : `${formatMillions(marketDisplayData?.available)} USG left to borrow out of a ${formatMillions(marketDisplayData?.cap)} USG cap.`}
+              </p>
             </div>
-          ))}
-        </div>
-      </div>
 
-      <div className="mt-10 grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_392px]">
-        <div className="min-w-0">
+            {/* market facts next to the title (they used to sit in a Borrowing block under the chart) */}
+            <div className="mt-6 grid grid-cols-2 gap-y-4 md:grid-cols-4 md:gap-y-0 2xl:mt-0 2xl:w-[520px] 2xl:shrink-0">
+              {(
+                [
+                  ["TVL", "$" + formatMillions(marketDisplayData?.tvlDollar), "Collateral deposited", undefined],
+                  [
+                    "Capacity",
+                    maxBorrowCapReached ? "Cap reached" : Math.round(capRatio * 100) + "%",
+                    formatMillions(marketDisplayData?.borrowed) + " / " + formatMillions(marketDisplayData?.cap),
+                    undefined,
+                  ],
+                  ["Max LTV", marketDisplayData.maxLtv, "Borrow limit", TERMS.maxLtv],
+                  ["Liq. threshold", marketDisplayData.lt, "Liquidation point", TERMS.lt],
+                ] as [string, string, string, string | undefined][]
+              ).map(([l, v, s, info]) => (
+                // equal columns: the block keeps its place while the numbers load
+                <div key={l} className="min-w-0 pr-3 md:border-l md:border-divider md:px-4 md:first:border-l-0 md:first:pl-0 md:last:pr-0">
+                  <div className="whitespace-nowrap text-xs text-ink-3">{info ? <Term info={info}>{l}</Term> : l}</div>
+                  {loading ? (
+                    <div className="v2-shimmer mt-1.5 h-5 w-16 rounded-md" />
+                  ) : (
+                    <div
+                      className={cn(
+                        "mt-1 truncate text-[16px] font-medium tabular-nums xl:text-[18px]",
+                        l === "Capacity" && maxBorrowCapReached && "text-warning"
+                      )}
+                    >
+                      {v}
+                    </div>
+                  )}
+                  <div className="mt-0.5 truncate text-xs tabular-nums text-ink-3">{loading ? " " : s}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="h-10" />
           <div className="sticky top-16 z-30 h-0 lg:top-0">
             <AnimatePresence>
               {stuck && (

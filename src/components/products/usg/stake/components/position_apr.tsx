@@ -1,6 +1,7 @@
 import { ReactNode, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { APRDisplay } from "./apr_display"
 import { UI_V2 } from "@/v2/ui"
+import { ChartTooltipV2, V2_CURSOR, tooltipDate, v2ActiveDot } from "@/v2/ui/chart"
 
 const LINE = UI_V2 ? "#0075FF" : "#95FF00"
 import { ButtonTab } from "@/components/design_system/inputs/button_tab"
@@ -76,6 +77,20 @@ const CustomAverageDisplay = (props: { averageApy: number; apy: number; viewBox?
 
   if (!viewBox || !text) return null
 
+  if (UI_V2) {
+    // same tag as the V2 bar charts (AverageLine): small, grey, left, sitting on the line
+    const tag = "avg " + averageApy.toFixed(2) + "%"
+    const tagWidth = tag.length * 5.6 + 12
+    return (
+      <g>
+        <rect x={4} y={viewBox.y - 19} width={tagWidth} height={16} rx={4} fill="#222222" />
+        <text x={10} y={viewBox.y - 8} fill="#a3a3a3" fontSize={10} fontWeight={500} style={{ fontVariantNumeric: "tabular-nums" }}>
+          {tag}
+        </text>
+      </g>
+    )
+  }
+
   const { width, y } = viewBox
   const labelWidth = Math.ceil(measuredTextWidth) + AVERAGE_LABEL_PADDING_X * 2
 
@@ -106,6 +121,8 @@ const ApyTooltip = (props: {
   const value = Number(props.payload[0]?.value)
 
   if (!Number.isFinite(props.label) || !Number.isFinite(value)) return null
+
+  if (UI_V2) return <ChartTooltipV2 title={tooltipDate(props.label)} rows={[{ color: LINE, label: "APY", value: value.toFixed(2) + "%" }]} />
 
   return (
     <div className="pointer-events-none flex flex-col items-start justify-between gap-3 rounded-[10px] bg-dark px-3 py-2 text-[10px]">
@@ -181,7 +198,7 @@ export const PositionAPR = ({ apy, token, fetchsUSGHistoryAPY, sUSGSelectedTab, 
             <AreaChart data={data} margin={CHART_MARGIN}>
               <defs>
                 <linearGradient id="greenGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor={LINE} stopOpacity={0.4} />
+                  <stop offset="0%" stopColor={LINE} stopOpacity={UI_V2 ? 0.22 : 0.4} />
                   <stop offset="100%" stopColor={LINE} stopOpacity={0} />
                 </linearGradient>
               </defs>
@@ -219,32 +236,47 @@ export const PositionAPR = ({ apy, token, fetchsUSGHistoryAPY, sUSGSelectedTab, 
                 type="monotone"
                 dataKey="uv"
                 stroke={LINE}
-                strokeWidth={2}
+                strokeWidth={UI_V2 ? 1.5 : 2}
                 fill="url(#greenGradient)"
                 dot={false}
-                activeDot={{
-                  r: 4,
-                  stroke: LINE,
-                  strokeWidth: 2,
-                  fill: LINE,
-                  filter: UI_V2 ? "drop-shadow(0 0 8px rgba(0, 117, 255, 0.7))" : "drop-shadow(0 0 8px rgba(217, 251, 11, 0.7))",
-                }}
+                activeDot={
+                  UI_V2
+                    ? v2ActiveDot(LINE)
+                    : {
+                        r: 4,
+                        stroke: LINE,
+                        strokeWidth: 2,
+                        fill: LINE,
+                        filter: UI_V2 ? "drop-shadow(0 0 8px rgba(0, 117, 255, 0.7))" : "drop-shadow(0 0 8px rgba(217, 251, 11, 0.7))",
+                      }
+                }
               />
 
-              <Tooltip cursor={{ ...AXIS_LINE_STYLE, strokeWidth: 1.5, strokeDasharray: "4 4" }} content={<ApyTooltip fmtLabel={fmtTooltipLabel} />} />
+              <Tooltip
+                cursor={UI_V2 ? V2_CURSOR : { ...AXIS_LINE_STYLE, strokeWidth: 1.5, strokeDasharray: "4 4" }}
+                content={<ApyTooltip fmtLabel={fmtTooltipLabel} />}
+              />
 
               <ReferenceLine
                 segment={[
                   { x: startTs, y: averageApy },
                   { x: endTs, y: averageApy },
                 ]}
-                stroke="#0075FF"
-                strokeDasharray="8 6"
-                strokeWidth={2}
+                stroke={UI_V2 ? "rgba(255,255,255,0.35)" : "#0075FF"}
+                strokeDasharray={UI_V2 ? "4 4" : "8 6"}
+                strokeWidth={UI_V2 ? 1 : 2}
                 label={<CustomAverageDisplay averageApy={averageApy} apy={apy} />}
               />
 
-              <ReferenceDot x={latestPoint.date} y={latestPoint.uv} r={4} fill={LINE} stroke={LINE} isFront={true} />
+              <ReferenceDot
+                x={latestPoint.date}
+                y={latestPoint.uv}
+                r={4}
+                fill={LINE}
+                stroke={UI_V2 ? "#1a1a1a" : LINE}
+                strokeWidth={UI_V2 ? 2 : 1}
+                isFront={true}
+              />
             </AreaChart>
           </ResponsiveContainer>
         </div>

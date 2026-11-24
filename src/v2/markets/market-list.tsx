@@ -228,8 +228,8 @@ export function MarketListV2() {
         </div>
       )}
 
-      {/* your numbers, only when there is something to show */}
-      {(userDeposit > 0 || userDebt > 0 || points > 0) && (
+      {/* your numbers, only when the wallet has a position (points alone do not show the row) */}
+      {(userDeposit > 0 || userDebt > 0) && (
         <div className="mt-6 border-t border-hairline pt-5 text-[13px] md:flex md:flex-wrap md:items-center md:gap-x-8 md:gap-y-2">
           {/* phones: a titled row of three numbers; desktop: one inline line */}
           <span className="mb-3 block font-semibold md:mb-0">

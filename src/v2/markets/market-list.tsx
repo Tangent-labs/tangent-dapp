@@ -6,7 +6,7 @@ import Link from "next/link"
 import { ReactNode, useMemo, useState } from "react"
 import { formatUnits } from "viem"
 import { AnimatePresence, motion } from "framer-motion"
-import { ChevronDown, ChevronRight, LayoutGrid, List, Pause, Search, SlidersHorizontal, Wallet } from "lucide-react"
+import { ChevronDown, ChevronRight, HeartPulse, LayoutGrid, List, Pause, Search, SlidersHorizontal, TriangleAlert, Wallet } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { ListRowData } from "@/types"
 import { formatMillions } from "@/lib/number_formatter"
@@ -23,6 +23,7 @@ import { SelectMenu } from "@/v2/ui/select-menu"
 import { Sparkline } from "@/v2/ui/sparkline"
 import { StatusChip } from "@/v2/ui/status-chip"
 import { HoverInfo } from "@/v2/ui/info-sheet"
+import { HEALTH_AT_RISK, PositionHealth, usePositionHealth } from "./positions"
 import { ActionSheet } from "@/v2/ui/mobile-action-bar"
 
 /** Market kinds as the docs define them (docs.tangent.finance, markets overview). */
@@ -89,6 +90,13 @@ export function MarketListV2() {
   const userDeposit = Number(formatUnits(userData?.totalUserDeposit || 0n, 18))
   const points = (lpUserPoints?.lpTotalPoints || 0) + (voteUserPoints?.voteTotalPoints || 0)
 
+  const healthByMarket = usePositionHealth()
+  const atRisk = sorted
+    .map((r) => ({ r, pos: healthByMarket.get(r.address.toLowerCase()) }))
+    .filter((x): x is { r: ListRowData; pos: PositionHealth } => !!x.pos && x.pos.health < HEALTH_AT_RISK)
+    .sort((a, b) => a.pos.health - b.pos.health)
+  const lowest = [...healthByMarket.values()].sort((a, b) => a.health - b.health)[0]
+
   const typeOptions = marketOptions.map((o) => ({ ...o, label: o.value === "All" ? "All types" : o.label, hint: KINDS[o.value]?.title }))
   const protocolOpts = protocolOptions.map((o) => ({ ...o, label: o.value === "All" ? "All protocols" : o.label }))
 
@@ -147,6 +155,33 @@ export function MarketListV2() {
         </div>
       </div>
 
+      {/* positions one price move from liquidation: same health as each market page, actions go to that market */}
+      {atRisk.length > 0 && (
+        <div role="status" className="mt-6 flex gap-3 rounded-2xl border border-hairline bg-white/[0.04] p-4">
+          <TriangleAlert className="mt-0.5 h-5 w-5 shrink-0 text-warning" strokeWidth={2} />
+          <div className="min-w-0 flex-1">
+            <div className="text-[14px] font-semibold">
+              {atRisk.length} {atRisk.length > 1 ? "positions" : "position"} near liquidation
+            </div>
+            <div className="mt-0.5 text-[13px] text-ink-2">{atRisk.map(({ r, pos }) => `${r.name}, health ${pos.label}`).join(" · ")}</div>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <Link
+                href={`/${atRisk[0].r.address}/deposit`}
+                className="flex h-9 items-center rounded-[8px] bg-white/[0.08] px-3.5 text-[13px] font-medium transition-colors hover:bg-white/[0.12]"
+              >
+                Add collateral
+              </Link>
+              <Link
+                href={`/${atRisk[0].r.address}/repay`}
+                className="flex h-9 items-center rounded-[8px] bg-white/[0.08] px-3.5 text-[13px] font-medium transition-colors hover:bg-white/[0.12]"
+              >
+                Repay
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* your numbers, only when there is something to show */}
       {(userDeposit > 0 || userDebt > 0 || points > 0) && (
         <div className="mt-6 border-t border-hairline pt-5 text-[13px] md:flex md:flex-wrap md:items-center md:gap-x-8 md:gap-y-2">
@@ -155,9 +190,12 @@ export function MarketListV2() {
             <span className="md:hidden">Your position</span>
             <span className="hidden md:inline">You</span>
           </span>
-          <div className="grid grid-cols-3 gap-3 md:contents">
+          <div className="grid grid-cols-2 gap-x-3 gap-y-4 md:contents">
             <Inline label="Collateral" value={`$${formatMillions(userDeposit)}`} />
             <Inline label="Debt" value={`${formatMillions(userDebt)} USG`} />
+            {lowest && (
+              <Inline label="Lowest health" value={<span className={lowest.health < HEALTH_AT_RISK ? "text-warning" : undefined}>{lowest.label}</span>} />
+            )}
             <Inline
               label="Points"
               value={
@@ -493,8 +531,10 @@ function capacity(r: ListRowData) {
 
 /** Market status chips. In the table (iconOnly) they shrink to the icon so the name keeps its room; the label shows on hover. */
 function Status({ r, iconOnly }: { r: ListRowData; iconOnly?: boolean }) {
+  const pos = usePositionHealth().get(r.address.toLowerCase())
   const paused = r.isDepositPaused || r.isBorrowPaused || r.isLeveragePaused
-  if (!paused && !r.userHasDeposited) return null
+  if (!paused && !r.userHasDeposited && !pos) return null
+  const risky = !!pos && pos.health < HEALTH_AT_RISK
   const pausedLabel = r.isDepositPaused ? "Deposits paused" : r.isBorrowPaused ? "Borrowing paused" : "Leverage paused"
   const chip = (icon: ReactNode, text: string) =>
     iconOnly ? (
@@ -509,6 +549,11 @@ function Status({ r, iconOnly }: { r: ListRowData; iconOnly?: boolean }) {
   return (
     <span className="inline-flex shrink-0 items-center gap-1">
       {r.userHasDeposited && chip(<Wallet strokeWidth={2} />, "Your deposit")}
+      {pos && (
+        <StatusChip icon={risky ? <TriangleAlert className="text-warning" strokeWidth={2} /> : <HeartPulse strokeWidth={2} />}>
+          {iconOnly ? pos.label : `Health ${pos.label}`}
+        </StatusChip>
+      )}
       {paused && chip(<Pause className="fill-current text-warning" strokeWidth={0} />, pausedLabel)}
     </span>
   )

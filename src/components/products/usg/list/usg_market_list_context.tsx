@@ -36,6 +36,9 @@ type USGMaketListContextValues = {
     constants: MarketConstants
   }>
 
+  /** raw rows already loaded for the list, exposed read-only (V2 reads per-market positions to show their health) */
+  onChainData: ChainViewMarketList | undefined
+
   userData: {
     totalUserDebt: bigint
     totalUserDeposit: bigint
@@ -262,6 +265,7 @@ export const USGMarketListProvider = ({ children }: USGMaketListContextProps) =>
     searchValue,
     setSearchValue,
     marketData,
+    onChainData,
     userData,
     getSortedRows,
     marketType,

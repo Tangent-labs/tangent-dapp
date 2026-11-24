@@ -100,7 +100,7 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
             </Link>{" "}
             / <span className="text-ink-2">{name}</span>
           </div>
-          <div ref={headRef} className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1">
+          <div ref={headRef} className="mt-2 flex flex-col items-start gap-1.5">
             <MarketSwitcherV2 address={marketInfo?.marketAddress} name={name} logoKey={collateralInfo?.logoKey} />
             {marketData && (
               <span className="flex items-center gap-1.5 text-[13px] text-ink-2">

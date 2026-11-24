@@ -87,7 +87,9 @@ function Stat({ label, value, sub, first }: { label: string; value: string; sub?
 /** Status as a neutral chip: a check when on, a dash when off (same chip as the market statuses). */
 export function StatusDot({ on, onLabel = "Active", offLabel = "Inactive" }: { on: boolean; onLabel?: string; offLabel?: string }) {
   return on ? (
-    <StatusChip className="justify-self-start" icon={<Check className="text-action" strokeWidth={2.5} />}>{onLabel}</StatusChip>
+    <StatusChip className="justify-self-start" icon={<Check className="text-action" strokeWidth={2.5} />}>
+      {onLabel}
+    </StatusChip>
   ) : (
     <StatusChip muted className="justify-self-start" icon={<Minus strokeWidth={2} />}>
       {offLabel}

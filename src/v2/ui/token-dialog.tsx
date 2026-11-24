@@ -135,6 +135,9 @@ export function TokenDialogV2({
         <DialogPrimitive.Content
           aria-describedby={undefined}
           onKeyDown={onKey}
+          onOpenAutoFocus={(e) => {
+            if (mobile) e.preventDefault()
+          }}
           className="fixed z-50 overflow-hidden border border-white/10 bg-raised font-sans text-white shadow-[0_24px_60px_rgba(0,0,0,0.55)] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 max-md:inset-x-0 max-md:bottom-0 max-md:rounded-t-[20px] max-md:border-x-0 max-md:border-b-0 max-md:pb-[env(safe-area-inset-bottom)] max-md:duration-300 max-md:data-[state=closed]:slide-out-to-bottom max-md:data-[state=open]:slide-in-from-bottom md:left-1/2 md:top-[14vh] md:w-[440px] md:max-w-[calc(100vw-2rem)] md:-translate-x-1/2 md:rounded-2xl md:data-[state=closed]:zoom-out-[0.98] md:data-[state=open]:zoom-in-[0.97]"
         >
           <DialogPrimitive.Title className="sr-only">Select a token</DialogPrimitive.Title>

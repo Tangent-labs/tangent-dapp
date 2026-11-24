@@ -52,7 +52,10 @@ export const SliderInput = ({ className, handleSliderChange, legendValues, value
         `}</style>
         <div className="relative h-4 w-full">
           <div className="absolute inset-x-0 top-1/2 h-1 -translate-y-1/2 rounded-full bg-white/10" />
-          <div className="absolute left-0 top-1/2 h-1 -translate-y-1/2 rounded-full bg-action" style={{ width: `${percentage}%` }} />
+          <div
+            className="absolute left-0 top-1/2 h-1 -translate-y-1/2 rounded-full bg-action"
+            style={{ width: `calc(8px + (100% - 16px) * ${Math.min(100, Math.max(0, percentage)) / 100})` }}
+          />
           <input
             type="range"
             min={start}
@@ -65,9 +68,13 @@ export const SliderInput = ({ className, handleSliderChange, legendValues, value
             className={cn("v2-range absolute inset-0 z-10 h-4 w-full cursor-pointer appearance-none bg-transparent disabled:cursor-not-allowed", className)}
           />
         </div>
-        <div className="relative mx-2 mt-2 h-4 text-[11px] tabular-nums">
-          {legendValues.map((el) => {
+        <div className="relative mt-2 h-4 text-[11px] tabular-nums">
+          {legendValues.map((el, i) => {
             const pos = ((Number(el) - start) * 100) / (end - start)
+            const last = i === legendValues.length - 1
+            // a mark too close to the max (6x next to 6.12x) is dropped instead of overlapping it
+            const nextPos = last ? undefined : ((Number(legendValues[legendValues.length - 1]) - start) * 100) / (end - start)
+            if (!last && nextPos !== undefined && nextPos - pos < 9) return null
             return (
               <button
                 key={`label-${el}`}
@@ -75,10 +82,12 @@ export const SliderInput = ({ className, handleSliderChange, legendValues, value
                 disabled={disabled}
                 onClick={() => pick(el)}
                 className={cn(
-                  "absolute -translate-x-1/2 whitespace-nowrap transition-colors hover:text-white",
+                  "absolute whitespace-nowrap transition-colors hover:text-white",
+                  // the max sits flush with the right edge, the others centre under the thumb position
+                  !last && "-translate-x-1/2",
                   Number(el) <= value ? "text-ink-2" : "text-ink-3"
                 )}
-                style={{ left: `${pos}%` }}
+                style={last ? { right: 0 } : { left: `calc(8px + (100% - 16px) * ${pos / 100})` }}
               >
                 {unit === "x" ? `${el}x` : `${el}%`}
               </button>

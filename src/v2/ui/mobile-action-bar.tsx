@@ -125,7 +125,8 @@ export function ActionSheet({ open, onClose, title, children }: { open: boolean;
               <span className="h-1 w-10 rounded-full bg-white/20" />
               {title && <div className="mt-3 w-full text-[15px] font-semibold">{title}</div>}
             </div>
-            <div className="overflow-y-auto overscroll-contain px-4 pb-[calc(16px+env(safe-area-inset-bottom))] pt-3">{children}</div>
+            {/* no visible scrollbar: a native sheet has none, and a bar would narrow the content on long tabs (Leverage) */}
+            <div className="v2-noscrollbar overflow-y-auto overscroll-contain px-4 pb-[calc(16px+env(safe-area-inset-bottom))] pt-3">{children}</div>
           </motion.div>
         </>
       )}

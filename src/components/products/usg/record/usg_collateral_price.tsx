@@ -27,19 +27,19 @@ import { CollatGraphData } from "../usg_type"
 import { OraclePricePoint } from "./collat_price/collat_price_controller"
 
 /** V2 palettes. The canvas needs literal colours, so the values mirror the --tgt-v2-* tokens of each theme.
- *  No green in V2: candles read in ink, down candles dimmed. */
+ *  Candles in a soft mint and coral (not the stock trading green and red), one step deeper on the light theme. */
 const V2_CHART_THEMES = {
   dark: {
-    up: "rgba(237,237,239,0.92)",
-    down: "rgba(237,237,239,0.3)",
+    up: "#3dd6a3",
+    down: "#f2727f",
     oracle: "#0075ff",
     liquidation: "#f5b544",
     text: "rgba(255,255,255,0.45)",
     grid: "rgba(255,255,255,0.04)",
   },
   light: {
-    up: "rgba(11,11,11,0.85)",
-    down: "rgba(11,11,11,0.28)",
+    up: "#13a87a",
+    down: "#e0505f",
     oracle: "#0062d6",
     liquidation: "#b26b00",
     text: "rgba(0,0,0,0.5)",

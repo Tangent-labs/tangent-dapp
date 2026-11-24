@@ -537,3 +537,11 @@ html[data-ui="v2"][data-theme="light"] img[data-ring] {
     transform: scale(2.2);
   }
 }
+
+/* scrollable area without a visible bar (bottom sheets): it still scrolls by touch, wheel and keyboard */
+.v2-noscrollbar {
+  scrollbar-width: none;
+}
+.v2-noscrollbar::-webkit-scrollbar {
+  display: none;
+}

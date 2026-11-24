@@ -72,7 +72,7 @@ export const FeatureTabs = ({
           <LargeButtonTab label="Borrow" active={activeTab === "Borrow"} onClick={onClickBorrow} />
           <LargeButtonTab label="Repay" active={activeTab === "Repay"} onClick={onClickRepay} />
         </div>
-        <div role="tablist" className="mt-4 flex w-full justify-between gap-3 border-b border-hairline">
+        <div role="tablist" className="v2-chips mt-4 flex w-full justify-between gap-2 overflow-x-auto border-b border-hairline sm:gap-3">
           {tabs.map((t) => {
             const active = feature === t.key
             return (
@@ -83,7 +83,7 @@ export const FeatureTabs = ({
                 disabled={!t.enabled}
                 onClick={t.go}
                 className={cn(
-                  "relative whitespace-nowrap px-1 pb-2.5 pt-1 text-[13px] font-medium transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-40",
+                  "relative shrink-0 whitespace-nowrap px-1 pb-2.5 pt-1 text-[13px] font-medium transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-40",
                   active ? "text-white" : "text-ink-3 hover:text-ink-2"
                 )}
               >
@@ -92,7 +92,7 @@ export const FeatureTabs = ({
                 {active && (
                   <motion.span
                     layoutId={`v2-action-${marketAddress}`}
-                    className="absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-white"
+                    className="absolute inset-x-0 bottom-0 h-0.5 rounded-full bg-white"
                     transition={{ type: "spring", visualDuration: 0.35, bounce: 0.15 }}
                   />
                 )}

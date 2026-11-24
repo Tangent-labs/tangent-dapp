@@ -91,7 +91,7 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.18, ease: [0.25, 0.8, 0.25, 1] }}
-                  className="flex items-center gap-x-6 gap-y-1 overflow-x-auto border-b border-hairline bg-page py-2.5"
+                  className="v2-chips flex items-center gap-x-6 gap-y-1 overflow-x-auto border-b border-hairline bg-page py-2.5"
                 >
                   <span className="flex shrink-0 items-center gap-2.5">
                     <TokenImage token={collateralInfo?.logoKey} size={24} className="h-6 w-auto" />

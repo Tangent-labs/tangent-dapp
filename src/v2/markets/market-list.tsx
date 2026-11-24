@@ -268,7 +268,7 @@ export function MarketListV2() {
               aria-selected={filteredBy === s.value}
               onClick={() => setFilteredBy(s.value)}
               className={cn(
-                "relative h-8 flex-1 whitespace-nowrap rounded-[6px] px-3 text-[13px] font-medium transition-colors sm:flex-none",
+                "relative h-8 min-w-0 flex-1 whitespace-nowrap rounded-[6px] px-2 text-[12px] font-medium transition-colors min-[380px]:px-3 min-[380px]:text-[13px] sm:flex-none",
                 filteredBy === s.value ? "text-white" : "text-ink-3 hover:text-ink-2"
               )}
             >

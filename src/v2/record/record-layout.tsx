@@ -118,7 +118,7 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
         </div>
 
         {/* market facts next to the title (they used to sit in a Borrowing block under the chart) */}
-        <div className="mt-6 grid grid-cols-2 gap-x-6 gap-y-4 sm:grid-cols-4 xl:mt-0 xl:shrink-0">
+        <div className="mt-6 grid grid-cols-2 gap-y-4 sm:flex sm:gap-y-0 xl:mt-0 xl:shrink-0">
           {(
             [
               ["TVL", "$" + formatMillions(marketDisplayData?.tvlDollar), "Collateral deposited", undefined],
@@ -128,24 +128,20 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
                 formatMillions(marketDisplayData?.borrowed) + " / " + formatMillions(marketDisplayData?.cap),
                 undefined,
               ],
-              [
-                "Max lev. vAPR",
-                maxLev ?? "-",
-                (() => {
-                  const proj = Number(maxLevIndicator?.subValue)
-                  return Number.isFinite(proj) ? "Proj. " + proj.toFixed(2) + "%" : "No projection"
-                })(),
-                TERMS.maxLevVapr,
-              ],
-              ["Rewards cut", marketDisplayData.rewardsCutCurrent, "Proj. " + marketDisplayData.rewardsCutNext, TERMS.rewardsCut],
+              ["Max LTV", marketDisplayData.maxLtv, "Borrow limit", TERMS.maxLtv],
+              ["Liq. threshold", marketDisplayData.lt, "Liquidation point", TERMS.lt],
             ] as [string, string, string, string | undefined][]
           ).map(([l, v, s, info]) => (
-            <div key={l} className="min-w-0">
-              <div className="text-xs text-ink-3">{info ? <Term info={info}>{l}</Term> : l}</div>
+            <div key={l} className="min-w-0 pr-4 sm:border-l sm:border-divider sm:px-6 sm:first:border-l-0 sm:first:pl-0 sm:last:pr-0 2xl:px-10">
+              <div className="whitespace-nowrap text-xs text-ink-3">{info ? <Term info={info}>{l}</Term> : l}</div>
               {loading ? (
                 <div className="v2-shimmer mt-1.5 h-5 w-16 rounded-md" />
               ) : (
-                <div className={cn("mt-1 truncate text-[16px] font-medium tabular-nums", l === "Capacity" && maxBorrowCapReached && "text-warning")}>{v}</div>
+                <div
+                  className={cn("mt-1 truncate text-[16px] font-medium tabular-nums xl:text-[18px]", l === "Capacity" && maxBorrowCapReached && "text-warning")}
+                >
+                  {v}
+                </div>
               )}
               <div className="mt-0.5 truncate text-xs tabular-nums text-ink-3">{loading ? " " : s}</div>
             </div>
@@ -226,8 +222,23 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
                     value={computedBorrowRate.current}
                     sub={fixed ? "Fixed" : `Proj. ${computedBorrowRate.next}`}
                   />
-                  <Stat loading={loading} label="Max LTV" info={TERMS.maxLtv} value={marketDisplayData.maxLtv} sub="Borrow limit" />
-                  <Stat loading={loading} label="Liq. threshold" info={TERMS.lt} value={marketDisplayData.lt} sub="Liquidation point" />
+                  <Stat
+                    loading={loading}
+                    label="Max lev. vAPR"
+                    info={TERMS.maxLevVapr}
+                    value={maxLev ?? "-"}
+                    sub={(() => {
+                      const proj = Number(maxLevIndicator?.subValue)
+                      return Number.isFinite(proj) ? "Proj. " + proj.toFixed(2) + "%" : "No projection"
+                    })()}
+                  />
+                  <Stat
+                    loading={loading}
+                    label="Rewards cut"
+                    info={TERMS.rewardsCut}
+                    value={marketDisplayData.rewardsCutCurrent}
+                    sub={"Proj. " + marketDisplayData.rewardsCutNext}
+                  />
                 </div>
 
                 {/* the live chart card carries its own title and range tabs */}

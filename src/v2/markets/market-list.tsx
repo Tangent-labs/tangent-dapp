@@ -498,17 +498,25 @@ function capacity(r: ListRowData) {
   return { ratio: cap > 0 ? Math.min(1, borrowed / cap) : 0, label: `${ind(r, "borrowed")?.value} / ${ind(r, "borrowed")?.subValue}` }
 }
 
-function Status({ r }: { r: ListRowData }) {
+/** Market status chips. In the table (iconOnly) they shrink to the icon so the name keeps its room; the label shows on hover. */
+function Status({ r, iconOnly }: { r: ListRowData; iconOnly?: boolean }) {
   const paused = r.isDepositPaused || r.isBorrowPaused || r.isLeveragePaused
   if (!paused && !r.userHasDeposited) return null
-  return (
-    <span className="inline-flex shrink-0 items-center gap-1.5">
-      {r.userHasDeposited && <StatusChip icon={<Wallet strokeWidth={2} />}>Your deposit</StatusChip>}
-      {paused && (
-        <StatusChip icon={<Pause className="fill-current text-warning" strokeWidth={0} />}>
-          {r.isDepositPaused ? "Deposits paused" : r.isBorrowPaused ? "Borrowing paused" : "Leverage paused"}
+  const pausedLabel = r.isDepositPaused ? "Deposits paused" : r.isBorrowPaused ? "Borrowing paused" : "Leverage paused"
+  const chip = (icon: ReactNode, text: string) =>
+    iconOnly ? (
+      <span title={text} className="inline-flex">
+        <StatusChip icon={icon} className="w-5 justify-center px-0">
+          <span className="sr-only">{text}</span>
         </StatusChip>
-      )}
+      </span>
+    ) : (
+      <StatusChip icon={icon}>{text}</StatusChip>
+    )
+  return (
+    <span className="inline-flex shrink-0 items-center gap-1">
+      {r.userHasDeposited && chip(<Wallet strokeWidth={2} />, "Your deposit")}
+      {paused && chip(<Pause className="fill-current text-warning" strokeWidth={0} />, pausedLabel)}
     </span>
   )
 }
@@ -528,7 +536,7 @@ function Row({ r }: { r: ListRowData }) {
         <span className="min-w-0">
           <span className="flex min-w-0 items-center gap-2 leading-5">
             <span className="truncate text-[14px] font-semibold">{r.name}</span>
-            <Status r={r} />
+            <Status r={r} iconOnly />
           </span>
           <Venue type={r.protocol} className="text-xs leading-4 text-ink-3" />
         </span>

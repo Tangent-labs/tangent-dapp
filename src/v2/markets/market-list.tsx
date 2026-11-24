@@ -102,19 +102,25 @@ export function MarketListV2() {
 
   return (
     <div className="font-sans">
-      <h1 className="text-[32px] font-semibold tracking-[-0.02em]">Markets</h1>
-      <p className="mt-1 text-[14px] text-ink-2">
-        Borrow USG against productive collateral.
-        {!loading && ` Markets hold $${formatMillions(globalData.globalTvl)} of collateral against ${formatMillions(globalData.globalDebt)} USG of debt.`}{" "}
-        <Link
-          href="https://docs.tangent.finance/docs/usg/overview_usg#markets%E2%80%8B"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-white underline decoration-white/25 underline-offset-4 hover:decoration-white"
-        >
-          HEC, LEC and FIR explained
-        </Link>
-      </p>
+      <div className="xl:flex xl:items-start xl:justify-between xl:gap-10">
+        <div className="min-w-0">
+          <h1 className="text-[32px] font-semibold tracking-[-0.02em]">Markets</h1>
+          <p className="mt-1 text-[14px] text-ink-2">
+            Borrow USG against productive collateral.
+            {!loading &&
+              ` Markets hold $${formatMillions(globalData.globalTvl)} of collateral against ${formatMillions(globalData.globalDebt)} USG of debt.`}{" "}
+            <Link
+              href="https://docs.tangent.finance/docs/usg/overview_usg#markets%E2%80%8B"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white underline decoration-white/25 underline-offset-4 hover:decoration-white"
+            >
+              HEC, LEC and FIR explained
+            </Link>
+          </p>
+        </div>
+        {atRisk.length > 0 && <RiskAlert atRisk={atRisk} className="hidden w-[460px] shrink-0 xl:flex" />}
+      </div>
 
       {/* phones: one compact card (price vs peg with the month line, then the four protocol numbers on one row) */}
       <div className="mt-6 rounded-2xl border border-hairline bg-surface p-4 md:hidden">
@@ -191,42 +197,8 @@ export function MarketListV2() {
         </div>
       </div>
 
-      {/* positions one price move from liquidation: same health as each market page, actions go to that market */}
-      {atRisk.length > 0 && (
-        <div role="status" className="mt-6 flex gap-3 rounded-2xl border border-hairline bg-white/[0.04] p-4">
-          <TriangleAlert className="mt-0.5 h-5 w-5 shrink-0 text-warning" strokeWidth={2} />
-          <div className="min-w-0 flex-1">
-            <div className="text-[14px] font-semibold">
-              {atRisk.length} {atRisk.length > 1 ? "positions" : "position"} near liquidation
-            </div>
-            <div className="mt-0.5 text-[13px] text-ink-2">
-              {atRisk.map(({ r, pos }, i) => (
-                <span key={r.address}>
-                  {i > 0 && " · "}
-                  <Link href={`/${r.address}/deposit-borrow`} className="underline decoration-white/25 underline-offset-4 hover:text-white">
-                    {r.name}
-                  </Link>
-                  , health {pos.label}
-                </span>
-              ))}
-            </div>
-            <div className="mt-3 flex flex-wrap gap-2">
-              <Link
-                href={`/${atRisk[0].r.address}/deposit`}
-                className="flex h-9 items-center rounded-[8px] bg-white/[0.08] px-3.5 text-[13px] font-medium transition-colors hover:bg-white/[0.12]"
-              >
-                Add collateral{atRisk.length > 1 ? ` to ${atRisk[0].r.name}` : ""}
-              </Link>
-              <Link
-                href={`/${atRisk[0].r.address}/repay`}
-                className="flex h-9 items-center rounded-[8px] bg-white/[0.08] px-3.5 text-[13px] font-medium transition-colors hover:bg-white/[0.12]"
-              >
-                Repay{atRisk.length > 1 ? ` on ${atRisk[0].r.name}` : ""}
-              </Link>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* positions one price move from liquidation (wide screens show it next to the title) */}
+      {atRisk.length > 0 && <RiskAlert atRisk={atRisk} className="mt-6 xl:hidden" />}
 
       {/* your numbers, only when the wallet has a position (points alone do not show the row) */}
       {(userDeposit > 0 || userDebt > 0) && (
@@ -840,5 +812,44 @@ function MobileRow({ r }: { r: ListRowData }) {
         </span>
       </div>
     </Link>
+  )
+}
+
+/** Positions under the health warning line, with shortcuts to add collateral or repay on the most fragile one. */
+function RiskAlert({ atRisk, className }: { atRisk: { r: ListRowData; pos: PositionHealth }[]; className?: string }) {
+  return (
+    <div role="status" className={cn("flex gap-3 rounded-2xl border border-hairline bg-white/[0.04] p-4", className)}>
+      <TriangleAlert className="mt-0.5 h-5 w-5 shrink-0 text-warning" strokeWidth={2} />
+      <div className="min-w-0 flex-1">
+        <div className="text-[14px] font-semibold">
+          {atRisk.length} {atRisk.length > 1 ? "positions" : "position"} near liquidation
+        </div>
+        <div className="mt-0.5 text-[13px] text-ink-2">
+          {atRisk.map(({ r, pos }, i) => (
+            <span key={r.address}>
+              {i > 0 && " · "}
+              <Link href={`/${r.address}/deposit-borrow`} className="underline decoration-white/25 underline-offset-4 hover:text-white">
+                {r.name}
+              </Link>
+              , health {pos.label}
+            </span>
+          ))}
+        </div>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <Link
+            href={`/${atRisk[0].r.address}/deposit`}
+            className="flex h-9 items-center rounded-[8px] bg-white/[0.08] px-3.5 text-[13px] font-medium transition-colors hover:bg-white/[0.12]"
+          >
+            Add collateral{atRisk.length > 1 ? ` to ${atRisk[0].r.name}` : ""}
+          </Link>
+          <Link
+            href={`/${atRisk[0].r.address}/repay`}
+            className="flex h-9 items-center rounded-[8px] bg-white/[0.08] px-3.5 text-[13px] font-medium transition-colors hover:bg-white/[0.12]"
+          >
+            Repay{atRisk.length > 1 ? ` on ${atRisk[0].r.name}` : ""}
+          </Link>
+        </div>
+      </div>
+    </div>
   )
 }

@@ -101,7 +101,7 @@ export function MarketListV2() {
   const protocolOpts = protocolOptions.map((o) => ({ ...o, label: o.value === "All" ? "All protocols" : o.label }))
 
   return (
-    <div className="font-sans">
+    <div className="pt-2 font-sans">
       <div className="xl:flex xl:items-start xl:justify-between xl:gap-10">
         <div className="min-w-0">
           <h1 className="text-[32px] font-semibold tracking-[-0.02em]">Markets</h1>

@@ -18,7 +18,7 @@ export function DashboardHeaderV2() {
   const pegGap = price !== undefined ? (price - 1) * 100 : undefined
 
   return (
-    <div className="w-full">
+    <div className="w-full pt-2">
       <h1 className="text-[32px] font-semibold tracking-[-0.02em]">Analytics</h1>
       <p className="mt-1 max-w-[720px] text-[14px] text-ink-2">Overview of protocol activity and performance.</p>
       <div className="v2-kpis mt-8 flex flex-wrap items-stretch gap-y-4">

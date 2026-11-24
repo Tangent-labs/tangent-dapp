@@ -168,7 +168,7 @@ export function ShellV2({ children }: { children: ReactNode }) {
 function Brand() {
   return (
     <Link href="/" className="flex items-center" aria-label="Tangent home">
-      <Image src="/medias/v2/tangent-logo-typo.svg" alt="Tangent" width={100} height={30} unoptimized priority className="v2-logo" />
+      <Image src="/medias/v2/tangent-logo-typo.svg" alt="Tangent" width={100} height={30} unoptimized priority />
     </Link>
   )
 }

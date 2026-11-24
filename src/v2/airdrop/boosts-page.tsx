@@ -11,7 +11,7 @@ import { boostHeaders } from "@/components/products/usg/airdrop/boosts/usg_boost
 import { IconReferral } from "@/components/icons"
 import { AirdropHeaderV2, StatusDot } from "./header"
 import { useResolvedTheme } from "@/v2/theme/use-appearance"
-import { lightLogoSrc } from "@/v2/theme/logos"
+import { lightLogoSrc, markDisc } from "@/v2/theme/logos"
 
 /** V2 Boosts page. Same context (UsgBoostsContext: userBoosts, getSortedRows) as UsgBoostsContent. */
 export function BoostsPageV2() {
@@ -60,7 +60,17 @@ export function BoostsPageV2() {
                 {b.type === "Onboarded User" ? (
                   <IconReferral className="h-7 w-7 shrink-0" />
                 ) : (
-                  <Image className="h-7 w-7 shrink-0 object-contain" src={lightLogo(`/medias/logos/${b.logo}.webp`)} alt={b.logo} height={28} width={28} />
+                  <Image
+                    className="h-7 w-7 shrink-0 object-contain"
+                    src={lightLogo(`/medias/logos/${b.logo}.webp`)}
+                    onLoad={(e) => markDisc(e.currentTarget)}
+                    ref={(el) => {
+                      if (el?.complete) markDisc(el)
+                    }}
+                    alt={b.logo}
+                    height={28}
+                    width={28}
+                  />
                 )}
                 <span className="line-clamp-2 text-[14px] font-semibold leading-5 md:truncate">{b.type}</span>
               </span>

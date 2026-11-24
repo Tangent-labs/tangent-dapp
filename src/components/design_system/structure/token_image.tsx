@@ -2,7 +2,7 @@
 
 import { ImageProps } from "next/image"
 import { useEffect, useState } from "react"
-import { useThemedLogo } from "@/v2/theme/logos"
+import { markDisc, useThemedLogo } from "@/v2/theme/logos"
 
 interface TokenImageProps extends React.HTMLAttributes<HTMLImageElement> {
   token?: string
@@ -35,6 +35,10 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
       alt={alt}
       src={hasError ? fallback : themedSrc}
       onError={() => setHasError(true)} // Set error to true if the image fails to load
+      onLoad={(e) => markDisc(e.currentTarget)}
+      ref={(el) => {
+        if (el?.complete) markDisc(el)
+      }}
     />
   )
 }

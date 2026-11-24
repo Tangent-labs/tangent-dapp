@@ -492,6 +492,11 @@ html[data-ui="v2"][data-theme="light"] .v2-scroll::-webkit-scrollbar-thumb {
   background: rgb(0 0 0 / 0.18);
 }
 /* the wordmark is a white SVG file: drawn in ink on the light theme */
-html[data-ui="v2"][data-theme="light"] .v2-logo {
+html[data-ui="v2"][data-theme="light"] img[src$="/medias/v2/tangent-logo-typo.svg"] {
   filter: invert(1);
+}
+/* round logos (data-disc, set by markDisc) get a hairline ring on the light theme, like Aave Pro; other shapes stay bare */
+html[data-ui="v2"][data-theme="light"] img[data-disc="1"] {
+  border-radius: 9999px;
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 0.08);
 }

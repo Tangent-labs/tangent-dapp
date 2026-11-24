@@ -8,6 +8,7 @@ import { ButtonTab } from "@/components/design_system/inputs/button_tab"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { ValueType } from "recharts/types/component/DefaultTooltipContent"
 import { Area, AreaChart, CartesianGrid, ReferenceDot, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
+import { COLOR } from "@/v2/theme/colors"
 
 const TIME_TICK_COUNT = 7
 const CHART_Y_AXIS_WIDTH = 52
@@ -15,7 +16,7 @@ const CHART_MARGIN = { top: 20, right: -50, left: 0, bottom: 0 }
 const X_AXIS_PADDING = { left: 0, right: 35 }
 const AXIS_LINE_STYLE = { stroke: "rgba(255,255,255,0.08)" }
 const TICK_STYLE = UI_V2 ? V2_TICK : { fontSize: 12, fill: "rgba(255,255,255,0.5)" }
-const SUSG_COLOR = UI_V2 ? "#0075FF" : "var(--tgt-dash-susg)"
+const SUSG_COLOR = UI_V2 ? COLOR.data : "var(--tgt-dash-susg)"
 
 type RangeKey = "1m" | "3m" | "1y"
 type TvlHistoryPoint = {
@@ -223,7 +224,7 @@ export const PositionTVL = ({ tvl }: PositionTVLProps) => {
                 y={latestPoint.uv}
                 r={4}
                 fill={SUSG_COLOR}
-                stroke={UI_V2 ? "#1a1a1a" : SUSG_COLOR}
+                stroke={UI_V2 ? COLOR.ring : SUSG_COLOR}
                 strokeWidth={UI_V2 ? 2 : 1}
                 isFront={true}
               />

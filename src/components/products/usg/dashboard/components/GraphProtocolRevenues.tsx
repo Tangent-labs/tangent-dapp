@@ -14,6 +14,7 @@ import { useGraphPeriodSelection } from "@/hooks/useGraphPeriodSelection"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { InnerTooltip } from "@/components/design_system/structure/inner_tooltip"
 import { formatPeriodLabel, formatYAxis, computeYAxisTicks } from "../dashboard_controller"
+import { COLOR } from "@/v2/theme/colors"
 
 type GraphProtocolRevenuesProps = {
   protocolRevenues: ProtocolRevenue[]
@@ -92,7 +93,7 @@ export const GraphProtocolRevenues = ({ totalRevenues, protocolRevenues, selecte
             return (
               <ChartLegendV2
                 items={[
-                  { color: "#0075FF", label: "Interest", value: `${((ir / sum) * 100).toFixed(0)}%` },
+                  { color: COLOR.data, label: "Interest", value: `${((ir / sum) * 100).toFixed(0)}%` },
                   { color: "#a79bff", label: "Rewards", value: `${((reward / sum) * 100).toFixed(0)}%` },
                 ]}
               />

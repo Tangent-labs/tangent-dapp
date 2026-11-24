@@ -11,6 +11,7 @@ import { GraphLpLiquidity } from "./components/GraphLpLiquidity"
 import { GraphCollateralsAndDebts } from "./components/GraphCollateralsAndDebts"
 import { UI_V2 } from "@/v2/ui"
 import { DashboardHeaderV2 } from "@/v2/dashboard/header"
+import { COLOR, SERIES } from "@/v2/theme/colors"
 
 export const USGDashboardContent = () => {
   const {
@@ -54,8 +55,8 @@ export const USGDashboardContent = () => {
           selectedTab={priceSelectedTabs.USG}
           data={priceHistory.USG}
           fetchPriceHistoryData={fetchPriceHistoryData}
-          accentColor="#0075FF"
-          gradientStart="#0075FF"
+          accentColor={COLOR.data}
+          gradientStart={COLOR.data}
         />
 
         <GraphTokenPrice
@@ -64,8 +65,8 @@ export const USGDashboardContent = () => {
           selectedTab={priceSelectedTabs.sUSG}
           data={priceHistory.sUSG}
           fetchPriceHistoryData={fetchPriceHistoryData}
-          accentColor={UI_V2 ? "#a79bff" : "#A3FF12"}
-          gradientStart={UI_V2 ? "#a79bff" : "#D9FB0B"}
+          accentColor={UI_V2 ? SERIES.violet : "#A3FF12"}
+          gradientStart={UI_V2 ? SERIES.violet : "#D9FB0B"}
         />
       </div>
 

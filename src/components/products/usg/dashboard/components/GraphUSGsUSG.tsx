@@ -8,6 +8,7 @@ import { TokenImage } from "@/components/design_system/structure/token_image"
 import { CustomTooltip, TooltipCategory } from "./CustomGraphTooltip"
 import { UI_V2 } from "@/v2/ui"
 import { ChartHeadV2, ChartLegendV2, V2_CURSOR, rangeChange, v2ActiveDot } from "@/v2/ui/chart"
+import { COLOR, SERIES } from "@/v2/theme/colors"
 
 type MarketDebtProps = {
   USGCurrentSupply: number
@@ -61,7 +62,7 @@ export const GraphUSGsUSG = ({
             <ChartLegendV2
               items={[
                 {
-                  color: "#0075FF",
+                  color: COLOR.data,
                   label: "USG",
                   value: formatMillions(USGCurrentSupply),
                   share: `${((USGCurrentSupply / (sUSGCurrentSupply + USGCurrentSupply)) * 100).toFixed(1)}%`,
@@ -182,13 +183,13 @@ export const GraphUSGsUSG = ({
             <CartesianGrid horizontal={true} vertical={false} stroke="rgba(255,255,255,0.06)" />
             <defs>
               <linearGradient id="supply-susgGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor={UI_V2 ? "rgba(167, 155, 255, 0.3)" : "rgba(252, 248, 47, 0.3)"} />
-                <stop offset="100%" stopColor={UI_V2 ? "rgba(167, 155, 255, 0)" : "rgba(251, 249, 17, 0)"} />
+                <stop offset="0%" stopColor={UI_V2 ? SERIES.violet : "rgba(252, 248, 47, 0.3)"} stopOpacity={UI_V2 ? 0.3 : 1} />
+                <stop offset="100%" stopColor={UI_V2 ? SERIES.violet : "rgba(251, 249, 17, 0)"} stopOpacity={UI_V2 ? 0 : 1} />
               </linearGradient>
 
               <linearGradient id="supply-usgGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="rgba(0, 117, 255, 0.3)" />
-                <stop offset="100%" stopColor="rgba(0, 117, 255, 0)" />
+                <stop offset="0%" stopColor={COLOR.data} stopOpacity={0.3} />
+                <stop offset="100%" stopColor={COLOR.data} stopOpacity={0} />
               </linearGradient>
             </defs>
 
@@ -196,10 +197,10 @@ export const GraphUSGsUSG = ({
               strokeWidth={1.5}
               type="monotone"
               dataKey="susg"
-              stroke={UI_V2 ? "rgba(167, 155, 255, 0.9)" : "rgba(251, 249, 17, 0.8)"}
+              stroke={UI_V2 ? SERIES.violet : "rgba(251, 249, 17, 0.8)"}
               fill="url(#supply-susgGradient)"
               name="sUSG Total Supply"
-              activeDot={UI_V2 ? v2ActiveDot("#a79bff") : undefined}
+              activeDot={UI_V2 ? v2ActiveDot(SERIES.violet) : undefined}
               connectNulls
             />
 
@@ -207,10 +208,10 @@ export const GraphUSGsUSG = ({
               strokeWidth={1.5}
               type="monotone"
               dataKey="usg"
-              stroke="rgba(0, 117, 255, 0.8)"
+              stroke={COLOR.data}
               fill="url(#supply-usgGradient)"
               name="USG Total Supply"
-              activeDot={UI_V2 ? v2ActiveDot("#0075FF") : undefined}
+              activeDot={UI_V2 ? v2ActiveDot(COLOR.data) : undefined}
               connectNulls
             />
 

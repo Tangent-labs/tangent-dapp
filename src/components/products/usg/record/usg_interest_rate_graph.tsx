@@ -8,10 +8,12 @@ import { ResponsiveContainer, AreaChart, XAxis, YAxis, CartesianGrid, Area, Tool
 import { isVolatileCollateral } from "@/lib/risk_color"
 import { UI_V2 } from "@/v2/ui"
 import { ChartTooltipV2, V2_CURSOR, V2_GRID, V2_TICK, v2ActiveDot } from "@/v2/ui/chart"
+import { COLOR } from "@/v2/theme/colors"
 
 const TICK = UI_V2 ? V2_TICK.fill : "rgba(255,255,255,0.6)"
-const IR_COLOR = UI_V2 ? "#EDEDEF" : "#95FF00"
-const IR_FILL = UI_V2 ? "237,237,239" : "149,255,0"
+const IR_COLOR = UI_V2 ? COLOR.fg : "#95FF00"
+// V1 fill as an rgb triplet (the V2 fill uses IR_COLOR with stopOpacity)
+const IR_FILL = "149,255,0"
 const GRID = UI_V2 ? V2_GRID : "#FFFFFF1A"
 
 const CustomTooltip = ({
@@ -115,14 +117,14 @@ export function InterestRateGraph() {
       >
         <defs>
           <linearGradient id="gradiant-blue" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="rgba(0,117,255,0.3)" stopOpacity={1} />
-            <stop offset="50%" stopColor="rgba(0,117,255,0.05)" stopOpacity={1} />
-            <stop offset="100%" stopColor="rgba(0,117,255,0)" stopOpacity={0} />
+            <stop offset="0%" stopColor={COLOR.data} stopOpacity={0.3} />
+            <stop offset="50%" stopColor={COLOR.data} stopOpacity={0.05} />
+            <stop offset="100%" stopColor={COLOR.data} stopOpacity={0} />
           </linearGradient>
           <linearGradient id="gradiant-yellow" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={`rgba(${IR_FILL},${UI_V2 ? 0.14 : 0.3})`} stopOpacity={1} />
-            <stop offset="50%" stopColor={`rgba(${IR_FILL},0.03)`} stopOpacity={1} />
-            <stop offset="100%" stopColor={`rgba(${IR_FILL},0)`} stopOpacity={0} />
+            <stop offset="0%" stopColor={UI_V2 ? IR_COLOR : `rgba(${IR_FILL},0.3)`} stopOpacity={UI_V2 ? 0.14 : 1} />
+            <stop offset="50%" stopColor={UI_V2 ? IR_COLOR : `rgba(${IR_FILL},0.03)`} stopOpacity={UI_V2 ? 0.03 : 1} />
+            <stop offset="100%" stopColor={UI_V2 ? IR_COLOR : `rgba(${IR_FILL},0)`} stopOpacity={0} />
           </linearGradient>
         </defs>
 
@@ -172,7 +174,7 @@ export function InterestRateGraph() {
         <ReferenceLine
           yAxisId="right"
           x={USGInfo?.price}
-          stroke="rgba(255,255,255,0.6)"
+          stroke={UI_V2 ? COLOR.line : "rgba(255,255,255,0.6)"}
           strokeDasharray="3 3"
           label={{
             value: `$${(USGInfo?.price ?? 1).toFixed(4)}`,
@@ -186,11 +188,11 @@ export function InterestRateGraph() {
           yAxisId="left"
           type="stepAfter"
           dataKey="rewardsCut"
-          stroke="#0075FF"
+          stroke={COLOR.data}
           strokeWidth={1.5}
           fill="url(#gradiant-blue)"
           fillOpacity={1}
-          activeDot={UI_V2 ? v2ActiveDot("#0075FF") : undefined}
+          activeDot={UI_V2 ? v2ActiveDot(COLOR.data) : undefined}
         />
 
         <Area

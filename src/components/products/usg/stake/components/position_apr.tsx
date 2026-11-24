@@ -2,8 +2,9 @@ import { ReactNode, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { APRDisplay } from "./apr_display"
 import { UI_V2 } from "@/v2/ui"
 import { ChartTooltipV2, V2_CURSOR, V2_GRID, V2_TICK, v2ActiveDot } from "@/v2/ui/chart"
+import { COLOR } from "@/v2/theme/colors"
 
-const LINE = UI_V2 ? "#0075FF" : "#95FF00"
+const LINE = UI_V2 ? COLOR.data : "#95FF00"
 import { ButtonTab } from "@/components/design_system/inputs/button_tab"
 import { ValueType } from "recharts/types/component/DefaultTooltipContent"
 import { Area, AreaChart, CartesianGrid, ReferenceDot, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
@@ -84,8 +85,8 @@ const CustomAverageDisplay = (props: { averageApy: number; apy: number; viewBox?
     const right = (viewBox.x ?? 0) + viewBox.width
     return (
       <g>
-        <rect x={right - tagWidth} y={viewBox.y + 5} width={tagWidth} height={20} rx={5} fill="#222222" />
-        <text x={right - 7} y={viewBox.y + 19} textAnchor="end" fill="#d4d4d4" fontSize={12} fontWeight={500} style={{ fontVariantNumeric: "tabular-nums" }}>
+        <rect x={right - tagWidth} y={viewBox.y + 5} width={tagWidth} height={20} rx={5} fill={COLOR.raised} />
+        <text x={right - 7} y={viewBox.y + 19} textAnchor="end" fill={COLOR.ink2} fontSize={12} fontWeight={500} style={{ fontVariantNumeric: "tabular-nums" }}>
           {tag}
         </text>
       </g>
@@ -263,7 +264,7 @@ export const PositionAPR = ({ apy, token, fetchsUSGHistoryAPY, sUSGSelectedTab, 
                   { x: startTs, y: averageApy },
                   { x: endTs, y: averageApy },
                 ]}
-                stroke={UI_V2 ? "rgba(255,255,255,0.35)" : "#0075FF"}
+                stroke={UI_V2 ? COLOR.line : "#0075FF"}
                 strokeDasharray={UI_V2 ? "4 4" : "8 6"}
                 strokeWidth={UI_V2 ? 1 : 2}
                 label={<CustomAverageDisplay averageApy={averageApy} apy={apy} />}
@@ -274,7 +275,7 @@ export const PositionAPR = ({ apy, token, fetchsUSGHistoryAPY, sUSGSelectedTab, 
                 y={latestPoint.uv}
                 r={4}
                 fill={LINE}
-                stroke={UI_V2 ? "#1a1a1a" : LINE}
+                stroke={UI_V2 ? COLOR.ring : LINE}
                 strokeWidth={UI_V2 ? 2 : 1}
                 isFront={true}
               />

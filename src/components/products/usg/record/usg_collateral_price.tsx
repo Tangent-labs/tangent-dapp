@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { formatDollar, formatNumber } from "@/lib/number_formatter"
 import { UI_V2 } from "@/v2/ui"
+import { useResolvedTheme } from "@/v2/theme/use-appearance"
 
 import {
   AutoscaleInfo,
@@ -25,14 +26,25 @@ import {
 import { CollatGraphData } from "../usg_type"
 import { OraclePricePoint } from "./collat_price/collat_price_controller"
 
-/** V2 palette. SVG/canvas need literal colors, not CSS variables. No green in V2: candles read in ink, down candles dimmed. */
-const V2_CHART = {
-  up: "rgba(237,237,239,0.92)",
-  down: "rgba(237,237,239,0.3)",
-  oracle: "#0075FF",
-  liquidation: "#f5b544",
-  text: "rgba(255,255,255,0.45)",
-  grid: "rgba(255,255,255,0.04)",
+/** V2 palettes. The canvas needs literal colours, so the values mirror the --tgt-v2-* tokens of each theme.
+ *  No green in V2: candles read in ink, down candles dimmed. */
+const V2_CHART_THEMES = {
+  dark: {
+    up: "rgba(237,237,239,0.92)",
+    down: "rgba(237,237,239,0.3)",
+    oracle: "#0075ff",
+    liquidation: "#f5b544",
+    text: "rgba(255,255,255,0.45)",
+    grid: "rgba(255,255,255,0.04)",
+  },
+  light: {
+    up: "rgba(11,11,11,0.85)",
+    down: "rgba(11,11,11,0.28)",
+    oracle: "#0062d6",
+    liquidation: "#b26b00",
+    text: "rgba(0,0,0,0.5)",
+    grid: "rgba(0,0,0,0.06)",
+  },
 }
 
 // The oracle series comes with its own timestamps, which can stretch the shared time scale
@@ -122,6 +134,8 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
   const visibleBarsCount = 50
   const containerRef = useRef<HTMLDivElement>(null)
   const chartShellRef = useRef<HTMLDivElement>(null)
+  const theme = useResolvedTheme()
+  const V2_CHART = V2_CHART_THEMES[theme]
   const chartRef = useRef<IChartApi | null>(null)
   const seriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null)
   const oracleSeriesRef = useRef<ISeriesApi<"Line"> | null>(null)
@@ -229,7 +243,21 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
       oracleSeriesRef.current = null
       priceLineRef.current = null
     }
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps -- built once; the theme colours are re-applied below
+
+  useEffect(() => {
+    if (!UI_V2) return
+    chartRef.current?.applyOptions({ layout: { textColor: V2_CHART.text }, grid: { horzLines: { color: V2_CHART.grid } } })
+    seriesRef.current?.applyOptions({
+      upColor: V2_CHART.up,
+      downColor: V2_CHART.down,
+      borderUpColor: V2_CHART.up,
+      borderDownColor: V2_CHART.down,
+      wickUpColor: V2_CHART.up,
+      wickDownColor: V2_CHART.down,
+    })
+    oracleSeriesRef.current?.applyOptions({ color: V2_CHART.oracle })
+  }, [V2_CHART])
 
   useEffect(() => {
     if (!seriesRef.current || !chartRef.current || !graphData?.data?.length) return
@@ -310,7 +338,7 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
     } else {
       priceLineRef.current.applyOptions(options)
     }
-  }, [liquidationPriceNumber])
+  }, [liquidationPriceNumber, V2_CHART])
 
   useEffect(() => {
     const series = seriesRef.current
@@ -374,7 +402,7 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
 
       {oracleLabelTop !== null && !isPending && (
         <div
-          className={cn("absolute right-2 z-10 px-1 py-0.5 text-xs text-white", UI_V2 ? "rounded bg-action-fill tabular-nums" : "rounded-[2px] bg-[#3b82f6]")}
+          className={cn("absolute right-2 z-10 px-1 py-0.5 text-xs text-on-fill", UI_V2 ? "rounded bg-action-fill tabular-nums" : "rounded-[2px] bg-[#3b82f6]")}
           style={{ top: `${oracleLabelTop}px` }}
         >
           Oracle ${(lastVisibleOracleValue || 0).toFixed(5)}

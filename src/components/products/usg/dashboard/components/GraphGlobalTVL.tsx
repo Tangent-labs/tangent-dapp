@@ -12,6 +12,7 @@ import { returnTVLType } from "../utils"
 import { CustomTooltip, TooltipCategory } from "./CustomGraphTooltip"
 import { UI_V2 } from "@/v2/ui"
 import { ChartHeadV2, ChartLegendV2, V2_CURSOR, rangeChange, v2ActiveDot } from "@/v2/ui/chart"
+import { COLOR, SERIES } from "@/v2/theme/colors"
 
 type MarketDebtProps = {
   protocolCurrentTVL: TVLData
@@ -27,9 +28,9 @@ const TVL_CATEGORY_METADATA: Record<string, { label: string; className: string }
 }
 
 const SERIES_CONFIG = [
-  { key: "markets" as keyof TVLData, stroke: "#0075ff", gradient: "tvl-marketsGradient", name: "Markets" },
-  { key: "pegkeepers" as keyof TVLData, stroke: UI_V2 ? "#d9c49a" : "#24DD9A", gradient: "tvl-pegKeepersGradient", name: "Peg Keepers" },
-  { key: "susg" as keyof TVLData, stroke: UI_V2 ? "#a79bff" : "#4EB3DF", gradient: "tvl-susgGradient", name: "SUSG" },
+  { key: "markets" as keyof TVLData, stroke: COLOR.data, gradient: "tvl-marketsGradient", name: "Markets" },
+  { key: "pegkeepers" as keyof TVLData, stroke: UI_V2 ? SERIES.gold : "#24DD9A", gradient: "tvl-pegKeepersGradient", name: "Peg Keepers" },
+  { key: "susg" as keyof TVLData, stroke: UI_V2 ? SERIES.violet : "#4EB3DF", gradient: "tvl-susgGradient", name: "SUSG" },
 ]
 
 export const GraphGlobalTVL = ({ fetchTVLData, tvlSelectedTab, protocolCurrentTVL, tvl }: MarketDebtProps) => {
@@ -175,8 +176,8 @@ export const GraphGlobalTVL = ({ fetchTVLData, tvlSelectedTab, protocolCurrentTV
 
             <defs>
               <linearGradient id="tvl-marketsGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#0075ff" stopOpacity={0.6} />
-                <stop offset="95%" stopColor="#0075ff" stopOpacity={0} />
+                <stop offset="5%" stopColor={COLOR.data} stopOpacity={0.6} />
+                <stop offset="95%" stopColor={COLOR.data} stopOpacity={0} />
               </linearGradient>
 
               <linearGradient id="tvl-pegKeepersGradient" x1="0" y1="0" x2="0" y2="1">

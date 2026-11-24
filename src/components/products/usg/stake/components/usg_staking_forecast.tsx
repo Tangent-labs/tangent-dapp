@@ -10,6 +10,7 @@ import { ValueType } from "recharts/types/component/DefaultTooltipContent"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip } from "recharts"
 import { UI_V2 } from "@/v2/ui"
 import { ChartTooltipV2, V2_CURSOR, V2_GRID, V2_TICK, v2ActiveDot } from "@/v2/ui/chart"
+import { COLOR } from "@/v2/theme/colors"
 
 const MS_PER_YEAR = 365.25 * 24 * 60 * 60 * 1000
 
@@ -33,7 +34,7 @@ const EndDot = (lastIndex: number, fill: string) =>
     if (index !== lastIndex || cx == null || cy == null) return null
     return (
       <g pointerEvents="none" key={`EndDot${lastIndex}`}>
-        <circle cx={cx} cy={cy} r={UI_V2 ? 4 : 4.5} fill={fill} stroke={UI_V2 ? "#1a1a1a" : undefined} strokeWidth={UI_V2 ? 2 : 0} />
+        <circle cx={cx} cy={cy} r={UI_V2 ? 4 : 4.5} fill={fill} stroke={UI_V2 ? COLOR.ring : undefined} strokeWidth={UI_V2 ? 2 : 0} />
       </g>
     )
   }
@@ -163,7 +164,7 @@ const CustomTooltip = (props: {
   if (UI_V2) {
     const rows = []
     if (total && base && props.newLiquidity > 0 && Number(total.value) > Number(base.value))
-      rows.push({ color: "#0075FF", label: "With this change", value: formatDollar(Number(total.value)) })
+      rows.push({ color: COLOR.data, label: "With this change", value: formatDollar(Number(total.value)) })
     if (base) rows.push({ color: "#FFFFFF", label: "Current position", value: formatDollar(Number(base.value)) })
     return <ChartTooltipV2 title={props.fmtLabel(Number(props.label))} rows={rows} />
   }
@@ -273,8 +274,8 @@ export const ForecastGraph = ({ currentInvestment, newLiquidity, apy, currentFea
               >
                 <defs>
                   <linearGradient id="gradientColor" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor={UI_V2 ? "#2f8dff" : "#FBF911"} />
-                    <stop offset="100%" stopColor={UI_V2 ? "#0075FF" : "#99FF00"} />
+                    <stop offset="0%" stopColor={UI_V2 ? COLOR.data : "#FBF911"} />
+                    <stop offset="100%" stopColor={UI_V2 ? COLOR.data : "#99FF00"} />
                   </linearGradient>
                 </defs>
 
@@ -319,7 +320,7 @@ export const ForecastGraph = ({ currentInvestment, newLiquidity, apy, currentFea
                   strokeWidth={UI_V2 ? 1.5 : 2}
                   type="monotone"
                   dataKey="baseAmount"
-                  activeDot={UI_V2 ? v2ActiveDot("#FFFFFF") : undefined}
+                  activeDot={UI_V2 ? v2ActiveDot(COLOR.fg) : undefined}
                   stroke="#FFFFFF"
                   name="Current Position Growth"
                   dot={EndDot(forecastData.length - 1, "#FFFFFF") as LineDot}
@@ -331,7 +332,7 @@ export const ForecastGraph = ({ currentInvestment, newLiquidity, apy, currentFea
                     strokeWidth={UI_V2 ? 1.5 : 2}
                     type="monotone"
                     dataKey="amountWithLiquidity"
-                    activeDot={UI_V2 ? v2ActiveDot("#0075FF") : undefined}
+                    activeDot={UI_V2 ? v2ActiveDot(COLOR.data) : undefined}
                     stroke="url(#gradientColor)"
                     name={`Total After ${liquidityChangeSign}${formatDollar(newLiquidity, 0)}`}
                     dot={EndDot(forecastData.length - 1, "url(#gradientColor)") as LineDot}

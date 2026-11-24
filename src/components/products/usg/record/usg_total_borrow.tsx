@@ -4,6 +4,7 @@ import { formatDollar, formatMillions } from "@/lib/number_formatter"
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts"
 import { UI_V2 } from "@/v2/ui"
 import { ChartTooltipV2, V2_CURSOR, V2_GRID, V2_TICK, v2ActiveDot } from "@/v2/ui/chart"
+import { COLOR } from "@/v2/theme/colors"
 
 const TICK = UI_V2 ? V2_TICK.fill : "rgba(255,255,255,0.6)"
 
@@ -87,8 +88,8 @@ export default function UsgTotalBorrow({ totalBorrow }: UsgTotalBorrowProps) {
       >
         <defs>
           <linearGradient id="borrowGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={UI_V2 ? "#0075FF" : "#3b82f6"} stopOpacity={UI_V2 ? 0.28 : 0.4} />
-            <stop offset="100%" stopColor={UI_V2 ? "#0075FF" : "#3b82f6"} stopOpacity={0} />
+            <stop offset="0%" stopColor={UI_V2 ? COLOR.data : "#3b82f6"} stopOpacity={UI_V2 ? 0.28 : 0.4} />
+            <stop offset="100%" stopColor={UI_V2 ? COLOR.data : "#3b82f6"} stopOpacity={0} />
           </linearGradient>
         </defs>
         <CartesianGrid horizontal={true} vertical={false} stroke={UI_V2 ? V2_GRID : "#FFFFFF1A"} />
@@ -122,7 +123,7 @@ export default function UsgTotalBorrow({ totalBorrow }: UsgTotalBorrowProps) {
               return (
                 <ChartTooltipV2
                   title={new Date(label).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
-                  rows={[{ color: "#0075FF", label: "Total borrow", value: formatDollar(Number(payload[0]?.value || 0).toFixed(0), 0) }]}
+                  rows={[{ color: COLOR.data, label: "Total borrow", value: formatDollar(Number(payload[0]?.value || 0).toFixed(0), 0) }]}
                 />
               )
             if (active && payload && payload.length) {
@@ -149,11 +150,11 @@ export default function UsgTotalBorrow({ totalBorrow }: UsgTotalBorrowProps) {
         <Area
           type="monotone"
           dataKey="value"
-          stroke={UI_V2 ? "#0075FF" : "#1568ed"}
+          stroke={UI_V2 ? COLOR.data : "#1568ed"}
           strokeWidth={1.5}
           fill="url(#borrowGradient)"
           dot={false}
-          activeDot={UI_V2 ? v2ActiveDot("#0075FF") : undefined}
+          activeDot={UI_V2 ? v2ActiveDot(COLOR.data) : undefined}
         />
       </AreaChart>
     </ResponsiveContainer>

@@ -10,6 +10,7 @@ import { ButtonTab } from "@/components/design_system/inputs/button_tab"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { formatXAxis, getDataRangeMs, getXAxisTicks } from "../dashboard_controller"
 import { Area, AreaChart, CartesianGrid, Customized, ReferenceDot, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
+import { COLOR } from "@/v2/theme/colors"
 
 type AxisWithScale = { scale: (v: number) => number }
 type CustomizedChartProps = { xAxisMap: Record<string, AxisWithScale>; yAxisMap: Record<string, AxisWithScale> }
@@ -188,7 +189,7 @@ export const GraphTokenPrice = ({ token, title, selectedTab, data, fetchPriceHis
                 y={1}
                 stroke="rgba(255,255,255,0.35)"
                 strokeDasharray="3 3"
-                label={{ value: "Peg $1.00", position: "insideTopLeft", fill: "#8f8f8f", fontSize: 11 }}
+                label={{ value: "Peg $1.00", position: "insideTopLeft", fill: COLOR.ink3, fontSize: 11 }}
               />
             )}
             {latestPoint && (
@@ -197,7 +198,7 @@ export const GraphTokenPrice = ({ token, title, selectedTab, data, fetchPriceHis
                 y={latestPoint.uv}
                 r={4}
                 fill={accentColor}
-                stroke={UI_V2 ? "#1a1a1a" : accentColor}
+                stroke={UI_V2 ? COLOR.ring : accentColor}
                 strokeWidth={UI_V2 ? 2 : 1}
                 isFront={true}
               />

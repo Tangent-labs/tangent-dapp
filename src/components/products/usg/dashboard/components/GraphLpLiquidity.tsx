@@ -11,6 +11,7 @@ import { formatXAxis, formatYAxis, getDataRangeMs, getXAxisTicks } from "../dash
 import { CustomTooltip, TooltipCategory } from "./CustomGraphTooltip"
 import { UI_V2 } from "@/v2/ui"
 import { ChartHeadV2, ChartLegendV2, V2_CURSOR, v2ActiveDot } from "@/v2/ui/chart"
+import { COLOR } from "@/v2/theme/colors"
 
 type GraphLpLiquidityProps = {
   liquidity: LpLiquidityHistory
@@ -22,7 +23,7 @@ const RANGES: LiquidityRange[] = ["1w", "1m", "1y", "all"]
 
 // Class names are spelled out so Tailwind picks them up
 const LIVE_PALETTE = [
-  { stroke: "#0075FF", className: "text-[#0075FF]" },
+  { stroke: COLOR.data, className: "text-data-primary" },
   { stroke: "#24DD9A", className: "text-[#24DD9A]" },
   { stroke: "#4EB3DF", className: "text-[#4EB3DF]" },
   { stroke: "#A3FF12", className: "text-[#A3FF12]" },
@@ -31,7 +32,7 @@ const LIVE_PALETTE = [
 ]
 // V2: blue first, then quiet tints (no green, no yellow)
 const V2_PALETTE = [
-  { stroke: "#0075FF", className: "text-[#0075FF]" },
+  { stroke: COLOR.data, className: "text-data-primary" },
   { stroke: "#a79bff", className: "text-[#a79bff]" },
   { stroke: "#e78fb3", className: "text-[#e78fb3]" },
   { stroke: "#d9c49a", className: "text-[#d9c49a]" },

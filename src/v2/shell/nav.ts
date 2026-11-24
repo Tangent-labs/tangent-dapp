@@ -3,7 +3,6 @@ import {
   ArrowLeftRight,
   BarChart3,
   BookOpen,
-  Coins,
   Gift,
   HandCoins,
   ListChecks,
@@ -30,11 +29,12 @@ export type NavGroup = { group: string | null; items: NavItem[] }
 
 /**
  * Same destinations as the live MenuBarFeature, grouped by intent like the Aave Pro sidebar:
- * the products first, then your rewards, then the protocol itself, then the airdrop. Swap keeps the live default pair.
+ * the protocol (products and analytics) first, then your rewards, the airdrop, and the outside resources last. Swap keeps the live default pair.
+ * TAN is hidden for now (its pages still exist).
  */
 export const NAV: NavGroup[] = [
   {
-    group: "Explore",
+    group: "Protocol",
     items: [
       { href: "/", label: "Markets", icon: BarChart3, isActive: isOnMarket },
       { href: "/stake", label: "Savings", icon: PiggyBank, isActive: (p) => p.startsWith("/stake") },
@@ -45,6 +45,7 @@ export const NAV: NavGroup[] = [
         icon: ArrowLeftRight,
         isActive: (p) => p === "/swap",
       },
+      { href: "/dashboard", label: "Analytics", icon: Activity },
     ],
   },
   {
@@ -55,21 +56,19 @@ export const NAV: NavGroup[] = [
     ],
   },
   {
-    group: "Protocol",
-    items: [
-      { href: "/dashboard", label: "Insights", icon: Activity },
-      { href: "/tan/lock", label: "TAN", icon: Coins, isActive: (p) => p.startsWith("/tan") },
-      { href: "https://snapshot.box/#/s:tangent-finance.eth", label: "Governance", icon: Vote, external: true },
-      { href: "https://docs.tangent.finance/docs/overview", label: "Docs", icon: BookOpen, external: true },
-    ],
-  },
-  {
     group: "Airdrop",
     items: [
       { href: "/claim-airdrop", label: "Checker", icon: Gift },
       { href: "/tasks", label: "Tasks", icon: ListChecks },
       { href: "/referral", label: "Referral", icon: Users },
       { href: "/boosts", label: "Boosts", icon: Rocket },
+    ],
+  },
+  {
+    group: "Resources",
+    items: [
+      { href: "https://snapshot.box/#/s:tangent-finance.eth", label: "Governance", icon: Vote, external: true },
+      { href: "https://docs.tangent.finance/docs/overview", label: "Docs", icon: BookOpen, external: true },
     ],
   },
 ]

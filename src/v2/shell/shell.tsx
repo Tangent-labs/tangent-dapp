@@ -293,8 +293,8 @@ function Socials() {
 }
 
 /** The four destinations people use most, one thumb away. Everything else lives in the More sheet. */
-const TABS: NavItem[] = NAV[0].items
-const MORE = NAV.slice(1)
+const TABS: NavItem[] = NAV[0].items.slice(0, 4)
+const MORE = [{ group: NAV[0].group, items: NAV[0].items.slice(4) }, ...NAV.slice(1)]
 
 function MobileTabBar({ path, onMore, moreOpen }: { path: string; onMore: () => void; moreOpen: boolean }) {
   const inMore = MORE.some((g) => g.items.some((it) => isItemActive(it, path)))

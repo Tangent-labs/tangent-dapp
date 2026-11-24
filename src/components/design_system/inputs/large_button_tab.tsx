@@ -18,7 +18,7 @@ export function LargeButtonTab({ label, active, className, ...props }: ButtonTab
         className={clsx(
           className,
           "h-[34px] w-full rounded-[6px] text-[13px] font-semibold transition-colors duration-150",
-          active ? "bg-white/[0.09] text-white" : "text-ink-2 hover:text-white"
+          active ? "bg-white/[0.14] text-white md:bg-white/[0.09]" : "text-ink-2 hover:text-white"
         )}
         {...props}
       >

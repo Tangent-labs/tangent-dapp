@@ -387,7 +387,7 @@ function MoreSheet({ open, onClose, path }: { open: boolean; onClose: () => void
                           aria-current={active ? "page" : undefined}
                           className={cn(
                             "flex h-12 items-center gap-2.5 rounded-[10px] px-3 text-[14px] transition-colors",
-                            active ? "bg-white/[0.09] font-medium text-white" : "bg-white/[0.03] text-ink-2 active:bg-white/[0.07]"
+                            active ? "bg-white/[0.14] font-medium text-white" : "bg-white/[0.03] text-ink-2 active:bg-white/[0.07]"
                           )}
                         >
                           <Icon className="h-[18px] w-[18px] shrink-0 text-white opacity-80" strokeWidth={1.75} />

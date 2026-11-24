@@ -236,7 +236,7 @@ export function MarketListV2() {
                 filteredBy === s.value ? "text-white" : "text-ink-3 hover:text-ink-2"
               )}
             >
-              {filteredBy === s.value && <span className="absolute inset-0 rounded-[6px] bg-white/[0.09]" />}
+              {filteredBy === s.value && <span className="absolute inset-0 rounded-[6px] bg-white/[0.14] md:bg-white/[0.09]" />}
               <span className="relative">{s.label}</span>
             </button>
           ))}

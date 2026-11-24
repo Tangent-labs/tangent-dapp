@@ -400,3 +400,10 @@ html:has(.v2-shell)::-webkit-scrollbar-thumb,
 html:has(.v2-shell) {
   scrollbar-gutter: stable;
 }
+/* V2 phones: OLED screens and low brightness swallow 5-6% white hairlines, so borders and dividers step up on small screens */
+@media (max-width: 767px) {
+  html[data-ui="v2"] {
+    --tgt-v2-border-hairline: rgb(255 255 255 / 0.1);
+    --tgt-v2-border-divider: rgb(255 255 255 / 0.1);
+  }
+}

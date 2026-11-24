@@ -152,7 +152,7 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
                 className={cn("relative pb-3 text-[14px] font-medium capitalize transition-colors", tab === t ? "text-white" : "text-ink-3 hover:text-ink-2")}
               >
                 {t}
-                {tab === t && <span className="absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-white" />}
+                {tab === t && <span className="absolute inset-x-0 -bottom-px h-[3px] rounded-full bg-white md:h-0.5" />}
               </button>
             ))}
           </div>

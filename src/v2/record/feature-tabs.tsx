@@ -143,10 +143,10 @@ export function FeatureTabsV2({
           <span
             aria-hidden
             className={cn(
-              "pointer-events-none absolute bottom-0 left-0 h-0.5 rounded-full bg-white",
+              "pointer-events-none absolute bottom-0 left-0 h-[3px] rounded-full bg-white md:h-0.5",
               bar.animate && "transition-[transform,width] duration-200 ease-out"
             )}
-            style={{ width: bar.w, transform: `translateX(${bar.x}px)` }}
+            style={{ width: Math.round(bar.w), transform: `translate3d(${Math.round(bar.x)}px, 0, 0)` }}
           />
         )}
       </div>

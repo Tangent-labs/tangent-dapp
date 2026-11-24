@@ -304,11 +304,12 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
         }
       },
     })
-    // hand the scale back to autoscale and make the chart recompute it now (toggling forces the refresh, also after a
-    // manual drag of the scale)
+    // a new autoscale provider is only read on the next scale change: switch autoscale off, then back on in the next
+    // frame (two calls in the same frame are merged and change nothing). Also resets a manual drag of the scale.
     const scale = chartRef.current?.priceScale("right")
     scale?.applyOptions({ autoScale: false })
-    scale?.applyOptions({ autoScale: true })
+    const frame = requestAnimationFrame(() => scale?.applyOptions({ autoScale: true }))
+    return () => cancelAnimationFrame(frame)
   }, [clampedVisiblePriceRange, fitRequest, liquidationPriceNumber])
 
   useEffect(() => {
@@ -406,7 +407,8 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
     container.addEventListener("wheel", onPointer, { passive: true })
     const timeScale = chartRef.current?.timeScale()
     timeScale?.subscribeVisibleLogicalRangeChange(scheduleCheck)
-    const settle = window.setTimeout(scheduleCheck, 80)
+    // after a refit the chart redraws a couple of frames later
+    const settle = window.setTimeout(scheduleCheck, 160)
 
     scheduleCheck()
 

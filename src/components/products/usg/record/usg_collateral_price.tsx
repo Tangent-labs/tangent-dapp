@@ -143,8 +143,10 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
 
   const [showBackupBadge, setShowBackupBadge] = useState(false)
   const [isAboveView, setIsAboveView] = useState(false)
-  // V2: the liquidation chip zooms the price scale out to frame the candles and the liquidation price together
-  const [fitLiquidation, setFitLiquidation] = useState(false)
+  // V2: the liquidation chip zooms the price scale out to frame the candles and the liquidation price together.
+  // A counter, not a boolean: every click refits, even when the scale moved again since the last one (0 = off).
+  const [fitRequest, setFitRequest] = useState(0)
+  const fitLiquidation = fitRequest > 0
   const [oracleLabelTop, setOracleLabelTop] = useState<number | null>(null)
 
   const liquidationPriceNumber = useMemo(() => {
@@ -302,9 +304,12 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
         }
       },
     })
-    // hand the scale back to autoscale so the new range applies even after a manual drag
-    chartRef.current?.priceScale("right").applyOptions({ autoScale: true })
-  }, [clampedVisiblePriceRange, fitLiquidation, liquidationPriceNumber])
+    // hand the scale back to autoscale and make the chart recompute it now (toggling forces the refresh, also after a
+    // manual drag of the scale)
+    const scale = chartRef.current?.priceScale("right")
+    scale?.applyOptions({ autoScale: false })
+    scale?.applyOptions({ autoScale: true })
+  }, [clampedVisiblePriceRange, fitRequest, liquidationPriceNumber])
 
   useEffect(() => {
     if (!oracleSeriesRef.current) return
@@ -397,6 +402,12 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
     const ro = new ResizeObserver(() => scheduleCheck())
     ro.observe(container)
 
+    // the scale also moves on wheel zoom, time scroll and refits: re-check then too
+    container.addEventListener("wheel", onPointer, { passive: true })
+    const timeScale = chartRef.current?.timeScale()
+    timeScale?.subscribeVisibleLogicalRangeChange(scheduleCheck)
+    const settle = window.setTimeout(scheduleCheck, 80)
+
     scheduleCheck()
 
     return () => {
@@ -405,9 +416,12 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
       container.removeEventListener("pointerup", onPointer)
 
       ro.disconnect()
+      container.removeEventListener("wheel", onPointer)
+      timeScale?.unsubscribeVisibleLogicalRangeChange(scheduleCheck)
+      window.clearTimeout(settle)
       if (animationFrame) cancelAnimationFrame(animationFrame)
     }
-  }, [liquidationPriceNumber, isPending, graphData?.data?.length, lastVisibleOracleValue, fitLiquidation])
+  }, [liquidationPriceNumber, isPending, graphData?.data?.length, lastVisibleOracleValue, fitRequest])
 
   return (
     <div ref={chartShellRef} className={cn("relative min-h-80 w-full", UI_V2 ? "rounded-xl" : "rounded-[10px] bg-[#0a0a0a] ring-1 ring-white/5")}>
@@ -425,7 +439,7 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
       {showBackupBadge && !isPending && UI_V2 && liquidationPriceNumber > 0 && (
         <button
           type="button"
-          onClick={() => setFitLiquidation(true)}
+          onClick={() => setFitRequest((n) => n + 1)}
           title="Zoom out to show the liquidation price"
           className={cn(
             "absolute right-2 z-10 flex items-center gap-1.5 rounded-md border border-hairline bg-surface px-2 py-1 text-[11px] tabular-nums text-ink-2 shadow-pop transition-colors hover:text-white",
@@ -445,7 +459,7 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
       {UI_V2 && fitLiquidation && !isPending && (
         <button
           type="button"
-          onClick={() => setFitLiquidation(false)}
+          onClick={() => setFitRequest(0)}
           className="absolute left-2 top-2 z-10 rounded-md border border-hairline bg-surface px-2 py-1 text-[11px] text-ink-2 shadow-pop transition-colors hover:text-white"
         >
           Zoom to price

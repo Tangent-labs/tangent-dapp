@@ -1,6 +1,7 @@
 "use client"
 
 import { Roll } from "@/v2/ui/roll"
+import { COLOR } from "@/v2/theme/colors"
 import { ReactNode, useMemo, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { ChevronDown } from "lucide-react"
@@ -34,7 +35,7 @@ export type VAPRCalculatorV2Props = {
 
 const TICK = V2_TICK
 const clampPct = (v: number) => Math.min(100, Math.max(0, v))
-const NEG = "#ff5c5c"
+const NEG = COLOR.negative
 const X_MIN = 0.9897
 
 /** Presentation only: splits the live curve into a positive (blue) and a negative (red) run, finds the break-even and today's point. */
@@ -181,8 +182,8 @@ export function VAPRCalculatorV2(p: VAPRCalculatorV2Props) {
                       <ComposedChart data={rows} margin={{ top: 28, right: 8, left: 0, bottom: 0 }}>
                         <defs>
                           <linearGradient id="v2-vapr-fill" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="0%" stopColor="#0075FF" stopOpacity={0.22} />
-                            <stop offset="100%" stopColor="#0075FF" stopOpacity={0} />
+                            <stop offset="0%" stopColor={COLOR.data} stopOpacity={0.22} />
+                            <stop offset="100%" stopColor={COLOR.data} stopOpacity={0} />
                           </linearGradient>
                           <linearGradient id="v2-vapr-neg" x1="0" y1="1" x2="0" y2="0">
                             <stop offset="0%" stopColor={NEG} stopOpacity={0.18} />
@@ -204,16 +205,16 @@ export function VAPRCalculatorV2(p: VAPRCalculatorV2Props) {
                         />
                         <YAxis tickFormatter={(v) => `${Number(v).toFixed(1)}%`} tick={TICK} axisLine={false} tickLine={false} width={48} />
                         {breakEven !== null && <ReferenceArea x1={breakEven} x2={X_MIN} fill={NEG} fillOpacity={0.04} ifOverflow="hidden" />}
-                        <ReferenceLine y={0} stroke="rgba(255,255,255,0.25)" />
+                        <ReferenceLine y={0} stroke={COLOR.line} />
                         {p.usgPrice !== undefined && (
                           <ReferenceLine
                             x={p.usgPrice}
-                            stroke="rgba(255,255,255,0.5)"
+                            stroke={COLOR.line}
                             strokeDasharray="3 3"
                             label={{
                               value: today ? `USG ${p.usgPrice.toFixed(4)} · ${today.vAPR.toFixed(2)}%` : `${p.usgPrice.toFixed(4)}`,
                               position: "top",
-                              fill: "rgba(255,255,255,0.85)",
+                              fill: COLOR.ink2,
                               fontSize: 11,
                             }}
                           />
@@ -226,7 +227,7 @@ export function VAPRCalculatorV2(p: VAPRCalculatorV2Props) {
                                 title={"USG at $" + Number(label).toFixed(4)}
                                 rows={[
                                   {
-                                    color: Number(payload[0]?.payload?.vAPR) < 0 ? NEG : "#0075FF",
+                                    color: Number(payload[0]?.payload?.vAPR) < 0 ? NEG : COLOR.data,
                                     label: "Net vAPR",
                                     value: Number(payload[0]?.payload?.vAPR).toFixed(2) + "%",
                                   },
@@ -240,15 +241,15 @@ export function VAPRCalculatorV2(p: VAPRCalculatorV2Props) {
                         <Line
                           type="monotone"
                           dataKey="pos"
-                          stroke="#0075FF"
+                          stroke={COLOR.data}
                           strokeWidth={1.5}
                           dot={false}
-                          activeDot={v2ActiveDot("#0075FF")}
+                          activeDot={v2ActiveDot(COLOR.data)}
                           animationDuration={700}
                         />
                         <Line type="monotone" dataKey="neg" stroke={NEG} strokeWidth={1.5} dot={false} activeDot={v2ActiveDot(NEG)} animationDuration={700} />
                         {today && (
-                          <ReferenceDot x={today.price} y={today.vAPR} r={4} fill={today.vAPR < 0 ? NEG : "#0075FF"} stroke="#1a1a1a" strokeWidth={2} />
+                          <ReferenceDot x={today.price} y={today.vAPR} r={4} fill={today.vAPR < 0 ? NEG : COLOR.data} stroke={COLOR.ring} strokeWidth={2} />
                         )}
                       </ComposedChart>
                     </ResponsiveContainer>

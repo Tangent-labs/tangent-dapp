@@ -1,6 +1,7 @@
 "use client"
 
 import { useId, useMemo } from "react"
+import { COLOR } from "@/v2/theme/colors"
 
 /** Small line chart with optional area, end dot and dashed reference value. SVG gets literal colors, never CSS variables. */
 export function Sparkline({
@@ -9,7 +10,7 @@ export function Sparkline({
   reference,
   area = true,
   dot = true,
-  color = "#0075FF",
+  color = COLOR.data,
   className,
 }: {
   values: number[]
@@ -48,16 +49,7 @@ export function Sparkline({
           </linearGradient>
         </defs>
         {geo.refY !== null && (
-          <line
-            x1="0"
-            x2={W}
-            y1={geo.refY}
-            y2={geo.refY}
-            stroke="rgba(255,255,255,0.25)"
-            strokeDasharray="2 3"
-            strokeWidth={1}
-            vectorEffect="non-scaling-stroke"
-          />
+          <line x1="0" x2={W} y1={geo.refY} y2={geo.refY} stroke={COLOR.line} strokeDasharray="2 3" strokeWidth={1} vectorEffect="non-scaling-stroke" />
         )}
         {area && <path d={geo.fill} fill={`url(#spark-${id})`} />}
         <path d={geo.d} fill="none" stroke={color} strokeWidth={1.5} vectorEffect="non-scaling-stroke" />

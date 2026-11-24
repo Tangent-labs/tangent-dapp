@@ -42,7 +42,7 @@ type BarAction = { label: string; onClick: () => void; primary?: boolean }
  */
 export function MobileActionBar({ title, sub, actions }: { title?: string; sub?: string; actions: BarAction[] }) {
   return (
-    <div className="fixed inset-x-0 bottom-[calc(64px+env(safe-area-inset-bottom))] z-40 border-t border-hairline bg-[rgba(15,15,15,0.96)] px-4 py-3 backdrop-blur-md lg:bottom-0 xl:hidden">
+    <div className="fixed inset-x-0 bottom-[calc(64px+env(safe-area-inset-bottom))] z-40 border-t border-hairline bg-bar px-4 py-3 backdrop-blur-md lg:bottom-0 xl:hidden">
       <div className="mx-auto flex max-w-[560px] items-center gap-2">
         <span className="min-w-0 flex-1">
           {title && <span className="block truncate text-[13px] font-semibold">{title}</span>}
@@ -55,7 +55,7 @@ export function MobileActionBar({ title, sub, actions }: { title?: string; sub?:
             onClick={a.onClick}
             className={cn(
               "h-11 shrink-0 rounded-[10px] px-4 text-[14px] font-semibold transition-colors",
-              a.primary ? "bg-action-fill text-white hover:bg-action-fill-hover" : "bg-white/[0.07] text-white hover:bg-white/10"
+              a.primary ? "bg-action-fill text-on-fill hover:bg-action-fill-hover" : "bg-white/[0.07] text-white hover:bg-white/10"
             )}
           >
             {a.label}

@@ -95,7 +95,7 @@ export function ClaimPageV2() {
                 {!isWellConnected && (
                   <button
                     onClick={connect}
-                    className="mt-4 h-9 rounded-[9px] bg-action-fill px-4 text-[13px] font-semibold text-white transition-colors hover:bg-action-fill-hover"
+                    className="mt-4 h-9 rounded-[9px] bg-action-fill px-4 text-[13px] font-semibold text-on-fill transition-colors hover:bg-action-fill-hover"
                   >
                     Connect wallet
                   </button>
@@ -131,7 +131,7 @@ export function ClaimPageV2() {
                       selected ? "border-action bg-action" : "border-white/20"
                     )}
                   >
-                    {selected && <Check className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />}
+                    {selected && <Check className="h-3.5 w-3.5 text-on-fill" strokeWidth={2.5} />}
                   </span>
                   <span className="flex min-w-0 items-center gap-3">
                     <TokenImage token={item.logoKey} size={32} className="h-8 w-auto shrink-0" />
@@ -207,7 +207,7 @@ function AprHoverRewards({ item }: { item: ClaimData }) {
       <span className="peer text-[15px] font-semibold tabular-nums underline decoration-white/15 decoration-dotted underline-offset-4">
         {formatDollar(item.totalClaimableValue || 0, 2)}
       </span>
-      <span className="pointer-events-none absolute bottom-full left-0 z-30 mb-2 hidden w-[260px] rounded-[10px] border border-white/10 bg-raised p-3 text-xs shadow-[0_12px_32px_rgba(0,0,0,0.55)] peer-hover:block">
+      <span className="pointer-events-none absolute bottom-full left-0 z-30 mb-2 hidden w-[260px] rounded-[10px] border border-white/10 bg-raised p-3 text-xs shadow-pop peer-hover:block">
         <span className="mb-1.5 block font-semibold">{item.marketName} rewards</span>
         {(item.claimable as ClaimAsset[]).map((r) => (
           <span key={r.symbol} className="mt-1 flex items-center gap-2 tabular-nums">

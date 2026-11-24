@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { SERIES } from "@/v2/theme/colors"
 import { Check } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useUSGContext } from "@/components/products/usg/usg_context"
@@ -24,10 +25,10 @@ const CLAIM_ENABLED = false
 
 // V2 palette: blue for data, no green
 const CAT_COLOR: Record<AirdropCategoryId, string> = {
-  compensationCvg: "#0075FF",
-  pointCampaign: "#a79bff",
-  preDeposit: "#e78fb3",
-  others: "#8fa3bf",
+  compensationCvg: SERIES.blue,
+  pointCampaign: SERIES.violet,
+  preDeposit: SERIES.pink,
+  others: SERIES.slate,
 }
 
 /**
@@ -87,7 +88,7 @@ export function ClaimAirdropPageV2() {
                   <button
                     onClick={signMessage}
                     disabled={airdropDataIsLoading || !isConnected}
-                    className="h-9 rounded-[9px] bg-action-fill px-4 text-[13px] font-semibold text-white transition-colors hover:bg-action-fill-hover disabled:opacity-40"
+                    className="h-9 rounded-[9px] bg-action-fill px-4 text-[13px] font-semibold text-on-fill transition-colors hover:bg-action-fill-hover disabled:opacity-40"
                   >
                     Apply
                   </button>

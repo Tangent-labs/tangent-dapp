@@ -52,7 +52,7 @@ export function AirdropHeaderV2({ title, description }: { title: string; descrip
                   <button
                     onClick={signMessage}
                     disabled={airdropDataIsLoading || !isConnected}
-                    className="h-9 rounded-[9px] bg-action-fill px-4 text-[13px] font-semibold text-white transition-colors hover:bg-action-fill-hover disabled:opacity-40"
+                    className="h-9 rounded-[9px] bg-action-fill px-4 text-[13px] font-semibold text-on-fill transition-colors hover:bg-action-fill-hover disabled:opacity-40"
                   >
                     Apply
                   </button>
@@ -88,7 +88,7 @@ export function StatusDot({ on, onLabel = "Active", offLabel = "Inactive" }: { o
   return on ? (
     <span className="inline-flex items-center gap-2 justify-self-start whitespace-nowrap text-[13px] font-medium text-white">
       <span className="grid h-[18px] w-[18px] shrink-0 place-items-center rounded-full bg-action-fill">
-        <Check className="h-3 w-3 text-white" strokeWidth={3} />
+        <Check className="h-3 w-3 text-on-fill" strokeWidth={3} />
       </span>
       {onLabel}
     </span>

@@ -273,7 +273,7 @@ export function MarketListV2() {
           >
             <SlidersHorizontal className="h-4 w-4" strokeWidth={1.75} />
             {activeFilters > 0 && (
-              <span className="absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-action-fill px-1 text-[10px] font-semibold tabular-nums text-white">
+              <span className="absolute -right-1 -top-1 grid h-4 min-w-4 place-items-center rounded-full bg-action-fill px-1 text-[10px] font-semibold tabular-nums text-on-fill">
                 {activeFilters}
               </span>
             )}
@@ -426,7 +426,7 @@ export function MarketListV2() {
           <button
             type="button"
             onClick={() => setFiltersOpen(false)}
-            className="h-11 flex-[2] rounded-[10px] bg-action-fill text-[14px] font-semibold text-white transition-colors hover:bg-action-fill-hover"
+            className="h-11 flex-[2] rounded-[10px] bg-action-fill text-[14px] font-semibold text-on-fill transition-colors hover:bg-action-fill-hover"
           >
             Show {sorted.length} {sorted.length === 1 ? "market" : "markets"}
           </button>
@@ -776,7 +776,7 @@ function MobileRow({ r }: { r: ListRowData }) {
   return (
     <Link
       href={`/${r.address}/deposit-borrow`}
-      className="block rounded-2xl border border-hairline bg-surface p-4 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-[rgba(0,117,255,0.6)] active:bg-raised"
+      className="focus-visible:ring-action/60 block rounded-2xl border border-hairline bg-surface p-4 outline-none transition-colors focus-visible:ring-2 active:bg-raised"
     >
       <div className="flex items-center gap-3">
         <TokenImage token={r.logoKey} size={48} className="h-9 w-auto shrink-0" />

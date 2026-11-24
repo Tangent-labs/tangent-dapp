@@ -1,6 +1,7 @@
 "use client"
 
 import { Roll } from "@/v2/ui/roll"
+import { COLOR } from "@/v2/theme/colors"
 import { useId, useMemo } from "react"
 import { formatUnits } from "viem"
 import { cn } from "@/lib/utils"
@@ -97,13 +98,13 @@ function PegSparkline({ points }: { points: number[] }) {
       <svg viewBox={`0 0 ${W} ${H}`} width="100%" height={H} preserveAspectRatio="none" className="block overflow-visible" aria-hidden>
         <defs>
           <linearGradient id={`peg-${id}`} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#0075FF" stopOpacity={0.22} />
-            <stop offset="100%" stopColor="#0075FF" stopOpacity={0} />
+            <stop offset="0%" stopColor={COLOR.data} stopOpacity={0.22} />
+            <stop offset="100%" stopColor={COLOR.data} stopOpacity={0} />
           </linearGradient>
         </defs>
-        <line x1="0" x2={W} y1={refY} y2={refY} stroke="rgba(255,255,255,0.25)" strokeDasharray="2 3" strokeWidth={1} vectorEffect="non-scaling-stroke" />
+        <line x1="0" x2={W} y1={refY} y2={refY} stroke={COLOR.line} strokeDasharray="2 3" strokeWidth={1} vectorEffect="non-scaling-stroke" />
         <path d={area} fill={`url(#peg-${id})`} />
-        <path d={path} fill="none" stroke="#0075FF" strokeWidth={1.5} vectorEffect="non-scaling-stroke" />
+        <path d={path} fill="none" stroke={COLOR.data} strokeWidth={1.5} vectorEffect="non-scaling-stroke" />
       </svg>
       {lastY && (
         <span

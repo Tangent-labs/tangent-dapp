@@ -3,6 +3,7 @@
 import { ReactNode } from "react"
 import { cn } from "@/lib/utils"
 import { Roll } from "./roll"
+import { COLOR } from "@/v2/theme/colors"
 
 /**
  * V2 chart kit (Aave Pro Insights and the Mebius chart rules): presentation only.
@@ -10,23 +11,23 @@ import { Roll } from "./roll"
  */
 
 /** Hover cursor: a quiet dashed hairline, not a bright 2px rule. */
-export const V2_CURSOR = { stroke: "rgba(255,255,255,0.22)", strokeWidth: 1, strokeDasharray: "3 3" }
+export const V2_CURSOR = { stroke: COLOR.cursor, strokeWidth: 1, strokeDasharray: "3 3" }
 
 /** Active point: the series color ringed with the card surface, so it reads on any line. */
-export const v2ActiveDot = (color: string) => ({ r: 4, fill: color, stroke: "#1a1a1a", strokeWidth: 2 })
+export const v2ActiveDot = (color: string) => ({ r: 4, fill: color, stroke: COLOR.ring, strokeWidth: 2 })
 
 /** Axis tick style: small, quiet, tabular. */
-export const V2_TICK = { fontSize: 11, fill: "#8f8f8f" }
+export const V2_TICK = { fontSize: 11, fill: COLOR.ink3 }
 
 /** Horizontal grid hairline. */
-export const V2_GRID = "rgba(255,255,255,0.06)"
+export const V2_GRID = COLOR.grid
 
 export type TooltipRow = { color?: string; label: string; value: string }
 
 /** Hover card: date on top, one row per series (dot, label, value), optional total. */
 export function ChartTooltipV2({ title, rows, total }: { title: ReactNode; rows: TooltipRow[]; total?: TooltipRow }) {
   return (
-    <div className="min-w-[180px] rounded-[10px] border border-white/[0.08] bg-raised px-3 py-2.5 font-sans text-xs shadow-[0_12px_32px_rgba(0,0,0,0.5)]">
+    <div className="min-w-[180px] rounded-[10px] border border-white/[0.08] bg-raised px-3 py-2.5 font-sans text-xs shadow-pop">
       <div className="mb-2 text-[11px] tabular-nums text-ink-3">{title}</div>
       {total && (
         <div className="mb-1.5 flex items-center justify-between gap-4 border-b border-white/[0.06] pb-1.5">

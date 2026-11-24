@@ -60,7 +60,7 @@ export function MarketSwitcherV2({ address, name, logoKey }: { address?: string;
             exit={{ opacity: 0, scale: 0.98, y: -4 }}
             transition={{ duration: 0.16, ease: [0.25, 0.8, 0.25, 1] }}
             style={{ transformOrigin: "top left" }}
-            className="absolute left-0 top-[calc(100%+8px)] z-50 w-[440px] max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-white/10 bg-raised shadow-[0_24px_60px_rgba(0,0,0,0.55)]"
+            className="absolute left-0 top-[calc(100%+8px)] z-50 w-[440px] max-w-[calc(100vw-2rem)] overflow-hidden rounded-2xl border border-white/10 bg-raised shadow-pop"
           >
             <Panel current={address} close={() => setOpen(false)} />
           </motion.div>

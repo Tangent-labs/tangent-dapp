@@ -17,7 +17,7 @@ export function InnerTooltip({ children, innerContent }: InnerTooltipProps) {
         side="top"
         className={
           UI_V2
-            ? "z-[1001] w-fit rounded-[10px] border border-white/[0.08] bg-raised px-3 py-2.5 font-sans text-xs shadow-[0_12px_32px_rgba(0,0,0,0.5)]"
+            ? "z-[1001] w-fit rounded-[10px] border border-white/[0.08] bg-raised px-3 py-2.5 font-sans text-xs shadow-pop"
             : "z-[1001] w-full !border-none py-2 text-xs"
         }
       >

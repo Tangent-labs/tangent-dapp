@@ -45,7 +45,7 @@ export const InputSelect = <T extends { value: string }>({
             <SelectPrimitive.Content
               position="popper"
               sideOffset={6}
-              className="z-50 max-h-80 min-w-[var(--radix-select-trigger-width)] overflow-hidden rounded-xl border border-white/10 bg-raised p-1.5 font-sans text-white shadow-[0_16px_40px_rgba(0,0,0,0.5)]"
+              className="z-50 max-h-80 min-w-[var(--radix-select-trigger-width)] overflow-hidden rounded-xl border border-white/10 bg-raised p-1.5 font-sans text-white shadow-pop"
             >
               <SelectPrimitive.Viewport className="v2-scroll">
                 {options?.map((option) => (

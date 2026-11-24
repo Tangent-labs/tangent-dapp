@@ -89,11 +89,7 @@ export function SelectMenu({
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>{trigger}</PopoverTrigger>
-      <PopoverContent
-        align="start"
-        sideOffset={6}
-        className="w-[240px] rounded-xl border border-white/10 bg-raised p-1.5 font-sans text-white shadow-[0_16px_40px_rgba(0,0,0,0.5)]"
-      >
+      <PopoverContent align="start" sideOffset={6} className="w-[240px] rounded-xl border border-white/10 bg-raised p-1.5 font-sans text-white shadow-pop">
         <div role="listbox" aria-label={label}>
           {options.map((o) => {
             const active = o.value === value

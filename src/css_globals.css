@@ -86,6 +86,20 @@
     --tgt-v2-data-negative: #ff5c5c;
     --tgt-v2-status-warning: #f5b544;
     --tgt-v2-status-alert: #ff8a3d;
+    /* chart pieces drawn in SVG: the ring around a highlighted point (card colour), dashed reference lines, the hover
+       cursor and empty slider tracks */
+    --tgt-v2-chart-ring: #1a1a1a;
+    --tgt-v2-chart-line: rgb(255 255 255 / 0.35);
+    --tgt-v2-chart-cursor: rgb(255 255 255 / 0.22);
+    --tgt-v2-chart-track: rgb(255 255 255 / 0.12);
+    /* data series after the blue */
+    --tgt-v2-series-violet: #a79bff;
+    --tgt-v2-series-pink: #e78fb3;
+    --tgt-v2-series-gold: #d9c49a;
+    --tgt-v2-series-slate: #8fa3bf;
+    /* translucent bars pinned to the bottom on phones, and floating cards (popovers, tooltips) */
+    --tgt-v2-bg-bar: rgb(15 15 15 / 0.96);
+    --tgt-v2-shadow-pop: 0 12px 32px rgb(0 0 0 / 0.5);
   }
 
   /* V2 theme: the live --tgt-* tokens re-skinned. Applied only when NEXT_PUBLIC_UI=v2 (layout sets data-ui="v2"), so V1 keeps its original theme. */
@@ -406,4 +420,74 @@ html:has(.v2-shell) {
     --tgt-v2-border-hairline: rgb(255 255 255 / 0.1);
     --tgt-v2-border-divider: rgb(255 255 255 / 0.1);
   }
+}
+
+/* V2 light theme (Appearance: Light, or System on a light device), after Aave Pro light: near-white page, white cards,
+   black 6-8% hairlines and veils, black text with greys, no shadows, the blue one step darker so it keeps its contrast on white.
+   --tgt-fg drives Tailwind's "white" (text-white, white/x veils), so it flips to black here. */
+html[data-ui="v2"][data-theme="light"] {
+  color-scheme: light;
+  --tgt-fg: 11 11 11;
+  --tgt-v2-bg-page: #fcfcfc;
+  --tgt-v2-bg-sidebar: #fcfcfc;
+  --tgt-v2-bg-surface: #ffffff;
+  --tgt-v2-bg-raised: #f3f3f4;
+  --tgt-v2-bg-subtle: rgb(0 0 0 / 0.04);
+  --tgt-v2-bg-control: rgb(0 0 0 / 0.06);
+  --tgt-v2-border-hairline: rgb(0 0 0 / 0.08);
+  --tgt-v2-border-divider: rgb(0 0 0 / 0.07);
+  --tgt-v2-text-primary: #0b0b0b;
+  --tgt-v2-text-secondary: #666666;
+  --tgt-v2-text-tertiary: #8a8a8a;
+  --tgt-v2-action-primary: #0062d6;
+  --tgt-v2-action-hover: #0057bf;
+  --tgt-v2-action-fill: #0062d6;
+  --tgt-v2-action-fill-hover: #0057bf;
+  --tgt-v2-data-primary: #0062d6;
+  --tgt-v2-data-projected: #0091c2;
+  --tgt-v2-data-negative: #e84142;
+  --tgt-v2-status-warning: #b26b00;
+  --tgt-v2-status-alert: #d4550a;
+  --tgt-v2-chart-ring: #ffffff;
+  --tgt-v2-chart-line: rgb(0 0 0 / 0.3);
+  --tgt-v2-chart-cursor: rgb(0 0 0 / 0.2);
+  --tgt-v2-chart-track: rgb(0 0 0 / 0.1);
+  --tgt-v2-series-violet: #6f5cf0;
+  --tgt-v2-series-pink: #c2457a;
+  --tgt-v2-series-gold: #a8884a;
+  --tgt-v2-series-slate: #5c7391;
+  --tgt-v2-bg-bar: rgb(252 252 252 / 0.94);
+  --tgt-v2-shadow-pop: 0 8px 24px rgb(0 0 0 / 0.08), 0 2px 6px rgb(0 0 0 / 0.05);
+
+  --tgt-row-success: rgb(0 0 0 / 0.85);
+  --tgt-row-danger: #e84142;
+  --tgt-row-warning: #b26b00;
+  --tgt-dash-keepers: #a8884a;
+  --tgt-dash-wts: #5c7391;
+  --tgt-dash-susg: #6f5cf0;
+  --tgt-bg-button-inactive: linear-gradient(rgb(0 0 0 / 0.05), rgb(0 0 0 / 0.05));
+  --tgt-bg-top-performing-lps: linear-gradient(rgb(0 98 214 / 0.08), rgb(0 98 214 / 0.08));
+  --tgt-bg-earn-action: linear-gradient(#0062d6, #0062d6);
+  --tgt-bg-progress: linear-gradient(#0062d6, #0062d6);
+  --tgt-bg-pink: linear-gradient(rgb(0 0 0 / 0.05), rgb(0 0 0 / 0.05));
+  --tgt-bg-danger: linear-gradient(#e84142, #e84142);
+  --tgt-bg-select-input: linear-gradient(rgb(0 0 0 / 0.04), rgb(0 0 0 / 0.04));
+  --tgt-bg-panel-hover: rgb(0 0 0 / 0.04);
+  --tgt-bg-overlay-panel: rgb(0 0 0 / 0.03);
+  --tgt-bg-panel-disabled: rgb(0 0 0 / 0.06);
+  --tgt-bg-lec: linear-gradient(rgb(0 0 0 / 0.05), rgb(0 0 0 / 0.05));
+  --tgt-slippage-warning: #b26b00;
+  --tgt-button-active-hover: #0057bf;
+  --tgt-subtitle: rgb(0 0 0 / 0.55);
+  --tgt-danger: #e84142;
+  --tgt-list-row-hover: linear-gradient(rgb(0 0 0 / 0.03), rgb(0 0 0 / 0.03));
+  --tgt-panel-title-gradient: linear-gradient(rgb(0 0 0 / 0.03), rgb(0 0 0 / 0.03));
+  --tgt-bg-selected-row: linear-gradient(rgb(0 0 0 / 0.05), rgb(0 0 0 / 0.05));
+  --tgt-button: linear-gradient(rgb(0 0 0 / 0.05), rgb(0 0 0 / 0.05));
+}
+html[data-ui="v2"][data-theme="light"] .v2-scroll {
+  scrollbar-color: rgb(0 0 0 / 0.18) transparent;
+}
+html[data-ui="v2"][data-theme="light"] .v2-scroll::-webkit-scrollbar-thumb {
+  background: rgb(0 0 0 / 0.18);
 }

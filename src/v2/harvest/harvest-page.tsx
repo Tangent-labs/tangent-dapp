@@ -108,7 +108,7 @@ export function HarvestPageV2() {
                       selected ? "border-action bg-action" : "border-white/20"
                     )}
                   >
-                    {selected && <Check className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />}
+                    {selected && <Check className="h-3.5 w-3.5 text-on-fill" strokeWidth={2.5} />}
                   </span>
                   <span className="flex min-w-0 items-center gap-3">
                     <TokenImage token={item.logoKey} size={32} className="h-8 w-auto shrink-0" />
@@ -119,7 +119,7 @@ export function HarvestPageV2() {
                       {formatDollar(item.rewards?.totalDollar || 0)}
                     </span>
                     {details.length > 0 && (
-                      <span className="pointer-events-none absolute bottom-full left-0 z-30 mb-2 hidden w-[240px] rounded-[10px] border border-white/10 bg-raised p-3 text-xs shadow-[0_12px_32px_rgba(0,0,0,0.55)] peer-hover:block">
+                      <span className="pointer-events-none absolute bottom-full left-0 z-30 mb-2 hidden w-[240px] rounded-[10px] border border-white/10 bg-raised p-3 text-xs shadow-pop peer-hover:block">
                         <span className="mb-1.5 block font-semibold">{item.asset} rewards</span>
                         {details.map((r, i) => (
                           <span key={i} className="mt-1 flex items-center gap-2 tabular-nums">

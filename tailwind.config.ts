@@ -21,6 +21,9 @@ const config: Config = {
         gilroy: ["var(--font-gilroy, var(--font-dm-sans))", "sans-serif"],
         sans: ["var(--font-dm-sans, ui-sans-serif)", "system-ui", "sans-serif"],
       },
+      boxShadow: {
+        pop: "var(--tgt-v2-shadow-pop)",
+      },
       borderWidth: {
         tangent: "1.5px",
       },
@@ -44,6 +47,11 @@ const config: Config = {
         body: "var(--tgt-image-body)",
       },
       colors: {
+        // "white" is the foreground of the theme: white on the dark theme (V1 and V2 dark unchanged), black on the V2 light
+        // theme, so text-white and every white/x veil flip with it. Text sitting on a coloured fill uses "on-fill" (always white).
+        white: "rgb(var(--tgt-fg, 255 255 255) / <alpha-value>)",
+        "on-fill": "#ffffff",
+        bar: "var(--tgt-v2-bg-bar)",
         // V2 tokens (css_globals.css --tgt-v2-*), for the reworked components
         page: "var(--tgt-v2-bg-page)",
         sidebar: "var(--tgt-v2-bg-sidebar)",

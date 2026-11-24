@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import { COLOR } from "@/v2/theme/colors"
 import { Check } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { LockPosition } from "@/components/products/usg/usg_type"
@@ -173,7 +174,7 @@ export function ClaimFormV2() {
                 )}
               >
                 <span className={cn("grid h-5 w-5 place-items-center rounded-md border", on ? "border-action bg-action" : "border-white/20")}>
-                  {on && <Check className="h-3.5 w-3.5 text-white" strokeWidth={2.5} />}
+                  {on && <Check className="h-3.5 w-3.5 text-on-fill" strokeWidth={2.5} />}
                 </span>
                 <span className="text-[14px] font-semibold">#{id}</span>
                 <span className="ml-auto flex items-center gap-1.5 text-[13px] tabular-nums text-ink-2">
@@ -432,7 +433,7 @@ export function SplitFormV2() {
               onChange={(e) => setSplitPercentage(Number(e.target.value))}
               aria-label="Split ratio"
               className="h-1.5 w-full cursor-pointer appearance-none rounded-full"
-              style={{ background: `linear-gradient(to right, #0075FF ${visualPercentage}%, rgba(255,255,255,0.12) ${visualPercentage}%)` }}
+              style={{ background: `linear-gradient(to right, ${COLOR.data} ${visualPercentage}%, ${COLOR.track} ${visualPercentage}%)` }}
             />
             <div className="mt-2 flex justify-between text-xs tabular-nums text-ink-2">
               <span>

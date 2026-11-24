@@ -1,6 +1,7 @@
 "use client"
 
 import { formatEther } from "viem"
+import { COLOR } from "@/v2/theme/colors"
 import { MarketDebtData, USGCollateralData } from "@/components/products/usg/usg_type"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { InnerTooltip } from "@/components/design_system/structure/inner_tooltip"
@@ -37,10 +38,10 @@ export function CollateralsDebtV2({ collaterals, marketDebtData, marketTVLMaxVal
 
       <div className="mt-3 flex items-center gap-4 text-xs text-ink-2">
         <span className="flex items-center gap-1.5">
-          <span className="h-2 w-2 rounded-full" style={{ backgroundColor: "rgba(0, 117, 255, 0.5)" }} /> TVL
+          <span className="h-2 w-2 rounded-full" style={{ backgroundColor: COLOR.data, opacity: 0.5 }} /> TVL
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="h-2 w-2 rounded-full" style={{ backgroundColor: "rgba(0, 117, 255, 1)" }} /> Debt
+          <span className="h-2 w-2 rounded-full" style={{ backgroundColor: COLOR.data }} /> Debt
         </span>
       </div>
 

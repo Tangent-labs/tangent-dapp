@@ -1,11 +1,12 @@
 "use client"
 
 import { useRootContext } from "@/components/products/root/root_context"
+import { SERIES } from "@/v2/theme/colors"
 import { formatMillions } from "@/lib/number_formatter"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 
 /** V2 palette for data series: blue first, then quiet tints. No green, no yellow. */
-export const V2_SERIES = { blue: "#0075FF", violet: "#a79bff", pink: "#e78fb3", gold: "#d9c49a", slate: "#8fa3bf" } as const
+export const V2_SERIES = SERIES
 
 /**
  * V2 Dashboard header: one sentence and the four numbers that frame the charts below.

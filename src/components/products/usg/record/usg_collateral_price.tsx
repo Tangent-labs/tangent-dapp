@@ -395,6 +395,10 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
     }
 
     const onPointer = () => scheduleCheck()
+    const onWheel = () => {
+      scheduleCheck()
+      settleChecks()
+    }
 
     container.addEventListener("pointerdown", onPointer, { passive: true })
     container.addEventListener("pointermove", onPointer, { passive: true })
@@ -404,11 +408,16 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
     ro.observe(container)
 
     // the scale also moves on wheel zoom, time scroll and refits: re-check then too
-    container.addEventListener("wheel", onPointer, { passive: true })
+    container.addEventListener("wheel", onWheel, { passive: true })
     const timeScale = chartRef.current?.timeScale()
     timeScale?.subscribeVisibleLogicalRangeChange(scheduleCheck)
-    // after a refit the chart redraws a couple of frames later
-    const settle = window.setTimeout(scheduleCheck, 160)
+    // the chart redraws a few frames after a refit or a wheel zoom, at a pace that varies: check again over ~0.6s
+    let settles: number[] = []
+    const settleChecks = () => {
+      settles.forEach(window.clearTimeout)
+      settles = [60, 180, 360, 640].map((ms) => window.setTimeout(scheduleCheck, ms))
+    }
+    settleChecks()
 
     scheduleCheck()
 
@@ -418,9 +427,9 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
       container.removeEventListener("pointerup", onPointer)
 
       ro.disconnect()
-      container.removeEventListener("wheel", onPointer)
+      container.removeEventListener("wheel", onWheel)
       timeScale?.unsubscribeVisibleLogicalRangeChange(scheduleCheck)
-      window.clearTimeout(settle)
+      settles.forEach(window.clearTimeout)
       if (animationFrame) cancelAnimationFrame(animationFrame)
     }
   }, [liquidationPriceNumber, isPending, graphData?.data?.length, lastVisibleOracleValue, fitRequest])

@@ -38,7 +38,7 @@ export function Venue({ type, className, dense }: { type: string; className?: st
       {parts.map(([logo, label], i) => (
         <span key={label} className={cn("flex items-center", dense ? "gap-1" : "gap-1.5")}>
           {i > 0 && !dense && <span className="opacity-50">·</span>}
-          <TokenImage token={logo} size={12} className="h-3 w-3 shrink-0 rounded-full" />
+          <TokenImage token={logo} size={12} className="h-3 w-3 shrink-0 object-contain" />
           {label}
         </span>
       ))}

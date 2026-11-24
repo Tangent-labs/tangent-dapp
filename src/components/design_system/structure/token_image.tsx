@@ -2,6 +2,7 @@
 
 import { ImageProps } from "next/image"
 import { useEffect, useState } from "react"
+import { useThemedLogo } from "@/v2/theme/logos"
 
 interface TokenImageProps extends React.HTMLAttributes<HTMLImageElement> {
   token?: string
@@ -20,6 +21,8 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
   ...props
 }) => {
   const [hasError, setHasError] = useState(false)
+  // V2 light theme: white-on-transparent logos switch to their ink copy
+  const themedSrc = useThemedLogo(src)
 
   useEffect(() => {
     setHasError(false) // Reset error state when `src` changes
@@ -30,7 +33,7 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
     <img
       {...props}
       alt={alt}
-      src={hasError ? fallback : src}
+      src={hasError ? fallback : themedSrc}
       onError={() => setHasError(true)} // Set error to true if the image fails to load
     />
   )

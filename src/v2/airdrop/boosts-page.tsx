@@ -10,9 +10,13 @@ import { useUsgBoostsContext } from "@/components/products/usg/airdrop/boosts/us
 import { boostHeaders } from "@/components/products/usg/airdrop/boosts/usg_boosts_controller"
 import { IconReferral } from "@/components/icons"
 import { AirdropHeaderV2, StatusDot } from "./header"
+import { useResolvedTheme } from "@/v2/theme/use-appearance"
+import { lightLogoSrc } from "@/v2/theme/logos"
 
 /** V2 Boosts page. Same context (UsgBoostsContext: userBoosts, getSortedRows) as UsgBoostsContent. */
 export function BoostsPageV2() {
+  const theme = useResolvedTheme()
+  const lightLogo = (src: string) => (theme === "light" ? lightLogoSrc(src) : src)
   const { userBoosts, getSortedRows } = useUsgBoostsContext()
   const [sort, setSort] = useState<{ key: string; direction: "asc" | "desc" }>({ key: "status", direction: "desc" })
   const rows = useMemo(() => getSortedRows(userBoosts, { search: undefined, sort } as ListState), [userBoosts, getSortedRows, sort])
@@ -56,7 +60,7 @@ export function BoostsPageV2() {
                 {b.type === "Onboarded User" ? (
                   <IconReferral className="h-7 w-7 shrink-0" />
                 ) : (
-                  <Image className="h-7 w-7 shrink-0 object-contain" src={`/medias/logos/${b.logo}.webp`} alt={b.logo} height={28} width={28} />
+                  <Image className="h-7 w-7 shrink-0 object-contain" src={lightLogo(`/medias/logos/${b.logo}.webp`)} alt={b.logo} height={28} width={28} />
                 )}
                 <span className="line-clamp-2 text-[14px] font-semibold leading-5 md:truncate">{b.type}</span>
               </span>

@@ -269,7 +269,10 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
             like the phone sheet; the card scrolls inside itself when it is taller than the window */}
         <div className="hidden flex-col self-stretch xl:flex">
           {isDesktop && (
-            <div id="v2-action" className="v2-scroll sticky top-6 max-h-[calc(100dvh-3rem)] overflow-y-auto rounded-2xl border border-hairline bg-surface p-5">
+            <div
+              id="v2-action"
+              className="v2-scroll sticky top-6 max-h-[calc(100dvh-3rem)] overflow-y-auto rounded-2xl border border-hairline bg-surface py-5 pl-5 pr-[14px] [scrollbar-gutter:stable]"
+            >
               {form}
               <div className="mt-4 empty:hidden">
                 <YourLoanV2 />

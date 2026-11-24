@@ -94,6 +94,19 @@ export function FeatureTabsV2({
       el.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" })
   }, [shown, side])
 
+  // the row can change width without a tab change (a scrollbar appears in the form panel, the window resizes):
+  // put the line back under the active tab, without sliding
+  useEffect(() => {
+    const row = rowRef.current
+    if (!row || typeof ResizeObserver === "undefined") return
+    const ro = new ResizeObserver(() => {
+      const el = row.querySelector<HTMLElement>(`[data-key="${shown}"]`)
+      if (el) setBar((b) => (b && b.x === el.offsetLeft && b.w === el.offsetWidth ? b : { x: el.offsetLeft, w: el.offsetWidth, animate: false }))
+    })
+    ro.observe(row)
+    return () => ro.disconnect()
+  }, [shown])
+
   return (
     <div className="flex w-full flex-col">
       <div role="tablist" className="flex w-full gap-1 rounded-[10px] bg-white/[0.04] p-1">

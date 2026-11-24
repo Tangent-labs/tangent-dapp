@@ -250,11 +250,7 @@ function Nav({ path, collapsed }: { path: string; collapsed: boolean }) {
                 )}
               >
                 {active && (
-                  <motion.span
-                    layoutId="v2-nav-active"
-                    className="absolute inset-0 rounded-[8px] bg-white/[0.07]"
-                    transition={{ type: "spring", visualDuration: 0.35, bounce: 0.15 }}
-                  />
+                  <span className="absolute inset-0 rounded-[8px] bg-white/[0.07]" />
                 )}
                 <Icon
                   className={cn(

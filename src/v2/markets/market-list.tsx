@@ -30,7 +30,7 @@ import { ActionSheet } from "@/v2/ui/mobile-action-bar"
 const KINDS: Record<string, { title: string; rule: string }> = {
   HEC: { title: "High emissions collateral", rule: "rewards cut up to 90%, then interest under the market threshold" },
   LEC: { title: "Low emissions collateral", rule: "dynamic interest from day one, rewards cut 2.5%" },
-  FIR: { title: "Fixed interest rate", rule: "fixed interest, rewards cut 10%" },
+  FIR: { title: "Fixed interest rate", rule: "rewards cut 10%" },
 }
 const kindOf = (r: ListRowData) => (r.isFixedRate ? "FIR" : r.type)
 const ind = (r: ListRowData, key: string) => r.indicators.find((i) => i.key === key)
@@ -834,20 +834,6 @@ function RiskAlert({ atRisk, className }: { atRisk: { r: ListRowData; pos: Posit
               , health {pos.label}
             </span>
           ))}
-        </div>
-        <div className="mt-3 flex flex-wrap gap-2">
-          <Link
-            href={`/${atRisk[0].r.address}/deposit`}
-            className="flex h-9 items-center rounded-[8px] bg-white/[0.08] px-3.5 text-[13px] font-medium transition-colors hover:bg-white/[0.12]"
-          >
-            Add collateral{atRisk.length > 1 ? ` to ${atRisk[0].r.name}` : ""}
-          </Link>
-          <Link
-            href={`/${atRisk[0].r.address}/repay`}
-            className="flex h-9 items-center rounded-[8px] bg-white/[0.08] px-3.5 text-[13px] font-medium transition-colors hover:bg-white/[0.12]"
-          >
-            Repay{atRisk.length > 1 ? ` on ${atRisk[0].r.name}` : ""}
-          </Link>
         </div>
       </div>
     </div>

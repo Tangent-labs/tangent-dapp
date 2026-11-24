@@ -5,7 +5,7 @@ import { TokenImage } from "@/components/design_system/structure/token_image"
 
 /**
  * Where a market's collateral lives, as [logo, label] pairs, keyed by the live marketType.
- * Same protocols and names as the live list (TYPE_TO_MARKET in usg_market_controller): Convex FXN markets also run on f(x) Protocol.
+ * Same protocols as the live list (TYPE_TO_MARKET in usg_market_controller), shortened: Convex FXN markets also run on f(x).
  * Logos are protocol tokens already in /medias/tokens.
  */
 export const VENUE: Record<string, [string, string][]> = {
@@ -16,7 +16,7 @@ export const VENUE: Record<string, [string, string][]> = {
   Convex_FXN: [
     ["CRV", "Curve"],
     ["CVX", "Convex"],
-    ["FXN", "f(x) Protocol"],
+    ["FXN", "f(x)"],
   ],
   STAKEDAO_CRV_Vault: [
     ["CRV", "Curve"],

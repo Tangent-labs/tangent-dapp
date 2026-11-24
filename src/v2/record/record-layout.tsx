@@ -126,7 +126,7 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
                   ["TVL", "$" + formatMillions(marketDisplayData?.tvlDollar), "Collateral deposited", undefined],
                   [
                     "Capacity",
-                    maxBorrowCapReached ? "Cap reached" : Math.round(capRatio * 100) + "%",
+                    maxBorrowCapReached ? "100%" : Math.round(capRatio * 100) + "%",
                     formatMillions(marketDisplayData?.borrowed) + " / " + formatMillions(marketDisplayData?.cap),
                     undefined,
                   ],
@@ -173,7 +173,7 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
                   <Mini label="Collateral vAPR" short="vAPR" value={`${currentTotalMarketApr?.toFixed(2)}%`} />
                   <Mini label="Max lev. vAPR" value={maxLev} className="hidden md:flex" />
                   <Mini label="Borrow rate" short="Borrow" value={computedBorrowRate.current} />
-                  <Mini label="Capacity" value={maxBorrowCapReached ? "Cap reached" : `${Math.round(capRatio * 100)}%`} className="hidden md:flex" />
+                  <Mini label="Capacity" value={maxBorrowCapReached ? "100%" : `${Math.round(capRatio * 100)}%`} className="hidden md:flex" />
                 </motion.div>
               )}
             </AnimatePresence>

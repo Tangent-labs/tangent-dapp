@@ -603,7 +603,7 @@ function Row({ r }: { r: ListRowData }) {
       <Two top={ind(r, "tvl")?.value ?? "-"} sub={`Max LTV ${(r.maxLTV * 100).toFixed(0)}%`} />
       <span className="min-w-0">
         <span className={cn("block text-[15px] tabular-nums leading-5", r.isBorrowCapReached && "text-warning")}>
-          {r.isBorrowCapReached ? "Cap reached" : `${Math.round(ratio * 100)}%`}
+          {r.isBorrowCapReached ? "100%" : `${Math.round(ratio * 100)}%`}
         </span>
         <span className="mt-1 flex items-center gap-2">
           <Ticks ratio={ratio} full={r.isBorrowCapReached} />
@@ -695,7 +695,7 @@ function Card({ r }: { r: ListRowData }) {
             <span className="flex items-center gap-2.5">
               <Ticks ratio={ratio} full={r.isBorrowCapReached} />
               <span className={cn("w-[72px] text-right font-medium tabular-nums", r.isBorrowCapReached && "text-warning")}>
-                {r.isBorrowCapReached ? "Cap reached" : `${Math.round(ratio * 100)}% used`}
+                {r.isBorrowCapReached ? "100% used" : `${Math.round(ratio * 100)}% used`}
               </span>
             </span>
           </div>
@@ -807,7 +807,7 @@ function MobileRow({ r }: { r: ListRowData }) {
         <span className="min-w-0 text-right">
           <span className="block text-[11px] text-ink-3">TVL · cap</span>
           <span className={cn("block truncate font-medium tabular-nums", r.isBorrowCapReached && "text-warning")}>
-            {ind(r, "tvl")?.value ?? "-"} · {r.isBorrowCapReached ? "full" : `${Math.round(ratio * 100)}%`}
+            {ind(r, "tvl")?.value ?? "-"} · {r.isBorrowCapReached ? "100%" : `${Math.round(ratio * 100)}%`}
           </span>
         </span>
       </div>

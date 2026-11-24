@@ -66,12 +66,14 @@ export const FeatureTabs = ({
       { key: "withdraw", label: "Withdraw", go: () => onTabClick("withdraw"), paused: false, enabled: true },
       { key: "liquidate", label: "Liquidate", go: () => onTabClick("liquidate"), paused: false, enabled: true },
     ]
-    const tabs = activeTab === "Borrow" ? borrowTabs : repayTabs
+    // the side follows the page on screen (the route), so it stays right after back/forward, links or the mobile action bar
+    const side = repayTabs.some((t) => t.key === feature) ? "Repay" : borrowTabs.some((t) => t.key === feature) ? "Borrow" : activeTab
+    const tabs = side === "Borrow" ? borrowTabs : repayTabs
     return (
       <div className="flex w-full flex-col">
         <div role="tablist" className="flex w-full gap-1 rounded-[10px] bg-white/[0.04] p-1">
-          <LargeButtonTab label="Borrow" active={activeTab === "Borrow"} onClick={onClickBorrow} />
-          <LargeButtonTab label="Repay" active={activeTab === "Repay"} onClick={onClickRepay} />
+          <LargeButtonTab label="Borrow" active={side === "Borrow"} onClick={onClickBorrow} />
+          <LargeButtonTab label="Repay" active={side === "Repay"} onClick={onClickRepay} />
         </div>
         <div role="tablist" className="v2-chips mt-4 flex w-full justify-between gap-1 overflow-x-auto border-b border-hairline sm:gap-3">
           {tabs.map((t) => {

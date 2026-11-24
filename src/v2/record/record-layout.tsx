@@ -29,8 +29,17 @@ import { useRouter } from "next/navigation"
  * arranged as the V2: decision numbers first, the action card sticky on the right with "Your loan" above it.
  */
 export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNode; children: ReactNode }) {
-  const { collateralInfo, marketData, marketInfo, marketDisplayData, currentTotalMarketApr, computedBorrowRate, maxBorrowCapReached, marketContracts } =
-    useUSGRecordContext()
+  const {
+    collateralInfo,
+    marketData,
+    marketInfo,
+    marketDisplayData,
+    currentTotalMarketApr,
+    computedBorrowRate,
+    maxBorrowCapReached,
+    marketContracts,
+    setActiveTab,
+  } = useUSGRecordContext()
   const [tab, setTab] = useState<"overview" | "activity">("overview")
   const name = collateralInfo?.symbol?.replaceAll("-", "/")
   const fixed = isFixedRateMarket(marketData?.constants?.irParams)
@@ -62,6 +71,7 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
   const openSheet = (route: "deposit-borrow" | "repay-withdraw") => {
     const onRepay = ["repay", "withdraw", "repay-withdraw", "liquidate"].includes(window.location.pathname.split("/").pop() ?? "")
     if ((route === "repay-withdraw") !== onRepay) router.replace(`/${marketInfo?.marketAddress}/${route}`, { scroll: false })
+    setActiveTab(route === "repay-withdraw" ? "Repay" : "Borrow")
     setSheet(true)
   }
   const form = (

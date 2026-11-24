@@ -107,9 +107,7 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
           </div>
           {/* phones and tablets: your position comes before the market details, not after them */}
           <div className="mb-8 empty:hidden xl:hidden">
-            <div className="hidden xl:block">
-              <YourLoanV2 />
-            </div>
+            <YourLoanV2 />
           </div>
           <div role="tablist" className="mb-6 flex gap-6 border-b border-hairline">
             {(["overview", "activity"] as const).map((t) => (
@@ -230,7 +228,9 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
 
         {/* right column: Your loan scrolls away, the action card stays under the top bar */}
         <div className="flex flex-col gap-4 self-stretch">
-          <YourLoanV2 />
+          <div className="hidden xl:block">
+            <YourLoanV2 />
+          </div>
           <div ref={actionRef} id="v2-action" className="scroll-mt-20 rounded-2xl border border-hairline bg-surface p-4 sm:p-5 xl:sticky xl:top-24">
             {featureTabs}
             <div className="mt-4 flex flex-col gap-3">{children}</div>

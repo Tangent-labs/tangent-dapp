@@ -154,7 +154,7 @@ export function ClaimPageV2() {
         </div>
 
         {/* summary: stays in view while the list scrolls */}
-        <div className="rounded-2xl border border-hairline bg-surface p-4 sm:p-5 xl:sticky xl:top-24">
+        <div className="rounded-2xl border border-hairline bg-surface p-4 sm:p-5 xl:sticky xl:top-6">
           <div className="flex items-center justify-between">
             <span className="text-[15px] font-semibold">Claim summary</span>
             <label className="flex cursor-pointer items-center gap-2 text-xs text-ink-2">

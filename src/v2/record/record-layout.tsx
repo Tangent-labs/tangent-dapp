@@ -62,7 +62,9 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
   useEffect(() => {
     const el = headRef.current
     if (!el) return
-    const io = new IntersectionObserver(([e]) => setStuck(!e.isIntersecting), { rootMargin: "-72px 0px 0px 0px" })
+    const io = new IntersectionObserver(([e]) => setStuck(!e.isIntersecting), {
+      rootMargin: window.matchMedia("(min-width: 1024px)").matches ? "0px" : "-64px 0px 0px 0px",
+    })
     io.observe(el)
     return () => io.disconnect()
   }, [])
@@ -115,7 +117,7 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
 
       <div className="mt-10 grid grid-cols-1 items-start gap-6 xl:grid-cols-[minmax(0,1fr)_392px]">
         <div className="min-w-0">
-          <div className="sticky top-16 z-30 h-0 lg:top-[72px]">
+          <div className="sticky top-16 z-30 h-0 lg:top-0">
             <AnimatePresence>
               {stuck && (
                 <motion.div
@@ -261,7 +263,7 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
         <div className="hidden flex-col gap-4 self-stretch xl:flex">
           <YourLoanV2 />
           {isDesktop && (
-            <div id="v2-action" className="sticky top-24 rounded-2xl border border-hairline bg-surface p-5">
+            <div id="v2-action" className="sticky top-6 rounded-2xl border border-hairline bg-surface p-5">
               {form}
             </div>
           )}

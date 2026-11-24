@@ -95,7 +95,21 @@ export function ShellV2({ children }: { children: ReactNode }) {
                 {collapsed ? <PegMiniV2 /> : <PegCardV2 />}
               </motion.div>
             </AnimatePresence>
-            {!collapsed && <Socials />}
+            {/* account area (was the top bar): protocol TVL, then the wallet, pinned to the bottom like an app sidebar */}
+            {collapsed ? (
+              <div className="mt-3 flex flex-col items-center gap-2">
+                <WalletConnexionContent placement="compact" />
+              </div>
+            ) : (
+              <div className="mt-3 border-t border-hairline pt-3">
+                <div className={cn("mb-2 flex items-center justify-between px-1 text-[13px]", !protocolCurrentTVL?.total && "animate-pulse")}>
+                  <span className="text-ink-3">Protocol TVL</span>
+                  <span className="font-semibold tabular-nums">{protocolCurrentTVL?.total ? `${formatMillions(protocolCurrentTVL.total)}` : "-"}</span>
+                </div>
+                <WalletConnexionContent placement="sidebar" className="w-full" />
+                <Socials />
+              </div>
+            )}
           </div>
         </motion.aside>
         <button
@@ -113,11 +127,11 @@ export function ShellV2({ children }: { children: ReactNode }) {
       <MoreSheet open={drawer} onClose={() => setDrawer(false)} path={path} />
 
       <div className="min-w-0 flex-1">
-        <header className="sticky top-0 z-40 bg-page">
+        <header className="sticky top-0 z-40 bg-page lg:hidden">
           {/* same width and side padding as <main>; the hairline stops at the content edges, like Aave Pro */}
           <div className="mx-auto w-full max-w-[1520px] px-4 md:px-6 lg:px-8">
-            <div className="flex h-16 items-center gap-3 border-b border-hairline lg:h-[72px]">
-              <span className="min-w-0 flex-1 lg:hidden">
+            <div className="flex h-16 items-center gap-3 border-b border-hairline">
+              <span className="min-w-0 flex-1">
                 <FitBrand />
               </span>
               <div
@@ -133,7 +147,9 @@ export function ShellV2({ children }: { children: ReactNode }) {
             </div>
           </div>
         </header>
-        <main className="mx-auto w-full max-w-[1520px] px-4 pb-[calc(96px+env(safe-area-inset-bottom))] pt-6 md:px-6 md:pt-8 lg:px-8 lg:pb-20">{children}</main>
+        <main className="mx-auto w-full max-w-[1520px] px-4 pb-[calc(96px+env(safe-area-inset-bottom))] pt-6 md:px-6 md:pt-8 lg:px-8 lg:pb-20 lg:pt-10">
+          {children}
+        </main>
       </div>
     </div>
   )

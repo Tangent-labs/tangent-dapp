@@ -223,7 +223,7 @@ export function MarketListV2() {
 
       {/* toolbar: same filters as the live list (single select), plus sort and view */}
       {/* toolbar stays under the top bar while the table scrolls (Aave Pro) */}
-      <div className="z-20 -mx-4 mb-4 mt-10 flex flex-wrap items-center gap-2 bg-page px-4 py-3 md:sticky md:top-16 md:-mx-6 md:mt-12 md:px-6 lg:top-[72px] lg:-mx-8 lg:px-8">
+      <div className="z-20 -mx-4 mb-4 mt-10 flex flex-wrap items-center gap-2 bg-page px-4 py-3 md:sticky md:top-16 md:-mx-6 md:mt-12 md:px-6 lg:top-0 lg:-mx-8 lg:px-8">
         <div role="tablist" className="flex h-10 w-full items-center gap-0.5 rounded-[10px] bg-white/[0.03] p-1 ring-1 ring-inset ring-hairline sm:w-auto">
           {SHOW.map((s) => (
             <button

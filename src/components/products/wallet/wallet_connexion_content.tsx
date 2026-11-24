@@ -11,17 +11,18 @@ import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { Popover, PopoverAnchor, PopoverContent } from "@/components/ui/popover"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { ChevronDown, Copy, LayoutGrid, LogOut } from "lucide-react"
-import Link from "next/link"
+import { ChevronDown, Copy, LogOut, Wallet } from "lucide-react"
 import { UI_V2 } from "@/v2/ui"
 import { WalletOrb } from "@/v2/shell/wallet-orb"
 import { ActionSheet, useIsMobile } from "@/v2/ui/mobile-action-bar"
 
 type WalletConnexionContentProps = {
   className?: string
+  /** V2 only. "sidebar": full width at the bottom of the desktop sidebar, menu opens above. "compact": orb or icon only, for the collapsed sidebar. */
+  placement?: "bar" | "sidebar" | "compact"
 }
 
-export function WalletConnexionContent({ className }: WalletConnexionContentProps) {
+export function WalletConnexionContent({ className, placement = "bar" }: WalletConnexionContentProps) {
   const { copied, copy } = useClipboard()
 
   const { USGsUSGMetrics, TANsTANMetrics } = useUSGContext()
@@ -43,16 +44,46 @@ export function WalletConnexionContent({ className }: WalletConnexionContentProp
       { token: "USG", amount: USGsUSGMetrics?.USGBalance, price: USGsUSGMetrics?.USGPrice },
       { token: "sUSG", amount: USGsUSGMetrics?.sUSGBalance, price: USGsUSGMetrics?.sUSGPrice },
     ]
+    const compact = placement === "compact"
     const trigger = !ready ? (
+      compact ? (
+        <button
+          type="button"
+          onClick={() => (isConnected ? setPopoverOpen((v) => !v) : connect())}
+          aria-label={isConnected ? "Switch network" : "Connect wallet"}
+          title={isConnected ? "Switch network" : "Connect wallet"}
+          className={cn(
+            "grid h-10 w-10 shrink-0 place-items-center rounded-[10px] bg-action-fill text-white transition-colors hover:bg-action-fill-hover",
+            className
+          )}
+        >
+          <Wallet className="h-[18px] w-[18px]" strokeWidth={1.75} />
+        </button>
+      ) : (
+        <button
+          type="button"
+          onClick={() => (isConnected ? setPopoverOpen((v) => !v) : connect())}
+          className={cn(
+            "h-10 shrink-0 rounded-[10px] bg-action-fill px-5 text-[14px] font-semibold text-white transition-colors hover:bg-action-fill-hover active:scale-[0.98]",
+            className
+          )}
+        >
+          {isConnected ? "Switch network" : "Connect wallet"}
+        </button>
+      )
+    ) : compact ? (
       <button
         type="button"
-        onClick={() => (isConnected ? setPopoverOpen((v) => !v) : connect())}
+        onClick={() => setPopoverOpen((v) => !v)}
+        aria-expanded={popoverOpen}
+        aria-label={`Wallet ${buttonLabel}`}
+        title={buttonLabel}
         className={cn(
-          "h-10 shrink-0 rounded-[10px] bg-action-fill px-5 text-[14px] font-semibold text-white transition-colors hover:bg-action-fill-hover active:scale-[0.98]",
+          "grid h-10 w-10 shrink-0 place-items-center rounded-[10px] border border-hairline bg-white/[0.03] transition-colors hover:border-white/15",
           className
         )}
       >
-        {isConnected ? "Switch network" : "Connect wallet"}
+        <WalletOrb address={currentAddress} size={24} />
       </button>
     ) : (
       <button
@@ -65,8 +96,14 @@ export function WalletConnexionContent({ className }: WalletConnexionContentProp
         )}
       >
         <WalletOrb address={currentAddress} size={24} />
-        <span className="tabular-nums">{buttonLabel}</span>
-        <ChevronDown className={cn("h-3.5 w-3.5 text-ink-3 transition-transform duration-200", popoverOpen && "rotate-180")} strokeWidth={2} />
+        <span className={cn("tabular-nums", placement === "sidebar" && "flex-1 text-left")}>{buttonLabel}</span>
+        <ChevronDown
+          className={cn(
+            "h-3.5 w-3.5 text-ink-3 transition-transform duration-200",
+            placement === "sidebar" ? !popoverOpen && "rotate-180" : popoverOpen && "rotate-180"
+          )}
+          strokeWidth={2}
+        />
       </button>
     )
     const menu = (
@@ -96,13 +133,7 @@ export function WalletConnexionContent({ className }: WalletConnexionContentProp
             </div>
           ))}
         </div>
-        <Link
-          href="/dashboard"
-          onClick={() => setPopoverOpen(false)}
-          className="flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-[13px] transition-colors hover:bg-white/[0.06]"
-        >
-          <LayoutGrid className="h-4 w-4 text-ink-2" strokeWidth={1.75} /> Dashboard
-        </Link>
+        {/* a "Dashboard" entry comes back with the user portfolio page */}
         <button
           type="button"
           onClick={() => {
@@ -137,7 +168,8 @@ export function WalletConnexionContent({ className }: WalletConnexionContentProp
 
         {isConnected && currentAddress && (
           <PopoverContent
-            align="end"
+            side={placement === "bar" ? "bottom" : placement === "compact" ? "right" : "top"}
+            align={placement === "bar" ? "end" : placement === "compact" ? "end" : "start"}
             sideOffset={8}
             className="w-[260px] rounded-xl border border-white/10 bg-raised p-1.5 font-sans shadow-[0_16px_40px_rgba(0,0,0,0.5)]"
           >

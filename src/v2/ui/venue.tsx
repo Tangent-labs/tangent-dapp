@@ -3,25 +3,30 @@
 import { cn } from "@/lib/utils"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 
-/** Where a market's collateral lives, as [logo, label] pairs, keyed by the live marketType. Logos are protocol tokens already in /medias/tokens. */
+/**
+ * Where a market's collateral lives, as [logo, label] pairs, keyed by the live marketType.
+ * Same protocols and names as the live list (TYPE_TO_MARKET in usg_market_controller): Convex FXN markets also run on f(x) Protocol.
+ * Logos are protocol tokens already in /medias/tokens.
+ */
 export const VENUE: Record<string, [string, string][]> = {
   Convex_CRV: [
-    ["CRV", "Curve LP"],
+    ["CRV", "Curve"],
     ["CVX", "Convex"],
   ],
   Convex_FXN: [
-    ["CRV", "Curve LP"],
+    ["CRV", "Curve"],
     ["CVX", "Convex"],
+    ["FXN", "f(x) Protocol"],
   ],
   STAKEDAO_CRV_Vault: [
-    ["CRV", "Curve LP"],
+    ["CRV", "Curve"],
     ["SDT", "Stake DAO"],
   ],
-  CRV_Gauge: [["CRV", "Curve LP"]],
-  Pendle_PT: [["PENDLE", "Pendle PT"]],
+  CRV_Gauge: [["CRV", "Curve"]],
+  Pendle_PT: [["PENDLE", "Pendle"]],
 }
 
-/** "(Curve) Curve LP · (Convex) Convex": each protocol logo before its name. Falls back to the raw type. */
+/** "(Curve) Curve · (Convex) Convex": each protocol logo before its name. Falls back to the raw type. */
 export function Venue({ type, className }: { type: string; className?: string }) {
   const parts = VENUE[type]
   if (!parts) return type ? <span className={cn("truncate", className)}>{type}</span> : null

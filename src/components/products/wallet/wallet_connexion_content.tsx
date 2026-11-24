@@ -15,6 +15,7 @@ import { ChevronDown, Copy, LogOut, Wallet } from "lucide-react"
 import { UI_V2 } from "@/v2/ui"
 import { WalletOrb } from "@/v2/shell/wallet-orb"
 import { ActionSheet, useIsMobile } from "@/v2/ui/mobile-action-bar"
+import { AppearancePanel, AppearanceRow } from "@/v2/theme/appearance-menu"
 
 type WalletConnexionContentProps = {
   className?: string
@@ -29,7 +30,13 @@ export function WalletConnexionContent({ className, placement = "bar" }: WalletC
 
   const { connect, disconnect, isConnected, isChainConnected, currentAddress } = useWalletConnexionContext()
 
-  const [popoverOpen, setPopoverOpen] = useState(false)
+  const [popoverOpen, setPopoverOpenState] = useState(false)
+  // V2 menu view: the account, or the Appearance choices in its place; back to the account each time it opens
+  const [menuView, setMenuView] = useState<"account" | "appearance">("account")
+  const setPopoverOpen = (v: boolean | ((prev: boolean) => boolean)) => {
+    setMenuView("account")
+    setPopoverOpenState(v)
+  }
   const mobile = useIsMobile()
 
   const buttonLabel = useMemo(() => {
@@ -53,7 +60,7 @@ export function WalletConnexionContent({ className, placement = "bar" }: WalletC
           aria-label={isConnected ? "Switch network" : "Connect wallet"}
           title={isConnected ? "Switch network" : "Connect wallet"}
           className={cn(
-            "grid h-10 w-10 shrink-0 place-items-center rounded-[10px] bg-action-fill text-white transition-colors hover:bg-action-fill-hover",
+            "grid h-10 w-10 shrink-0 place-items-center rounded-[10px] bg-action-fill text-on-fill transition-colors hover:bg-action-fill-hover",
             className
           )}
         >
@@ -64,7 +71,7 @@ export function WalletConnexionContent({ className, placement = "bar" }: WalletC
           type="button"
           onClick={() => (isConnected ? setPopoverOpen((v) => !v) : connect())}
           className={cn(
-            "h-10 shrink-0 rounded-[10px] bg-action-fill px-5 text-[14px] font-semibold text-white transition-colors hover:bg-action-fill-hover active:scale-[0.98]",
+            "h-10 shrink-0 rounded-[10px] bg-action-fill px-5 text-[14px] font-semibold text-on-fill transition-colors hover:bg-action-fill-hover active:scale-[0.98]",
             className
           )}
         >
@@ -106,46 +113,51 @@ export function WalletConnexionContent({ className, placement = "bar" }: WalletC
         />
       </button>
     )
-    const menu = (
-      <>
-        <div className="flex items-center gap-2.5 px-2.5 pb-2.5 pt-1.5">
-          <WalletOrb address={currentAddress} size={32} />
-          <div className="min-w-0">
-            <div className="text-[13px] font-medium tabular-nums">{formatAddress(currentAddress)}</div>
-            <button
-              type="button"
-              onClick={() => copy(currentAddress)}
-              className="flex items-center gap-1 text-xs text-ink-3 transition-colors hover:text-white"
-            >
-              <Copy className="h-3 w-3" strokeWidth={1.75} />
-              {copied ? "Copied" : "Copy address"}
-            </button>
-          </div>
-        </div>
-        <div className="mx-1 mb-1.5 grid grid-cols-2 gap-1.5">
-          {balances.map((b) => (
-            <div key={b.token} className="rounded-lg bg-white/[0.04] px-2.5 py-2">
-              <div className="flex items-center gap-1.5 text-xs text-ink-2">
-                <TokenImage token={b.token} size={16} /> {b.token}
-              </div>
-              <div className="mt-1 text-[13px] font-medium tabular-nums">{formatBigInt(b.amount, 18, 2)}</div>
-              <div className="text-[11px] tabular-nums text-ink-3">${formatBigInt(((b.amount || 0n) * (b.price || 0n)) / BigInt(10 ** 18), 18, 2)}</div>
+    const menu =
+      menuView === "appearance" ? (
+        <AppearancePanel onBack={() => setMenuView("account")} />
+      ) : (
+        <>
+          <div className="flex items-center gap-2.5 px-2.5 pb-2.5 pt-1.5">
+            <WalletOrb address={currentAddress} size={32} />
+            <div className="min-w-0">
+              <div className="text-[13px] font-medium tabular-nums">{formatAddress(currentAddress)}</div>
+              <button
+                type="button"
+                onClick={() => copy(currentAddress)}
+                className="flex items-center gap-1 text-xs text-ink-3 transition-colors hover:text-white"
+              >
+                <Copy className="h-3 w-3" strokeWidth={1.75} />
+                {copied ? "Copied" : "Copy address"}
+              </button>
             </div>
-          ))}
-        </div>
-        {/* a "Dashboard" entry comes back with the user portfolio page */}
-        <button
-          type="button"
-          onClick={() => {
-            disconnect()
-            setPopoverOpen(false)
-          }}
-          className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-[13px] transition-colors hover:bg-white/[0.06]"
-        >
-          <LogOut className="h-4 w-4 text-ink-2" strokeWidth={1.75} /> Disconnect
-        </button>
-      </>
-    )
+          </div>
+          <div className="mx-1 mb-1.5 grid grid-cols-2 gap-1.5">
+            {balances.map((b) => (
+              <div key={b.token} className="rounded-lg bg-white/[0.04] px-2.5 py-2">
+                <div className="flex items-center gap-1.5 text-xs text-ink-2">
+                  <TokenImage token={b.token} size={16} /> {b.token}
+                </div>
+                <div className="mt-1 text-[13px] font-medium tabular-nums">{formatBigInt(b.amount, 18, 2)}</div>
+                <div className="text-[11px] tabular-nums text-ink-3">${formatBigInt(((b.amount || 0n) * (b.price || 0n)) / BigInt(10 ** 18), 18, 2)}</div>
+              </div>
+            ))}
+          </div>
+          {/* a "Dashboard" entry comes back with the user portfolio page */}
+          <AppearanceRow onOpen={() => setMenuView("appearance")} />
+          <div className="mx-1 my-1 h-px bg-divider" />
+          <button
+            type="button"
+            onClick={() => {
+              disconnect()
+              setPopoverOpen(false)
+            }}
+            className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-[13px] transition-colors hover:bg-white/[0.06]"
+          >
+            <LogOut className="h-4 w-4 text-ink-2" strokeWidth={1.75} /> Disconnect
+          </button>
+        </>
+      )
     // phones: the account menu opens as a bottom sheet (Aave mobile), desktop keeps the popover
     if (mobile)
       return (
@@ -171,7 +183,7 @@ export function WalletConnexionContent({ className, placement = "bar" }: WalletC
             side={placement === "bar" ? "bottom" : placement === "compact" ? "right" : "top"}
             align={placement === "bar" ? "end" : placement === "compact" ? "end" : "start"}
             sideOffset={8}
-            className="w-[260px] rounded-xl border border-white/10 bg-raised p-1.5 font-sans shadow-[0_16px_40px_rgba(0,0,0,0.5)]"
+            className="w-[260px] rounded-xl border border-white/10 bg-raised p-1.5 font-sans shadow-pop"
           >
             {menu}
           </PopoverContent>

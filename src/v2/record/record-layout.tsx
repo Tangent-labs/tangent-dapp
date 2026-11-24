@@ -252,7 +252,7 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
                   <div className="mt-10 space-y-10">
                     <VAPRCalculator />
 
-                    <Section title="Market" note="Rate model, borrow history, platform and contracts. Every transaction is under Activity.">
+                    <Section title="Market" note="Rate model, borrow history, collateral details and contracts.">
                       <div className="space-y-4">
                         <MarketDetails />
                         <MarketDetailsContracts marketContracts={marketContracts} />

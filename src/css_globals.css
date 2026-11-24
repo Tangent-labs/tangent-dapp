@@ -394,3 +394,7 @@ html:has(.v2-shell)::-webkit-scrollbar-thumb,
     display: none !important;
   }
 }
+/* V2: keep the scrollbar room reserved, so locking the page under a sheet or a dialog does not shift the layout */
+html:has(.v2-shell) {
+  scrollbar-gutter: stable;
+}

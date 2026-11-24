@@ -505,9 +505,35 @@ html[data-ui="v2"][data-theme="light"] .v2-scroll::-webkit-scrollbar-thumb {
 html[data-ui="v2"][data-theme="light"] img[src$="/medias/v2/tangent-logo-typo.svg"] {
   filter: invert(1);
 }
-/* every token and protocol logo gets Aave Pro's hairline ring on the light theme: 1px inside its own edge, drawn by the
-   SVG filter in src/v2/theme/logo-ring.tsx, so pairs and non-round logos get it without being cropped. TokenImage and
-   the boosts list mark their images with data-logo. */
-html[data-ui="v2"][data-theme="light"] img[data-logo] {
+/* logos drawn on a white disc get Aave Pro's grey hairline ring on the light theme: 1px inside their own edge, drawn by
+   the SVG filter in src/v2/theme/logo-ring.tsx (also fits the pairs that include a white token). The list of those
+   logos is in src/v2/theme/logos.ts; TokenImage and the boosts list set data-ring. */
+html[data-ui="v2"][data-theme="light"] img[data-ring] {
   filter: url(#tgt-logo-ring);
+}
+
+/* V2 charts: the latest point sends a radar pulse (Aave Pro timing). Still for reduced motion. */
+@keyframes v2-pulse {
+  0% {
+    opacity: 0.45;
+    transform: scale(1);
+  }
+  70%,
+  100% {
+    opacity: 0;
+    transform: scale(3.2);
+  }
+}
+.v2-pulse {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: v2-pulse 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .v2-pulse {
+    animation: none;
+    opacity: 0.18;
+    transform: scale(2.2);
+  }
 }

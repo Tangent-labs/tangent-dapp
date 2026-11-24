@@ -13,7 +13,7 @@ import { ChartTooltipV2 } from "./chart"
  * - the dates show on hover only, first date bottom left and "Now" bottom right;
  * - a solid hairline cursor, ringed points, the tooltip pinned at the top (date, time when the data is intraday, one
  *   row per series, a total for stacked series);
- * - the line fades in from the left edge, the latest point carries a soft halo.
+ * - the line fades in from the left edge, the latest point sends a radar pulse.
  * Every V2 time chart goes through this component, so they all behave the same.
  */
 export type TimeSeries = { key: string; label: string; color: string; fill?: boolean }
@@ -229,7 +229,8 @@ export function TimeChartV2<T extends object>({
                       <g />
                     ) : (
                       <g>
-                        <circle cx={cx} cy={cy} r={8} fill={s.color} opacity={0.18} />
+                        {/* radar pulse, as Aave Pro: grows to 3.2x while it fades, every 2s */}
+                        <circle cx={cx} cy={cy} r={3.5} fill={s.color} className="v2-pulse" />
                         <circle cx={cx} cy={cy} r={3.5} fill={s.color} />
                       </g>
                     )

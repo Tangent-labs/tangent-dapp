@@ -14,7 +14,7 @@ import { useGraphPeriodSelection } from "@/hooks/useGraphPeriodSelection"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { InnerTooltip } from "@/components/design_system/structure/inner_tooltip"
 import { formatPeriodLabel, formatYAxis, computeYAxisTicks } from "../dashboard_controller"
-import { COLOR } from "@/v2/theme/colors"
+import { COLOR, SERIES } from "@/v2/theme/colors"
 
 type GraphProtocolRevenuesProps = {
   protocolRevenues: ProtocolRevenue[]
@@ -94,7 +94,7 @@ export const GraphProtocolRevenues = ({ totalRevenues, protocolRevenues, selecte
               <ChartLegendV2
                 items={[
                   { color: COLOR.data, label: "Interest", value: `${((ir / sum) * 100).toFixed(0)}%` },
-                  { color: "#a79bff", label: "Rewards", value: `${((reward / sum) * 100).toFixed(0)}%` },
+                  { color: SERIES.violet, label: "Rewards", value: `${((reward / sum) * 100).toFixed(0)}%` },
                 ]}
               />
             )
@@ -150,8 +150,11 @@ export const GraphProtocolRevenues = ({ totalRevenues, protocolRevenues, selecte
                         className="absolute bottom-0 left-0 flex w-full flex-col-reverse overflow-hidden rounded-md transition-opacity duration-300 group-hover:opacity-80"
                         style={{ height: `${el?.total > 0 ? (el.total / axisMax) * 100 : 0}%` }}
                       >
-                        <div className="w-full bg-[#0075FF]" style={{ height: `${el?.total > 0 ? (el.ir / el.total) * 100 : 0}%` }} />
-                        <div className="w-full bg-[#a79bff]" style={{ height: `${el?.total > 0 ? (el.reward / el.total) * 100 : 0}%` }} />
+                        <div className="w-full bg-data-primary" style={{ height: `${el?.total > 0 ? (el.ir / el.total) * 100 : 0}%` }} />
+                        <div
+                          className="w-full bg-[color:var(--tgt-v2-series-violet)]"
+                          style={{ height: `${el?.total > 0 ? (el.reward / el.total) * 100 : 0}%` }}
+                        />
                         {el?.period === visibleRevenues.at(-1)?.period && (
                           <div
                             className="pointer-events-none absolute inset-0"

@@ -69,7 +69,7 @@ export const GraphUSGsUSG = ({
                   share: `${((USGCurrentSupply / (sUSGCurrentSupply + USGCurrentSupply)) * 100).toFixed(1)}%`,
                 },
                 {
-                  color: "#a79bff",
+                  color: SERIES.violet,
                   label: "sUSG",
                   value: formatMillions(sUSGCurrentSupply),
                   share: `${((sUSGCurrentSupply / (sUSGCurrentSupply + USGCurrentSupply)) * 100).toFixed(1)}%`,

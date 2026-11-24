@@ -4,6 +4,8 @@ import { Roll } from "@/v2/ui/roll"
 import { useMemo } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { cn } from "@/lib/utils"
+import { ArrowRight, CircleCheck } from "lucide-react"
+import { StatusChip } from "@/v2/ui/status-chip"
 import { formatBigIntAsNumber } from "@/lib/number_formatter"
 import { getLTVColor, isVolatileCollateral } from "@/lib/risk_color"
 import { TERMS, Term } from "@/v2/ui/term"
@@ -77,10 +79,9 @@ export function YourLoanV2() {
           <div className="rounded-2xl border border-hairline bg-surface p-5">
             <div className="flex items-center justify-between">
               <span className="text-[15px] font-semibold">Your loan</span>
-              <span className="flex items-center gap-1.5 text-xs text-ink-2">
-                <span className={cn("h-1.5 w-1.5 rounded-full", typing ? "bg-action" : "bg-white/80")} />
+              <StatusChip icon={typing ? <ArrowRight className="text-action" strokeWidth={2} /> : <CircleCheck strokeWidth={2} />}>
                 {typing ? (hasLoan ? "Today → after this action" : "After this action") : "Open"}
-              </span>
+              </StatusChip>
             </div>
 
             <div className="mt-4 grid grid-cols-2 gap-4">

@@ -1,5 +1,7 @@
 "use client"
 
+import { Check, Minus } from "lucide-react"
+import { StatusChip } from "@/v2/ui/status-chip"
 import { useState } from "react"
 import { useUSGContext } from "@/components/products/usg/usg_context"
 import { useUsgAirdropContext } from "@/components/products/usg/airdrop/usg_airdrop_context"
@@ -82,12 +84,13 @@ function Stat({ label, value, sub, first }: { label: string; value: string; sub?
   )
 }
 
-/** Status as dot + word, never a tinted pill. */
+/** Status as a neutral chip: a check when on, a dash when off (same chip as the market statuses). */
 export function StatusDot({ on, onLabel = "Active", offLabel = "Inactive" }: { on: boolean; onLabel?: string; offLabel?: string }) {
-  return (
-    <span className="inline-flex items-center gap-2 text-[13px]">
-      <span className={on ? "size-2 rounded-full bg-action" : "size-2 rounded-full bg-white/25"} />
-      <span className={on ? "text-white" : "text-ink-3"}>{on ? onLabel : offLabel}</span>
-    </span>
+  return on ? (
+    <StatusChip icon={<Check className="text-action" strokeWidth={2.5} />}>{onLabel}</StatusChip>
+  ) : (
+    <StatusChip muted icon={<Minus strokeWidth={2} />}>
+      {offLabel}
+    </StatusChip>
   )
 }

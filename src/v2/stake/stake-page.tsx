@@ -6,8 +6,8 @@ import { VoidTexture } from "@/v2/ui/void-texture"
 import Link from "next/link"
 import { useMemo, useState } from "react"
 import { formatUnits } from "viem"
-import { ArrowDown, ArrowUpRight } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { ArrowDown, ArrowRight, ArrowUpRight, CircleCheck } from "lucide-react"
+import { StatusChip } from "@/v2/ui/status-chip"
 import { useUSGStakeContext } from "@/components/products/usg/stake/usg_stake_context"
 import { computeProjection } from "@/components/products/usg/stake/usg_stake_controller"
 import { PositionAPR } from "@/components/products/usg/stake/components/position_apr"
@@ -251,10 +251,9 @@ export function StakePageV2() {
             <div className="rounded-2xl border border-hairline bg-surface p-5">
               <div className="flex items-center justify-between">
                 <span className="text-[15px] font-semibold">Your position</span>
-                <span className="flex items-center gap-1.5 text-xs text-ink-2">
-                  <span className={cn("h-1.5 w-1.5 rounded-full", typing ? "bg-action" : "bg-white/80")} />
+                <StatusChip icon={typing ? <ArrowRight className="text-action" strokeWidth={2} /> : <CircleCheck strokeWidth={2} />}>
                   {typing ? "Today, then after" : "Open"}
-                </span>
+                </StatusChip>
               </div>
               <div className="mt-4 space-y-3">
                 {rows.map((r) => (

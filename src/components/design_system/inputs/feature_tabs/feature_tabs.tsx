@@ -2,6 +2,7 @@
 
 import { Address } from "viem"
 import { cn } from "@/lib/utils"
+import { Pause } from "lucide-react"
 import { UI_V2 } from "@/v2/ui"
 import { motion } from "framer-motion"
 import { LayoutGroup } from "framer-motion"
@@ -88,7 +89,7 @@ export const FeatureTabs = ({
                 )}
               >
                 {t.label}
-                {t.paused && <span className="ml-1.5 inline-block h-1.5 w-1.5 rounded-full bg-warning align-middle" title="Paused" />}
+                {t.paused && <Pause aria-label="Paused" className="ml-1 inline-block h-3 w-3 fill-current align-[-1px] text-warning" strokeWidth={0} />}
                 {active && (
                   <motion.span
                     layoutId={`v2-action-${marketAddress}`}

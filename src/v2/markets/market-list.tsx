@@ -21,6 +21,7 @@ import { Term } from "@/v2/ui/term"
 import { Venue } from "@/v2/ui/venue"
 import { SelectMenu } from "@/v2/ui/select-menu"
 import { Sparkline } from "@/v2/ui/sparkline"
+import { StatusChip } from "@/v2/ui/status-chip"
 
 /** Market kinds as the docs define them (docs.tangent.finance, markets overview). */
 const KINDS: Record<string, { title: string; rule: string }> = {
@@ -417,22 +418,12 @@ function Status({ r }: { r: ListRowData }) {
   if (!paused && !r.userHasDeposited) return null
   return (
     <span className="inline-flex shrink-0 items-center gap-1.5">
-      {r.userHasDeposited && <StatusChip icon={<Wallet className="h-3 w-3" strokeWidth={2} />}>Your deposit</StatusChip>}
+      {r.userHasDeposited && <StatusChip icon={<Wallet strokeWidth={2} />}>Your deposit</StatusChip>}
       {paused && (
-        <StatusChip icon={<Pause className="h-3 w-3 fill-current text-warning" strokeWidth={0} />}>
+        <StatusChip icon={<Pause className="fill-current text-warning" strokeWidth={0} />}>
           {r.isDepositPaused ? "Deposits paused" : r.isBorrowPaused ? "Borrowing paused" : "Leverage paused"}
         </StatusChip>
       )}
-    </span>
-  )
-}
-
-/** Neutral status chip: hairline, quiet fill, an icon that carries the meaning (color only on the warning glyph). */
-function StatusChip({ icon, children }: { icon: ReactNode; children: ReactNode }) {
-  return (
-    <span className="inline-flex h-5 items-center gap-1 whitespace-nowrap rounded-[6px] bg-white/[0.05] px-1.5 text-[11px] font-medium leading-none text-ink-2 ring-1 ring-inset ring-hairline">
-      {icon}
-      {children}
     </span>
   )
 }

@@ -42,7 +42,7 @@ const SORTS = [
   { value: "tvl", label: "TVL" },
   { value: "vapr", label: "vAPR" },
   { value: "maxvapr", label: "Max lev. vAPR" },
-  { value: "borrowRate", label: "Borrow rate", asc: true },
+  { value: "borrowRate", label: "Borrow APY", asc: true },
   { value: "borrowed", label: "Borrowed" },
   { value: "collateral", label: "Collateral", asc: true },
 ]
@@ -358,7 +358,7 @@ export function MarketListV2() {
                       Collateral vAPR
                     </SortHead>
                     <SortHead k="borrowRate" sort={sort} onSort={toggleSort} info="Interest rate that borrowers pay on their outstanding debt.">
-                      Borrow rate
+                      Borrow APY
                     </SortHead>
                     <SortHead k="maxvapr" sort={sort} onSort={toggleSort} info="Net vAPR at max leverage.">
                       Max lev. vAPR
@@ -684,7 +684,7 @@ function Card({ r }: { r: ListRowData }) {
             </span>
           </div>
           <div className="flex items-baseline justify-between gap-3">
-            <span className="text-ink-2">Borrow rate</span>
+            <span className="text-ink-2">Borrow APY</span>
             <span className="tabular-nums">
               <span className="font-medium">{ind(r, "borrowRate")?.value}</span>
               <span className="ml-1.5 text-ink-3">{r.isFixedRate ? "Fixed" : "Variable"}</span>
@@ -797,7 +797,7 @@ function MobileRow({ r }: { r: ListRowData }) {
       </div>
       <div className="mt-3 grid grid-cols-3 gap-2 border-t border-divider pt-3 text-[13px]">
         <span className="min-w-0">
-          <span className="block text-[11px] text-ink-3">Borrow rate</span>
+          <span className="block text-[11px] text-ink-3">Borrow APY</span>
           <span className="block truncate font-medium tabular-nums">{ind(r, "borrowRate")?.value ?? "-"}</span>
         </span>
         <span className="min-w-0">

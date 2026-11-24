@@ -5,12 +5,12 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { ReactNode, useEffect, useState, useSyncExternalStore } from "react"
 import { AnimatePresence, motion } from "framer-motion"
-import { ArrowUpRight, ChevronLeft, Menu, X } from "lucide-react"
+import { ArrowUpRight, ChevronLeft, Ellipsis } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { formatMillions } from "@/lib/number_formatter"
 import { useRootContext } from "@/components/products/root/root_context"
 import { WalletConnexionContent } from "@/components/products/wallet/wallet_connexion_content"
-import { NAV, SOCIALS, isItemActive } from "./nav"
+import { NAV, NavItem, SOCIALS, isItemActive } from "./nav"
 import { PegCardV2, PegMiniV2 } from "./peg-card"
 
 const KEY = "tangent:sidebar-collapsed"
@@ -108,58 +108,15 @@ export function ShellV2({ children }: { children: ReactNode }) {
         </button>
       </div>
 
-      {/* mobile drawer */}
-      <AnimatePresence>
-        {drawer && (
-          <>
-            <motion.div
-              key="scrim"
-              className="fixed inset-0 z-50 bg-black/60 lg:hidden"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setDrawer(false)}
-            />
-            <motion.aside
-              key="drawer"
-              initial={{ x: "-100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "-100%" }}
-              transition={{ type: "spring", visualDuration: 0.3, bounce: 0.05 }}
-              className="fixed inset-y-0 left-0 z-50 flex w-[280px] flex-col border-r border-hairline bg-sidebar pb-4 lg:hidden"
-            >
-              <div className="flex h-16 shrink-0 items-center justify-between px-5">
-                <Brand />
-                <button
-                  onClick={() => setDrawer(false)}
-                  aria-label="Close menu"
-                  className="grid h-8 w-8 place-items-center rounded-lg text-ink-2 hover:bg-white/[0.06]"
-                >
-                  <X className="h-4 w-4" strokeWidth={1.75} />
-                </button>
-              </div>
-              <Nav path={path} collapsed={false} />
-              <div className="px-3">
-                <PegCardV2 />
-                <Socials />
-              </div>
-            </motion.aside>
-          </>
-        )}
-      </AnimatePresence>
+      {/* mobile: tab bar at the bottom (thumb reach) and a sheet for everything else */}
+      <MobileTabBar path={path} onMore={() => setDrawer(true)} moreOpen={drawer} />
+      <MoreSheet open={drawer} onClose={() => setDrawer(false)} path={path} />
 
       <div className="min-w-0 flex-1">
         <header className="sticky top-0 z-40 bg-page">
           {/* same width and side padding as <main>; the hairline stops at the content edges, like Aave Pro */}
           <div className="mx-auto w-full max-w-[1520px] px-4 md:px-6 lg:px-8">
             <div className="flex h-16 items-center gap-3 border-b border-hairline lg:h-[72px]">
-              <button
-                onClick={() => setDrawer(true)}
-                aria-label="Open menu"
-                className="grid h-9 w-9 place-items-center rounded-lg text-ink-2 hover:bg-white/[0.06] lg:hidden"
-              >
-                <Menu className="h-5 w-5" strokeWidth={1.75} />
-              </button>
               <span className="lg:hidden">
                 <Brand />
               </span>
@@ -176,7 +133,7 @@ export function ShellV2({ children }: { children: ReactNode }) {
             </div>
           </div>
         </header>
-        <main className="mx-auto w-full max-w-[1520px] px-4 pb-20 pt-8 md:px-6 lg:px-8">{children}</main>
+        <main className="mx-auto w-full max-w-[1520px] px-4 pb-[calc(96px+env(safe-area-inset-bottom))] pt-6 md:px-6 md:pt-8 lg:px-8 lg:pb-20">{children}</main>
       </div>
     </div>
   )
@@ -284,5 +241,149 @@ function Socials() {
         </a>
       ))}
     </div>
+  )
+}
+
+/** The four destinations people use most, one thumb away. Everything else lives in the More sheet. */
+const TABS: NavItem[] = NAV[0].items
+const MORE = NAV.slice(1)
+
+function MobileTabBar({ path, onMore, moreOpen }: { path: string; onMore: () => void; moreOpen: boolean }) {
+  const inMore = MORE.some((g) => g.items.some((it) => isItemActive(it, path)))
+  return (
+    <nav
+      aria-label="Main"
+      className="fixed inset-x-0 bottom-0 z-50 border-t border-hairline bg-[rgba(15,15,15,0.96)] pb-[env(safe-area-inset-bottom)] backdrop-blur-md lg:hidden"
+    >
+      <div className="mx-auto grid h-16 max-w-[560px] grid-cols-5">
+        {TABS.map((it) => {
+          const active = isItemActive(it, path) && !moreOpen
+          const Icon = it.icon
+          return (
+            <Link
+              key={it.label}
+              href={it.href}
+              aria-current={active ? "page" : undefined}
+              className={cn(
+                "relative flex flex-col items-center justify-center gap-1 text-[11px] font-medium transition-colors",
+                active ? "text-white" : "text-ink-3 active:text-ink-2"
+              )}
+            >
+              {active && (
+                <motion.span
+                  layoutId="v2-tab-active"
+                  className="absolute top-0 h-0.5 w-8 rounded-full bg-white"
+                  transition={{ type: "spring", visualDuration: 0.3, bounce: 0.15 }}
+                />
+              )}
+              <Icon className="h-5 w-5" strokeWidth={1.75} />
+              {it.label}
+            </Link>
+          )
+        })}
+        <button
+          type="button"
+          onClick={onMore}
+          aria-expanded={moreOpen}
+          aria-haspopup="dialog"
+          className={cn(
+            "relative flex flex-col items-center justify-center gap-1 text-[11px] font-medium transition-colors",
+            inMore || moreOpen ? "text-white" : "text-ink-3 active:text-ink-2"
+          )}
+        >
+          {(inMore || moreOpen) && <span className="absolute top-0 h-0.5 w-8 rounded-full bg-white" />}
+          <Ellipsis className="h-5 w-5" strokeWidth={1.75} />
+          More
+        </button>
+      </div>
+    </nav>
+  )
+}
+
+/** Bottom sheet with the rest of the menu (rewards, protocol, airdrop), the peg card and the socials. Drag down, tap outside or Escape to close. */
+function MoreSheet({ open, onClose, path }: { open: boolean; onClose: () => void; path: string }) {
+  useEffect(() => {
+    if (!open) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose()
+    }
+    const prev = document.body.style.overflow
+    document.body.style.overflow = "hidden"
+    window.addEventListener("keydown", onKey)
+    return () => {
+      document.body.style.overflow = prev
+      window.removeEventListener("keydown", onKey)
+    }
+  }, [open, onClose])
+
+  return (
+    <AnimatePresence>
+      {open && (
+        <>
+          <motion.div
+            key="scrim"
+            className="fixed inset-0 z-[60] bg-black/60 lg:hidden"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+          />
+          <motion.div
+            key="sheet"
+            role="dialog"
+            aria-modal="true"
+            aria-label="More"
+            initial={{ y: "100%" }}
+            animate={{ y: 0 }}
+            exit={{ y: "100%" }}
+            transition={{ type: "spring", visualDuration: 0.32, bounce: 0.08 }}
+            drag="y"
+            dragConstraints={{ top: 0, bottom: 0 }}
+            dragElastic={{ top: 0, bottom: 0.6 }}
+            onDragEnd={(_, info) => {
+              if (info.offset.y > 90 || info.velocity.y > 500) onClose()
+            }}
+            className="fixed inset-x-0 bottom-0 z-[60] flex max-h-[88dvh] flex-col rounded-t-[20px] border-t border-hairline bg-sidebar pb-[calc(16px+env(safe-area-inset-bottom))] lg:hidden"
+          >
+            <div className="flex justify-center pb-2 pt-3">
+              <span className="h-1 w-10 rounded-full bg-white/20" />
+            </div>
+            <div className="overflow-y-auto overscroll-contain px-4">
+              {MORE.map((g) => (
+                <div key={g.group} className="mb-4">
+                  <div className="px-1 pb-2 text-[11px] font-medium uppercase text-ink-3">{g.group}</div>
+                  <div className="grid grid-cols-2 gap-2">
+                    {g.items.map((it) => {
+                      const active = isItemActive(it, path)
+                      const Icon = it.icon
+                      return (
+                        <Link
+                          key={it.label}
+                          href={it.href}
+                          onClick={onClose}
+                          target={it.external ? "_blank" : undefined}
+                          rel={it.external ? "noopener noreferrer" : undefined}
+                          aria-current={active ? "page" : undefined}
+                          className={cn(
+                            "flex h-12 items-center gap-2.5 rounded-[10px] px-3 text-[14px] transition-colors",
+                            active ? "bg-white/[0.09] font-medium text-white" : "bg-white/[0.03] text-ink-2 active:bg-white/[0.07]"
+                          )}
+                        >
+                          <Icon className="h-[18px] w-[18px] shrink-0 text-white opacity-80" strokeWidth={1.75} />
+                          <span className="truncate">{it.label}</span>
+                          {it.external && <ArrowUpRight className="ml-auto h-3.5 w-3.5 shrink-0 opacity-40" strokeWidth={1.75} />}
+                        </Link>
+                      )
+                    })}
+                  </div>
+                </div>
+              ))}
+              <PegCardV2 />
+              <Socials />
+            </div>
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
   )
 }

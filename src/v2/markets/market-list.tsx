@@ -556,7 +556,7 @@ function Status({ r, iconOnly }: { r: ListRowData; iconOnly?: boolean }) {
   const pausedLabel = r.isDepositPaused ? "Deposits paused" : r.isBorrowPaused ? "Borrowing paused" : "Leverage paused"
   const chip = (icon: ReactNode, text: string) =>
     iconOnly ? (
-      <span title={text} className="inline-flex">
+      <span className="inline-flex">
         <StatusChip icon={icon} className="w-5 justify-center px-0">
           <span className="sr-only">{text}</span>
         </StatusChip>

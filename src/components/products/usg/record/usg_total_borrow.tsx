@@ -79,10 +79,12 @@ export default function UsgTotalBorrow({ totalBorrow }: UsgTotalBorrowProps) {
   if (UI_V2)
     return (
       <TimeChartV2
-        data={totalBorrow}
-        xKey="timestamp"
+        // the API sends ISO dates and string amounts: the chart reads numbers
+        data={totalBorrow.map((d) => ({ t: new Date(d.timestamp).getTime(), value: Number(d.value) }))}
+        xKey="t"
         series={[{ key: "value", label: "Total borrow", color: COLOR.data }]}
-        format={formatYAxisValue}
+        // one unit per axis: K under a million, M above
+        format={(v) => (v >= 1_000_000 ? "$" + Number((v / 1_000_000).toFixed(2)) + "M" : "$" + Number((v / 1_000).toFixed(0)) + "K")}
         valueFormat={(v) => formatDollar(v.toFixed(0), 0)}
         height="100%"
       />

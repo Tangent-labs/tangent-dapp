@@ -505,10 +505,9 @@ html[data-ui="v2"][data-theme="light"] .v2-scroll::-webkit-scrollbar-thumb {
 html[data-ui="v2"][data-theme="light"] img[src$="/medias/v2/tangent-logo-typo.svg"] {
   filter: invert(1);
 }
-/* every token and protocol logo gets a hairline outline on the light theme, like Aave Pro. It follows the logo's own
-   shape (four 0.5px shadows on its alpha), so pairs, Curve and other non-round logos are outlined without being cropped.
-   TokenImage and the boosts list mark their images with data-logo. */
+/* every token and protocol logo gets Aave Pro's hairline ring on the light theme: 1px inside its own edge, drawn by the
+   SVG filter in src/v2/theme/logo-ring.tsx, so pairs and non-round logos get it without being cropped. TokenImage and
+   the boosts list mark their images with data-logo. */
 html[data-ui="v2"][data-theme="light"] img[data-logo] {
-  filter: drop-shadow(0.5px 0 0 rgb(0 0 0 / 0.1)) drop-shadow(-0.5px 0 0 rgb(0 0 0 / 0.1)) drop-shadow(0 0.5px 0 rgb(0 0 0 / 0.1))
-    drop-shadow(0 -0.5px 0 rgb(0 0 0 / 0.1));
+  filter: url(#tgt-logo-ring);
 }

@@ -2,6 +2,7 @@ import "@/css_globals.css"
 import { dmSans, gilroy } from "./fonts"
 import { UI_V2 } from "@/v2/ui"
 import { ThemeScript } from "@/v2/theme/theme-script"
+import { LogoRingDefs } from "@/v2/theme/logo-ring"
 import type { Metadata } from "next"
 import { siteUrl, socialMetadata } from "./site_metadata"
 
@@ -27,6 +28,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       )}
       <body className="dark relative bg-dark font-gilroy antialiased" id="body" suppressHydrationWarning>
         {/* <div className="fixed inset-0 -z-30 bg-body"></div> */}
+        {UI_V2 && <LogoRingDefs />}
         <main className="overflow-y-overlay mx-auto min-h-[80vh] w-full">{children}</main>
       </body>
     </html>

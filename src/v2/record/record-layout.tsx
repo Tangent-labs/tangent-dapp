@@ -132,7 +132,11 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
               ["Liq. threshold", marketDisplayData.lt, "Liquidation point", TERMS.lt],
             ] as [string, string, string, string | undefined][]
           ).map(([l, v, s, info]) => (
-            <div key={l} className="min-w-0 pr-4 sm:border-l sm:border-divider sm:px-6 sm:first:border-l-0 sm:first:pl-0 sm:last:pr-0 2xl:px-10">
+            // fixed width per fact (sm up) so the block does not slide left when the numbers arrive
+            <div
+              key={l}
+              className="min-w-0 pr-4 sm:box-content sm:w-[124px] sm:shrink-0 sm:border-l sm:border-divider sm:px-6 sm:first:border-l-0 sm:first:pl-0 sm:last:pr-0 2xl:px-10"
+            >
               <div className="whitespace-nowrap text-xs text-ink-3">{info ? <Term info={info}>{l}</Term> : l}</div>
               {loading ? (
                 <div className="v2-shimmer mt-1.5 h-5 w-16 rounded-md" />
@@ -261,12 +265,15 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
           </AnimatePresence>
         </div>
 
-        {/* right column: Your loan scrolls away, the action card stays under the top bar */}
-        <div className="hidden flex-col gap-4 self-stretch xl:flex">
-          <YourLoanV2 />
+        {/* right column: the form first (no scroll to reach it on short screens), Your loan right under it in the same sticky card,
+            like the phone sheet; the card scrolls inside itself when it is taller than the window */}
+        <div className="hidden flex-col self-stretch xl:flex">
           {isDesktop && (
-            <div id="v2-action" className="sticky top-6 rounded-2xl border border-hairline bg-surface p-5">
+            <div id="v2-action" className="v2-scroll sticky top-6 max-h-[calc(100dvh-3rem)] overflow-y-auto rounded-2xl border border-hairline bg-surface p-5">
               {form}
+              <div className="mt-4 empty:hidden">
+                <YourLoanV2 />
+              </div>
             </div>
           )}
         </div>

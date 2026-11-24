@@ -63,7 +63,7 @@ const RANGE_KEYS = Object.keys(RANGE_CONFIG) as RangeKey[]
 
 const isRangeKey = (range: string): range is RangeKey => RANGE_KEYS.includes(range as RangeKey)
 
-const CustomAverageDisplay = (props: { averageApy: number; apy: number; viewBox?: { y: number; width: number } }) => {
+const CustomAverageDisplay = (props: { averageApy: number; apy: number; viewBox?: { x?: number; y: number; width: number } }) => {
   const { viewBox, averageApy, apy } = props
   const textRef = useRef<SVGTextElement>(null)
   const text = Number.isFinite(averageApy) ? `Avg ${averageApy.toFixed(2)}%` : ""
@@ -78,13 +78,14 @@ const CustomAverageDisplay = (props: { averageApy: number; apy: number; viewBox?
   if (!viewBox || !text) return null
 
   if (UI_V2) {
-    // same tag as the V2 bar charts (AverageLine): small, grey, left, sitting on the line
+    // V2 tag: right end of the dashed line, just under it (the latest values sit above the average), same size as the axis ticks
     const tag = "avg " + averageApy.toFixed(2) + "%"
-    const tagWidth = tag.length * 5.6 + 12
+    const tagWidth = Math.ceil(tag.length * 6.6) + 14
+    const right = (viewBox.x ?? 0) + viewBox.width
     return (
       <g>
-        <rect x={4} y={viewBox.y - 19} width={tagWidth} height={16} rx={4} fill="#222222" />
-        <text x={10} y={viewBox.y - 8} fill="#a3a3a3" fontSize={10} fontWeight={500} style={{ fontVariantNumeric: "tabular-nums" }}>
+        <rect x={right - tagWidth} y={viewBox.y + 5} width={tagWidth} height={20} rx={5} fill="#222222" />
+        <text x={right - 7} y={viewBox.y + 19} textAnchor="end" fill="#d4d4d4" fontSize={12} fontWeight={500} style={{ fontVariantNumeric: "tabular-nums" }}>
           {tag}
         </text>
       </g>

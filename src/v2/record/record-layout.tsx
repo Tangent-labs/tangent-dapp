@@ -20,7 +20,6 @@ import { TERMS, Term } from "@/v2/ui/term"
 import { Venue } from "@/v2/ui/venue"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { YourLoanV2 } from "./your-loan"
-import { OracleV2 } from "./oracle"
 import { MarketSwitcherV2 } from "./market-switcher"
 import { ActionSheet, MobileActionBar, useIsDesktop } from "@/v2/ui/mobile-action-bar"
 import { useRouter } from "next/navigation"
@@ -199,7 +198,7 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
                   />
                 </div>
 
-                {/* the live chart card carries its own title and range tabs; the oracle (technical) sits at the end of the page */}
+                {/* the live chart card carries its own title and range tabs */}
                 <CollateralPriceProvider>
                   <USGCollateralPrice />
 
@@ -239,10 +238,6 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
                         <MarketDetails />
                         <MarketDetailsContracts marketContracts={marketContracts} />
                       </div>
-                    </Section>
-
-                    <Section title="Oracle" note="The price feed this market uses to value the collateral.">
-                      <OracleV2 />
                     </Section>
                   </div>
                 </CollateralPriceProvider>

@@ -47,7 +47,7 @@ export function SavingsProductsV2({
             {bestApy > 0 ? `${bestApy.toFixed(2)}%` : <span className="v2-shimmer inline-block h-11 w-36 rounded-md align-middle" />}
           </div>
         </div>
-        <Stat label="Total TVL" value={totalTvl > 0 ? `${formatMillions(totalTvl)}` : "–"} sub={`${rows.length} products`} />
+        <Stat label="Total TVL" value={totalTvl > 0 ? `$${formatMillions(totalTvl)}` : "–"} sub={`${rows.length} products`} />
         <Stat label="Your deposits" value={formatDollar(deposits)} sub="Across all products" />
       </div>
 
@@ -89,7 +89,7 @@ function ProductCard({ vault, apy, tvl, deposit }: SavingsRowV2) {
         <span className="rounded-xl bg-white/[0.04] px-3.5 py-3">
           <span className="block text-xs text-ink-3">TVL</span>
           <span className="mt-1.5 block text-[18px] font-medium tabular-nums leading-none">
-            {tvl > 0 ? `${formatMillions(tvl)}` : <span className="text-ink-3">–</span>}
+            {tvl > 0 ? `$${formatMillions(tvl)}` : <span className="text-ink-3">–</span>}
           </span>
         </span>
       </span>

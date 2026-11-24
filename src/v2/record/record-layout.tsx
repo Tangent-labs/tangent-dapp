@@ -116,16 +116,17 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
                   transition={{ duration: 0.18, ease: [0.25, 0.8, 0.25, 1] }}
-                  className="v2-chips flex items-center gap-x-6 gap-y-1 overflow-x-auto border-b border-hairline bg-page py-2.5"
+                  className="v2-chips flex items-center gap-x-4 gap-y-1 overflow-x-auto border-b border-hairline bg-page py-2.5 md:gap-x-6"
                 >
                   <span className="flex shrink-0 items-center gap-2.5">
                     <TokenImage token={collateralInfo?.logoKey} size={24} className="h-6 w-auto" />
-                    <span className="text-[15px] font-semibold">{name}</span>
+                    <span className="max-w-[120px] truncate text-[15px] font-semibold sm:max-w-none">{name}</span>
                   </span>
-                  <Mini label="Collateral vAPR" value={`${currentTotalMarketApr?.toFixed(2)}%`} />
-                  <Mini label="Max lev. vAPR" value={maxLev} negative={maxLevNum < 0} />
-                  <Mini label="Borrow rate" value={computedBorrowRate.current} />
-                  <Mini label="Capacity" value={maxBorrowCapReached ? "Cap reached" : `${Math.round(capRatio * 100)}%`} />
+                  {/* phones keep the two numbers that decide a borrow, with short labels; the rest from md up */}
+                  <Mini label="Collateral vAPR" short="vAPR" value={`${currentTotalMarketApr?.toFixed(2)}%`} />
+                  <Mini label="Max lev. vAPR" value={maxLev} negative={maxLevNum < 0} className="hidden md:flex" />
+                  <Mini label="Borrow rate" short="Borrow" value={computedBorrowRate.current} />
+                  <Mini label="Capacity" value={maxBorrowCapReached ? "Cap reached" : `${Math.round(capRatio * 100)}%`} className="hidden md:flex" />
                 </motion.div>
               )}
             </AnimatePresence>
@@ -285,10 +286,17 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
   )
 }
 
-function Mini({ label, value, negative }: { label: string; value?: string; negative?: boolean }) {
+function Mini({ label, short, value, negative, className }: { label: string; short?: string; value?: string; negative?: boolean; className?: string }) {
   return (
-    <span className="flex shrink-0 items-baseline gap-1.5 whitespace-nowrap text-[13px]">
-      <span className="text-ink-3">{label}</span>
+    <span className={cn("flex shrink-0 items-baseline gap-1.5 whitespace-nowrap text-[13px]", className)}>
+      {short ? (
+        <>
+          <span className="text-ink-3 md:hidden">{short}</span>
+          <span className="hidden text-ink-3 md:inline">{label}</span>
+        </>
+      ) : (
+        <span className="text-ink-3">{label}</span>
+      )}
       <Roll className={cn("font-medium", negative && "text-negative")} value={value ?? "-"} />
     </span>
   )

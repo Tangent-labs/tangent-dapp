@@ -188,8 +188,8 @@ export function RecordLayoutV2({ featureTabs, children }: { featureTabs: ReactNo
                     value={computedBorrowRate.current}
                     sub={fixed ? "Fixed" : `Proj. ${computedBorrowRate.next}`}
                   />
-                  <Stat loading={loading} label="Max LTV" info={TERMS.maxLtv} value={marketDisplayData.maxLtv} sub="Max borrow vs collateral" />
-                  <Stat loading={loading} label="Liquidation threshold" info={TERMS.lt} value={marketDisplayData.lt} sub="Health 1.00 below this" />
+                  <Stat loading={loading} label="Max LTV" info={TERMS.maxLtv} value={marketDisplayData.maxLtv} sub="Borrow limit" />
+                  <Stat loading={loading} label="Liq. threshold" info={TERMS.lt} value={marketDisplayData.lt} sub="Liquidation point" />
                   <Stat
                     loading={loading}
                     label="Capacity"

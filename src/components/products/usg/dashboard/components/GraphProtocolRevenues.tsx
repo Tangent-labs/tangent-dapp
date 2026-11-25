@@ -106,8 +106,8 @@ export const GraphProtocolRevenues = ({ totalRevenues, protocolRevenues, selecte
         {!UI_V2 && <div className="font-semibold text-white">${formatMillions(totalRevenues)}</div>}
       </div>
 
-      <div className="w-full pr-12">
-        <div ref={plotRef} className="relative h-44 w-full">
+      <div className={cn("w-full pr-12", UI_V2 && "flex flex-1 flex-col")}>
+        <div ref={plotRef} className={cn("relative w-full", UI_V2 ? "min-h-44 flex-1" : "h-44")}>
           {ticks.map((tick) => (
             <div key={tick} className="pointer-events-none absolute inset-x-0" style={{ bottom: `${(tick / axisMax) * 100}%` }}>
               <div className="h-px w-full bg-white/[0.06]" />

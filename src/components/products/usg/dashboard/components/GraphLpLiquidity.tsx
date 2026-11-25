@@ -135,6 +135,7 @@ export const GraphLpLiquidity = ({ liquidity, selectedTab, fetchLiquidity }: Gra
       {UI_V2 ? (
         <TimeChartV2
           className="-mx-5 -mb-5 mt-2 w-[calc(100%+2.5rem)]"
+          grow
           data={data}
           xKey="date"
           stacked

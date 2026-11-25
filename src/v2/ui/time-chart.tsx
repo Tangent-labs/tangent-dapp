@@ -28,6 +28,8 @@ type Props<T> = {
   /** tooltip value format, the tick format when omitted (ticks are often rounder than the values) */
   valueFormat?: (v: number) => string
   height?: number | string
+  /** grow with the card instead of a fixed height (the card is stretched by its neighbour in the grid) */
+  grow?: boolean
   stacked?: boolean
   domain?: [number | "auto" | "dataMin" | "dataMax", number | "auto" | "dataMin" | "dataMax"]
   ticks?: number[]
@@ -64,6 +66,7 @@ export function TimeChartV2<T extends object>({
   format,
   valueFormat = format,
   height = 224,
+  grow,
   stacked,
   domain,
   ticks,
@@ -105,9 +108,9 @@ export function TimeChartV2<T extends object>({
     const finite = values.filter(Number.isFinite)
     const min = typeof domain?.[0] === "number" ? domain[0] : Math.min(...finite)
     const max = typeof domain?.[1] === "number" ? domain[1] : Math.max(...finite)
-    const span = max - min || Math.abs(max) * 0.1 || 1
+    const span = (stacked ? max : max - min) || Math.abs(max) * 0.1 || 1
     const step = niceStep(span)
-    const lo = typeof domain?.[0] === "number" ? domain[0] : Math.floor(min / step) * step
+    const lo = typeof domain?.[0] === "number" ? domain[0] : stacked ? 0 : Math.floor(min / step) * step
     const hi = typeof domain?.[1] === "number" ? domain[1] : Math.ceil(max / step) * step
     const lines =
       ticks ?? Array.from({ length: Math.floor((hi - Math.ceil(lo / step) * step) / step + 1e-9) + 1 }, (_, i) => Math.ceil(lo / step) * step + i * step)
@@ -121,7 +124,7 @@ export function TimeChartV2<T extends object>({
   const haloSeries = stacked ? series.slice(-1) : series
 
   return (
-    <div className={cn("group/chart relative w-full", className)} style={{ height }}>
+    <div className={cn("group/chart relative w-full", grow && "min-h-56 flex-1", className)} style={grow ? undefined : { height }}>
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart data={data} margin={{ top: 24, right: 16, left: 0, bottom: 0 }}>
           <defs>

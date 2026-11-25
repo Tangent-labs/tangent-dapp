@@ -12,7 +12,7 @@ import { CustomTooltip, TooltipCategory } from "./CustomGraphTooltip"
 import { UI_V2 } from "@/v2/ui"
 import { cn } from "@/lib/utils"
 import { TimeChartV2 } from "@/v2/ui/time-chart"
-import { ChartHeadV2, ChartLegendV2, V2_CURSOR, v2ActiveDot } from "@/v2/ui/chart"
+import { ChartHeadV2, ChartLegendV2 } from "@/v2/ui/chart"
 import { COLOR, SERIES } from "@/v2/theme/colors"
 
 type GraphLpLiquidityProps = {
@@ -190,12 +190,11 @@ export const GraphLpLiquidity = ({ liquidity, selectedTab, fetchLiquidity }: Gra
                   strokeWidth={1.5}
                   fill={`url(#lp-liquidity-gradient-${PALETTE.findIndex((c) => c.stroke === s.stroke)})`}
                   name={s.key}
-                  activeDot={UI_V2 ? v2ActiveDot(s.stroke) : undefined}
                 />
               ))}
 
               <Tooltip
-                cursor={UI_V2 ? V2_CURSOR : { stroke: "rgba(255,255,255,0.7)", strokeWidth: 2, strokeDasharray: "4 4" }}
+                cursor={{ stroke: "rgba(255,255,255,0.7)", strokeWidth: 2, strokeDasharray: "4 4" }}
                 allowEscapeViewBox={{ x: false, y: false }}
                 content={<CustomTooltip categories={categories} />}
               />

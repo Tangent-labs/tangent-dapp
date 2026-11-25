@@ -4,10 +4,7 @@ import { formatDollar, formatMillions } from "@/lib/number_formatter"
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts"
 import { UI_V2 } from "@/v2/ui"
 import { TimeChartV2 } from "@/v2/ui/time-chart"
-import { ChartTooltipV2, V2_CURSOR, V2_GRID, V2_TICK, v2ActiveDot } from "@/v2/ui/chart"
 import { COLOR } from "@/v2/theme/colors"
-
-const TICK = UI_V2 ? V2_TICK.fill : "rgba(255,255,255,0.6)"
 
 type UsgTotalBorrowProps = {
   totalBorrow: Array<{
@@ -29,7 +26,7 @@ const getAdaptiveYAxisStep = (maxValue: number) => {
 }
 
 const PriceAxisTick = ({ x, y, value }: { x?: number; y?: number; value: string }) => (
-  <text x={(x ?? 0) - 8} y={y} dy={4} textAnchor="end" fill={TICK} fontSize={11}>
+  <text x={(x ?? 0) - 8} y={y} dy={4} textAnchor="end" fill="rgba(255,255,255,0.6)" fontSize={11}>
     ${value}
   </text>
 )
@@ -103,18 +100,18 @@ export default function UsgTotalBorrow({ totalBorrow }: UsgTotalBorrowProps) {
       >
         <defs>
           <linearGradient id="borrowGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={UI_V2 ? COLOR.data : "#3b82f6"} stopOpacity={UI_V2 ? 0.28 : 0.4} />
-            <stop offset="100%" stopColor={UI_V2 ? COLOR.data : "#3b82f6"} stopOpacity={0} />
+            <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.4} />
+            <stop offset="100%" stopColor="#3b82f6" stopOpacity={0} />
           </linearGradient>
         </defs>
-        <CartesianGrid horizontal={true} vertical={false} stroke={UI_V2 ? V2_GRID : "#FFFFFF1A"} />
+        <CartesianGrid horizontal={true} vertical={false} stroke="#FFFFFF1A" />
         <XAxis
           dataKey="timestamp"
           ticks={xAxisTicks}
           minTickGap={24}
           tickMargin={8}
           padding={{ right: 38 }}
-          tick={{ fontSize: UI_V2 ? 11 : 12, fill: TICK }}
+          tick={{ fontSize: 12, fill: "rgba(255,255,255,0.6)" }}
           axisLine={false}
           tickLine={false}
           tickFormatter={formatAxisDate}
@@ -132,15 +129,7 @@ export default function UsgTotalBorrow({ totalBorrow }: UsgTotalBorrowProps) {
         />
 
         <Tooltip
-          cursor={UI_V2 ? V2_CURSOR : undefined}
           content={({ active, payload, label }) => {
-            if (UI_V2 && active && payload?.length)
-              return (
-                <ChartTooltipV2
-                  title={new Date(label).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
-                  rows={[{ color: COLOR.data, label: "Total borrow", value: formatDollar(Number(payload[0]?.value || 0).toFixed(0), 0) }]}
-                />
-              )
             if (active && payload && payload.length) {
               const formattedValue = formatDollar(Number(payload[0]?.value || 0).toFixed(0), 0)
               const formattedDate = new Date(label).toISOString().slice(0, 16).replace("T", " ")
@@ -162,15 +151,7 @@ export default function UsgTotalBorrow({ totalBorrow }: UsgTotalBorrowProps) {
             return null
           }}
         />
-        <Area
-          type="monotone"
-          dataKey="value"
-          stroke={UI_V2 ? COLOR.data : "#1568ed"}
-          strokeWidth={1.5}
-          fill="url(#borrowGradient)"
-          dot={false}
-          activeDot={UI_V2 ? v2ActiveDot(COLOR.data) : undefined}
-        />
+        <Area type="monotone" dataKey="value" stroke="#1568ed" strokeWidth={1.5} fill="url(#borrowGradient)" dot={false} />
       </AreaChart>
     </ResponsiveContainer>
   )

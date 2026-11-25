@@ -53,15 +53,6 @@ export function ChartTooltipV2({ title, time, rows, total }: { title: ReactNode;
   )
 }
 
-/** Date line used by the tooltips: "Sun Jun 7, 2026 · 7:44 PM". */
-export const tooltipDate = (ts: number | string | Date) => {
-  const d = new Date(ts)
-  if (Number.isNaN(d.getTime())) return ""
-  const day = d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", year: "numeric" })
-  const time = d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })
-  return `${day} · ${time}`
-}
-
 /** Change over the visible range, from the first to the last point. */
 export const rangeChange = (first?: number, last?: number) =>
   first && last !== undefined && first !== 0 ? ((last - first) / Math.abs(first)) * 100 : undefined

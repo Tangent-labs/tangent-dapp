@@ -3,7 +3,7 @@
 import { UI_V2 } from "@/v2/ui"
 import { cn } from "@/lib/utils"
 import { TimeChartV2 } from "@/v2/ui/time-chart"
-import { ChartHeadV2, V2_CURSOR, rangeChange, v2ActiveDot } from "@/v2/ui/chart"
+import { ChartHeadV2, rangeChange } from "@/v2/ui/chart"
 
 import { useId } from "react"
 import type { ComponentType } from "react"
@@ -11,8 +11,7 @@ import { formatDollar } from "@/lib/number_formatter"
 import { ButtonTab } from "@/components/design_system/inputs/button_tab"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { formatXAxis, getDataRangeMs, getXAxisTicks } from "../dashboard_controller"
-import { Area, AreaChart, CartesianGrid, Customized, ReferenceDot, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
-import { COLOR } from "@/v2/theme/colors"
+import { Area, AreaChart, CartesianGrid, Customized, ReferenceDot, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 
 type AxisWithScale = { scale: (v: number) => number }
 type CustomizedChartProps = { xAxisMap: Record<string, AxisWithScale>; yAxisMap: Record<string, AxisWithScale> }
@@ -33,7 +32,7 @@ type GraphTokenPriceProps = {
   gradientStart: string
 }
 
-const PriceTooltip = ({ active, payload, label }: { active?: boolean; payload?: Array<{ value?: number }>; label?: number; peg?: boolean }) => {
+const PriceTooltip = ({ active, payload, label }: { active?: boolean; payload?: Array<{ value?: number }>; label?: number }) => {
   if (!active || !payload?.length || !label) return null
 
   const value = Number(payload[0]?.value ?? 0)
@@ -134,10 +133,6 @@ export const GraphTokenPrice = ({ token, title, selectedTab, data, fetchPriceHis
               }}
             >
               <defs>
-                <linearGradient id={`${gradientId}-peg`} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#f5b544" stopOpacity={0.18} />
-                  <stop offset="100%" stopColor="#f5b544" stopOpacity={0.02} />
-                </linearGradient>
                 <linearGradient id={`${gradientId}-fill`} x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor={gradientStart} stopOpacity={0.35} />
                   <stop offset="100%" stopColor={gradientStart} stopOpacity={0} />
@@ -171,17 +166,13 @@ export const GraphTokenPrice = ({ token, title, selectedTab, data, fetchPriceHis
               />
 
               <Tooltip
-                cursor={
-                  UI_V2
-                    ? V2_CURSOR
-                    : {
-                        stroke: "rgba(255,255,255,0.65)",
-                        strokeWidth: 1.5,
-                        strokeDasharray: "4 4",
-                      }
-                }
+                cursor={{
+                  stroke: "rgba(255,255,255,0.65)",
+                  strokeWidth: 1.5,
+                  strokeDasharray: "4 4",
+                }}
                 allowEscapeViewBox={{ x: false, y: false }}
-                content={<PriceTooltip peg={pegMode} />}
+                content={<PriceTooltip />}
               />
 
               <Area
@@ -189,31 +180,12 @@ export const GraphTokenPrice = ({ token, title, selectedTab, data, fetchPriceHis
                 dataKey="uv"
                 stroke={accentColor}
                 strokeWidth={2}
-                fill={pegMode ? `url(#${gradientId}-peg)` : `url(#${gradientId}-fill)`}
-                baseValue={pegMode ? 1 : undefined}
+                fill={`url(#${gradientId}-fill)`}
                 dot={false}
-                activeDot={UI_V2 ? v2ActiveDot(accentColor) : { r: 4, fill: accentColor, stroke: accentColor }}
+                activeDot={{ r: 4, fill: accentColor, stroke: accentColor }}
               />
 
-              {pegMode && (
-                <ReferenceLine
-                  y={1}
-                  stroke="rgba(255,255,255,0.35)"
-                  strokeDasharray="3 3"
-                  label={{ value: "Peg $1.00", position: "insideTopLeft", fill: COLOR.ink3, fontSize: 11 }}
-                />
-              )}
-              {latestPoint && (
-                <ReferenceDot
-                  x={latestPoint.date}
-                  y={latestPoint.uv}
-                  r={4}
-                  fill={accentColor}
-                  stroke={UI_V2 ? COLOR.ring : accentColor}
-                  strokeWidth={UI_V2 ? 2 : 1}
-                  isFront={true}
-                />
-              )}
+              {latestPoint && <ReferenceDot x={latestPoint.date} y={latestPoint.uv} r={4} fill={accentColor} stroke={accentColor} isFront={true} />}
 
               <TypedCustomized
                 component={(props) => {

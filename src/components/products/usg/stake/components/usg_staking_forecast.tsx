@@ -10,14 +10,13 @@ import { ValueType } from "recharts/types/component/DefaultTooltipContent"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip } from "recharts"
 import { UI_V2 } from "@/v2/ui"
 import { TimeChartV2 } from "@/v2/ui/time-chart"
-import { V2_CURSOR, V2_GRID, V2_TICK, v2ActiveDot } from "@/v2/ui/chart"
 import { COLOR } from "@/v2/theme/colors"
 
 const MS_PER_YEAR = 365.25 * 24 * 60 * 60 * 1000
 
 const TIME_TICK_COUNT = 7
 const CHART_Y_AXIS_WIDTH = 52
-const TICK_STYLE = UI_V2 ? V2_TICK : { fontSize: 12, stroke: "rgba(255,255,255,0.08)" }
+const TICK_STYLE = { fontSize: 12, stroke: "rgba(255,255,255,0.08)" }
 const AXIS_LINE_STYLE = { stroke: "rgba(255,255,255,0.08)" }
 
 type ForecastMode = "stake" | "unstake"
@@ -35,7 +34,7 @@ const EndDot = (lastIndex: number, fill: string) =>
     if (index !== lastIndex || cx == null || cy == null) return null
     return (
       <g pointerEvents="none" key={`EndDot${lastIndex}`}>
-        <circle cx={cx} cy={cy} r={UI_V2 ? 4 : 4.5} fill={fill} stroke={UI_V2 ? COLOR.ring : undefined} strokeWidth={UI_V2 ? 2 : 0} />
+        <circle cx={cx} cy={cy} r={4.5} fill={fill} />
       </g>
     )
   }
@@ -285,12 +284,12 @@ export const ForecastGraph = ({ currentInvestment, newLiquidity, apy, currentFea
                 >
                   <defs>
                     <linearGradient id="gradientColor" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor={UI_V2 ? COLOR.data : "#FBF911"} />
-                      <stop offset="100%" stopColor={UI_V2 ? COLOR.data : "#99FF00"} />
+                      <stop offset="0%" stopColor="#FBF911" />
+                      <stop offset="100%" stopColor="#99FF00" />
                     </linearGradient>
                   </defs>
 
-                  <CartesianGrid horizontal vertical={false} stroke={UI_V2 ? V2_GRID : "rgba(255,255,255,0.05)"} />
+                  <CartesianGrid horizontal vertical={false} stroke="rgba(255,255,255,0.05)" />
 
                   <XAxis
                     dataKey="t"
@@ -314,7 +313,7 @@ export const ForecastGraph = ({ currentInvestment, newLiquidity, apy, currentFea
                     domain={[yAxis.min, yAxis.max]}
                     ticks={Array.from({ length: Math.floor((yAxis.max - yAxis.min) / yAxis.stepSize) + 1 }, (_, i) => yAxis.min + i * yAxis.stepSize)}
                     tick={({ x, y, payload }) => (
-                      <text x={x - 10} y={y - 7} dy={4} textAnchor="end" fill={UI_V2 ? V2_TICK.fill : "rgba(255,255,255,0.5)"} fontSize={11}>
+                      <text x={x - 10} y={y - 7} dy={4} textAnchor="end" fill="rgba(255,255,255,0.5)" fontSize={11}>
                         ${formatMillions(payload.value)}
                       </text>
                     )}
@@ -323,15 +322,14 @@ export const ForecastGraph = ({ currentInvestment, newLiquidity, apy, currentFea
                   />
 
                   <Tooltip
-                    cursor={UI_V2 ? V2_CURSOR : { stroke: "rgba(255,255,255,0.25)", strokeWidth: 2 }}
+                    cursor={{ stroke: "rgba(255,255,255,0.25)", strokeWidth: 2 }}
                     content={<CustomTooltip fmtLabel={fmtTooltipLabel} newLiquidity={newLiquidity} />}
                   />
 
                   <Line
-                    strokeWidth={UI_V2 ? 1.5 : 2}
+                    strokeWidth={2}
                     type="monotone"
                     dataKey="baseAmount"
-                    activeDot={UI_V2 ? v2ActiveDot(COLOR.fg) : undefined}
                     stroke="#FFFFFF"
                     name="Current Position Growth"
                     dot={EndDot(forecastData.length - 1, "#FFFFFF") as LineDot}
@@ -340,10 +338,9 @@ export const ForecastGraph = ({ currentInvestment, newLiquidity, apy, currentFea
 
                   {showSecondLine && (
                     <Line
-                      strokeWidth={UI_V2 ? 1.5 : 2}
+                      strokeWidth={2}
                       type="monotone"
                       dataKey="amountWithLiquidity"
-                      activeDot={UI_V2 ? v2ActiveDot(COLOR.data) : undefined}
                       stroke="url(#gradientColor)"
                       name={`Total After ${liquidityChangeSign}${formatDollar(newLiquidity, 0)}`}
                       dot={EndDot(forecastData.length - 1, "url(#gradientColor)") as LineDot}

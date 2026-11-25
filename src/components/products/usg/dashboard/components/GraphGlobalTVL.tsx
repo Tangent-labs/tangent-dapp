@@ -12,7 +12,7 @@ import { returnTVLType } from "../utils"
 import { CustomTooltip, TooltipCategory } from "./CustomGraphTooltip"
 import { UI_V2 } from "@/v2/ui"
 import { TimeChartV2 } from "@/v2/ui/time-chart"
-import { ChartHeadV2, ChartLegendV2, V2_CURSOR, rangeChange, v2ActiveDot } from "@/v2/ui/chart"
+import { ChartHeadV2, ChartLegendV2, rangeChange } from "@/v2/ui/chart"
 import { COLOR, SERIES } from "@/v2/theme/colors"
 
 type MarketDebtProps = {
@@ -186,45 +186,31 @@ export const GraphGlobalTVL = ({ fetchTVLData, tvlSelectedTab, protocolCurrentTV
 
               <defs>
                 <linearGradient id="tvl-marketsGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor={COLOR.data} stopOpacity={0.6} />
-                  <stop offset="95%" stopColor={COLOR.data} stopOpacity={0} />
+                  <stop offset="5%" stopColor="#0075ff" stopOpacity={0.6} />
+                  <stop offset="95%" stopColor="#0075ff" stopOpacity={0} />
                 </linearGradient>
 
                 <linearGradient id="tvl-pegKeepersGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor={SERIES_CONFIG[1].stroke} stopOpacity={0.6} />
-                  <stop offset="95%" stopColor={SERIES_CONFIG[1].stroke} stopOpacity={0} />
+                  <stop offset="5%" stopColor="#24DD9A" stopOpacity={0.6} />
+                  <stop offset="95%" stopColor="#24DD9A" stopOpacity={0} />
                 </linearGradient>
 
                 <linearGradient id="tvl-susgGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor={SERIES_CONFIG[2].stroke} stopOpacity={0.6} />
-                  <stop offset="95%" stopColor={SERIES_CONFIG[2].stroke} stopOpacity={0} />
+                  <stop offset="5%" stopColor="#4EB3DF" stopOpacity={0.6} />
+                  <stop offset="95%" stopColor="#4EB3DF" stopOpacity={0} />
                 </linearGradient>
               </defs>
 
               {sortedSeries.map((s) => (
-                <Area
-                  key={s.key}
-                  type="monotone"
-                  dataKey={s.key}
-                  stackId="1"
-                  stroke={s.stroke}
-                  strokeWidth={1.5}
-                  fill={`url(#${s.gradient})`}
-                  name={s.name}
-                  activeDot={UI_V2 ? v2ActiveDot(s.stroke) : undefined}
-                />
+                <Area key={s.key} type="monotone" dataKey={s.key} stackId="1" stroke={s.stroke} strokeWidth={1.5} fill={`url(#${s.gradient})`} name={s.name} />
               ))}
 
               <Tooltip
-                cursor={
-                  UI_V2
-                    ? V2_CURSOR
-                    : {
-                        stroke: "rgba(255,255,255,0.7)",
-                        strokeWidth: 2,
-                        strokeDasharray: "4 4",
-                      }
-                }
+                cursor={{
+                  stroke: "rgba(255,255,255,0.7)",
+                  strokeWidth: 2,
+                  strokeDasharray: "4 4",
+                }}
                 allowEscapeViewBox={{ x: false, y: false }}
                 content={<CustomTooltip categories={sortedCategories} />}
               />

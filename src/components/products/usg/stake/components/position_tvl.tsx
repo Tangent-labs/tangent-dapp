@@ -1,7 +1,6 @@
 import { ReactNode, useMemo, useState } from "react"
 import { UI_V2 } from "@/v2/ui"
 import { TimeChartV2 } from "@/v2/ui/time-chart"
-import { V2_CURSOR, V2_GRID, V2_TICK, v2ActiveDot } from "@/v2/ui/chart"
 import { TVLData } from "../../usg_type"
 import { formatMillions } from "@/lib/number_formatter"
 import { convertRange } from "@/components/products/root/root_controller"
@@ -16,8 +15,8 @@ const CHART_Y_AXIS_WIDTH = 52
 const CHART_MARGIN = { top: 20, right: -50, left: 0, bottom: 0 }
 const X_AXIS_PADDING = { left: 0, right: 35 }
 const AXIS_LINE_STYLE = { stroke: "rgba(255,255,255,0.08)" }
-const TICK_STYLE = UI_V2 ? V2_TICK : { fontSize: 12, fill: "rgba(255,255,255,0.5)" }
-const SUSG_COLOR = UI_V2 ? COLOR.data : "var(--tgt-dash-susg)"
+const TICK_STYLE = { fontSize: 12, fill: "rgba(255,255,255,0.5)" }
+const SUSG_COLOR = "var(--tgt-dash-susg)"
 
 type RangeKey = "1m" | "3m" | "1y"
 type TvlHistoryPoint = {
@@ -159,7 +158,7 @@ export const PositionTVL = ({ tvl }: PositionTVLProps) => {
             className="-mx-6 mt-2.5 w-[calc(100%+3rem)]"
             data={data}
             xKey="date"
-            series={[{ key: "uv", label: "TVL", color: SUSG_COLOR }]}
+            series={[{ key: "uv", label: "TVL", color: COLOR.data }]}
             format={formatYAxis}
             valueFormat={(v) => "$" + formatMillions(v)}
             height="18rem"
@@ -170,12 +169,12 @@ export const PositionTVL = ({ tvl }: PositionTVLProps) => {
               <AreaChart data={data} margin={CHART_MARGIN}>
                 <defs>
                   <linearGradient id="susgTvlGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor={SUSG_COLOR} stopOpacity={UI_V2 ? 0.22 : 0.4} />
+                    <stop offset="0%" stopColor={SUSG_COLOR} stopOpacity={0.4} />
                     <stop offset="100%" stopColor={SUSG_COLOR} stopOpacity={0} />
                   </linearGradient>
                 </defs>
 
-                <CartesianGrid horizontal={true} vertical={false} stroke={UI_V2 ? V2_GRID : "rgba(255,255,255,0.05)"} />
+                <CartesianGrid horizontal={true} vertical={false} stroke="rgba(255,255,255,0.05)" />
 
                 <XAxis
                   padding={X_AXIS_PADDING}
@@ -197,7 +196,7 @@ export const PositionTVL = ({ tvl }: PositionTVLProps) => {
                   width={CHART_Y_AXIS_WIDTH}
                   axisLine={false}
                   tick={({ x, y, payload }) => (
-                    <text x={x - 10} y={y - 7} dy={4} textAnchor="end" fill={TICK_STYLE.fill} fontSize={11}>
+                    <text x={x - 10} y={y - 7} dy={4} textAnchor="end" fill="rgba(255,255,255,0.5)" fontSize={11}>
                       {formatYAxis(payload.value)}
                     </text>
                   )}
@@ -208,36 +207,21 @@ export const PositionTVL = ({ tvl }: PositionTVLProps) => {
                   type="monotone"
                   dataKey="uv"
                   stroke={SUSG_COLOR}
-                  strokeWidth={UI_V2 ? 1.5 : 2}
+                  strokeWidth={2}
                   fill="url(#susgTvlGradient)"
                   dot={false}
-                  activeDot={
-                    UI_V2
-                      ? v2ActiveDot(SUSG_COLOR)
-                      : {
-                          r: 4,
-                          stroke: SUSG_COLOR,
-                          strokeWidth: 2,
-                          fill: SUSG_COLOR,
-                          filter: `drop-shadow(0 0 8px ${SUSG_COLOR})`,
-                        }
-                  }
+                  activeDot={{
+                    r: 4,
+                    stroke: SUSG_COLOR,
+                    strokeWidth: 2,
+                    fill: SUSG_COLOR,
+                    filter: `drop-shadow(0 0 8px ${SUSG_COLOR})`,
+                  }}
                 />
 
-                <Tooltip
-                  cursor={UI_V2 ? V2_CURSOR : { ...AXIS_LINE_STYLE, strokeWidth: 1.5, strokeDasharray: "4 4" }}
-                  content={<TvlTooltip fmtLabel={fmtTooltipLabel} />}
-                />
+                <Tooltip cursor={{ ...AXIS_LINE_STYLE, strokeWidth: 1.5, strokeDasharray: "4 4" }} content={<TvlTooltip fmtLabel={fmtTooltipLabel} />} />
 
-                <ReferenceDot
-                  x={latestPoint.date}
-                  y={latestPoint.uv}
-                  r={4}
-                  fill={SUSG_COLOR}
-                  stroke={UI_V2 ? COLOR.ring : SUSG_COLOR}
-                  strokeWidth={UI_V2 ? 2 : 1}
-                  isFront={true}
-                />
+                <ReferenceDot x={latestPoint.date} y={latestPoint.uv} r={4} fill={SUSG_COLOR} stroke={SUSG_COLOR} isFront={true} />
               </AreaChart>
             </ResponsiveContainer>
           </div>

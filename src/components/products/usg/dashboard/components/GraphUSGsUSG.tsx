@@ -8,7 +8,7 @@ import { TokenImage } from "@/components/design_system/structure/token_image"
 import { CustomTooltip, TooltipCategory } from "./CustomGraphTooltip"
 import { UI_V2 } from "@/v2/ui"
 import { TimeChartV2 } from "@/v2/ui/time-chart"
-import { ChartHeadV2, ChartLegendV2, V2_CURSOR, rangeChange, v2ActiveDot } from "@/v2/ui/chart"
+import { ChartHeadV2, ChartLegendV2, rangeChange } from "@/v2/ui/chart"
 import { COLOR, SERIES } from "@/v2/theme/colors"
 
 type MarketDebtProps = {
@@ -196,13 +196,13 @@ export const GraphUSGsUSG = ({
               <CartesianGrid horizontal={true} vertical={false} stroke="rgba(255,255,255,0.06)" />
               <defs>
                 <linearGradient id="supply-susgGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor={UI_V2 ? SERIES.violet : "rgba(252, 248, 47, 0.3)"} stopOpacity={UI_V2 ? 0.3 : 1} />
-                  <stop offset="100%" stopColor={UI_V2 ? SERIES.violet : "rgba(251, 249, 17, 0)"} stopOpacity={UI_V2 ? 0 : 1} />
+                  <stop offset="0%" stopColor="rgba(252, 248, 47, 0.3)" />
+                  <stop offset="100%" stopColor="rgba(251, 249, 17, 0)" />
                 </linearGradient>
 
                 <linearGradient id="supply-usgGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor={COLOR.data} stopOpacity={0.3} />
-                  <stop offset="100%" stopColor={COLOR.data} stopOpacity={0} />
+                  <stop offset="0%" stopColor="rgba(0, 117, 255, 0.3)" />
+                  <stop offset="100%" stopColor="rgba(0, 117, 255, 0)" />
                 </linearGradient>
               </defs>
 
@@ -210,10 +210,9 @@ export const GraphUSGsUSG = ({
                 strokeWidth={1.5}
                 type="monotone"
                 dataKey="susg"
-                stroke={UI_V2 ? SERIES.violet : "rgba(251, 249, 17, 0.8)"}
+                stroke="rgba(251, 249, 17, 0.8)"
                 fill="url(#supply-susgGradient)"
                 name="sUSG Total Supply"
-                activeDot={UI_V2 ? v2ActiveDot(SERIES.violet) : undefined}
                 connectNulls
               />
 
@@ -221,23 +220,18 @@ export const GraphUSGsUSG = ({
                 strokeWidth={1.5}
                 type="monotone"
                 dataKey="usg"
-                stroke={COLOR.data}
+                stroke="rgba(0, 117, 255, 0.8)"
                 fill="url(#supply-usgGradient)"
                 name="USG Total Supply"
-                activeDot={UI_V2 ? v2ActiveDot(COLOR.data) : undefined}
                 connectNulls
               />
 
               <Tooltip
-                cursor={
-                  UI_V2
-                    ? V2_CURSOR
-                    : {
-                        stroke: "rgba(255,255,255,0.7)",
-                        strokeWidth: 2,
-                        strokeDasharray: "4 4",
-                      }
-                }
+                cursor={{
+                  stroke: "rgba(255,255,255,0.7)",
+                  strokeWidth: 2,
+                  strokeDasharray: "4 4",
+                }}
                 allowEscapeViewBox={{ x: false, y: false }}
                 content={<CustomTooltip categories={SUPPLY_CATEGORIES} totalKeys={["usg"]} />}
               />

@@ -203,19 +203,19 @@ export function StakePageV2() {
                   <Roll value={sUSGCurrentAPY ? `${sUSGCurrentAPY.toFixed(2)}%` : "-"} />
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-y-4 sm:grid-cols-4 sm:gap-y-0 lg:w-[300px] lg:shrink-0 lg:grid-cols-2 lg:gap-x-6 lg:gap-y-3">
+              <div className="grid grid-cols-3 lg:w-[400px] lg:shrink-0">
                 {[
-                  [`${share} price`, USGsUSGMetrics ? formatDollar(formatUnits(USGsUSGMetrics.sUSGPrice || 0n, 18), 4) : "-"],
-                  ["Supply", USGsUSGMetrics ? `${formatMillions(Number(formatUnits(USGsUSGMetrics.sUSGSupply || 0n, 18)))} ${share}` : "-"],
-                  ["Your balance", `${formatNumber(sUSGBalance, 2)} ${share}`],
-                  ["Lockup", "None"],
-                ].map(([l, v]) => (
-                  <div
-                    key={l}
-                    className="min-w-0 pr-3 sm:border-l sm:border-divider sm:px-4 sm:first:border-l-0 sm:first:pl-0 sm:last:pr-0 lg:border-l-0 lg:px-0"
-                  >
+                  // value, then its unit in small grey so three columns fit on a phone
+                  [`${share} price`, USGsUSGMetrics ? formatDollar(formatUnits(USGsUSGMetrics.sUSGPrice || 0n, 18), 4) : "-", ""],
+                  ["Supply", USGsUSGMetrics ? formatMillions(Number(formatUnits(USGsUSGMetrics.sUSGSupply || 0n, 18))) : "-", share],
+                  ["Your balance", formatNumber(sUSGBalance, 2), share],
+                ].map(([l, v, unit]) => (
+                  <div key={l} className="min-w-0 border-l border-divider px-2.5 first:border-l-0 first:pl-0 last:pr-0 min-[360px]:px-3 sm:px-4">
                     <div className="whitespace-nowrap text-xs text-ink-3">{l}</div>
-                    <div className="mt-1 truncate text-[15px] font-medium tabular-nums">{v}</div>
+                    <div className="mt-1 text-[14px] font-medium tabular-nums min-[360px]:text-[15px]">
+                      {v}
+                      {unit && v !== "-" && <span className="block text-xs font-normal text-ink-3 min-[390px]:ml-1 min-[390px]:inline">{unit}</span>}
+                    </div>
                   </div>
                 ))}
               </div>

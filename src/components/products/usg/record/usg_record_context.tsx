@@ -357,7 +357,7 @@ export const USGRecordProvider = ({ marketAddress, children }: USGRecordContextP
       const data = prices
         .map((price) => {
           const HECvAPR = computeHECvAPR(currentTotalMarketApr, APRS, price, rcParams, Number(marketData?.debtInfos?.currentRewardCut) / 100000)
-          const LECvAPR = BigInt(Math.round(currentTotalMarketApr * 10 ** 18)) / BigInt(100)
+          const LECvAPR = BigInt(Math.round((currentTotalMarketApr || 0) * 10 ** 18)) / BigInt(100)
 
           const appliedAPR = irParams?.isHEC ? HECvAPR : LECvAPR
 

@@ -11,7 +11,7 @@ import { AssetDataPriced } from "@/types"
 import { FormState, StakingAssetInfo, StakingDepositType, USGStakingInfo } from "../usg_type"
 import { createContext, ReactNode, useContext, useEffect, useMemo, useState } from "react"
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
-import { doApprove, doStakeUSG, doUnstakeUSG, getExpectedSUSG, getExpectedUSG, getStakeFormState, getYearnV3Metrics } from "./usg_stake_controller"
+import { doApprove, doStakeUSG, doUnstakeUSG, getExpectedPreview, getStakeFormState, getYearnV3Metrics } from "./usg_stake_controller"
 import { matchBlockChainErrors } from "../record/usg_record_controller"
 
 type USGStakeContextProps = {
@@ -264,25 +264,15 @@ export const USGStakeProvider = ({ children, vault: vaultKey = "sUSG" }: USGStak
   }
 
   useEffect(() => {
-    if (!weiValue || weiValue === 0n) return
-    ;(async () => {
-      if (currentFeature === "stake") {
-        try {
-          const sdAssetAmountOut = await getExpectedSUSG(walletClient!, weiValue, vault.share.address)
-          setExpected(sdAssetAmountOut)
-        } catch (error) {
-          console.error("Error while estimating deposit preview :", error)
-        }
-      } else {
-        try {
-          const assetAmountOut = await getExpectedUSG(walletClient!, weiValue, vault.share.address)
-          setExpected(assetAmountOut)
-        } catch (error) {
-          console.error("Error while estimating redeem preview :", error)
-        }
-      }
-    })()
-  }, [weiValue])
+    if (!weiValue) return setExpected(undefined)
+    let stale = false
+    getExpectedPreview(currentFeature === "stake" ? "previewDeposit" : "previewRedeem", weiValue, vault.share.address)
+      .then((amount) => !stale && setExpected(amount))
+      .catch((error) => console.error("Error while estimating vault preview:", error))
+    return () => {
+      stale = true
+    }
+  }, [weiValue, currentFeature, vault])
 
   const computeProjectedValue = useMemo(() => {
     if (currentFeature === "stake") {

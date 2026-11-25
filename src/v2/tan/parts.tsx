@@ -3,7 +3,7 @@
 import { ReactNode } from "react"
 import { ExternalLink } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { LockData, LockPosition } from "@/components/products/usg/usg_type"
+import { LockData } from "@/components/products/usg/usg_type"
 import { formatBigInt } from "@/lib/number_formatter"
 import { FormAlert } from "@/components/design_system/inputs/form_alert"
 import { SelectMenu } from "@/v2/ui/select-menu"
@@ -106,5 +106,3 @@ export function Alerts({ errors, isLoading }: { errors: { type: string | null; k
 export function Empty({ text }: { text: string }) {
   return <p className="rounded-xl bg-white/[0.03] px-4 py-5 text-center text-[13px] text-ink-3">{text}</p>
 }
-
-export const lockOf = (p: LockPosition | undefined) => (p ? `#${p.tokenId}` : "-")

@@ -42,14 +42,3 @@ export function Roll({ value, className }: { value: string | number | undefined 
     </span>
   )
 }
-
-/** Crossfade from a loading placeholder to the first real value (skeleton to data, 150 ms). */
-export function FadeIn({ show, children, className }: { show: boolean; children: React.ReactNode; className?: string }) {
-  const reduce = useReducedMotion()
-  if (!show) return null
-  return (
-    <motion.span className={className} initial={reduce ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.15 }}>
-      {children}
-    </motion.span>
-  )
-}

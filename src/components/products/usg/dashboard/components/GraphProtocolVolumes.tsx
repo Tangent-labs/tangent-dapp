@@ -83,14 +83,14 @@ export const GraphProtocolVolumes = ({ totalVolumes, protocolVolumes, selectedVo
 
   return (
     <ReliefCard ref={cardRef} className="flex w-full flex-col items-start justify-start p-5">
-      <div className="flex w-full items-center justify-between">
+      <div className={cn("flex w-full justify-between", UI_V2 ? "items-start" : "items-center")}>
         {UI_V2 ? (
           <ChartHeadV2 label="Protocol volumes" value={"$" + formatMillions(totalVolumes)} />
         ) : (
           <div className="text-xl font-semibold">Protocol volumes</div>
         )}
 
-        <div className="flex gap-3">
+        <div className={cn("flex", UI_V2 ? "gap-2" : "gap-3")}>
           {VOLUME_RANGE_TABS.map((tab) => (
             <ButtonTab
               key={tab.range}

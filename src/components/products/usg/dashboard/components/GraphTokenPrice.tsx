@@ -1,6 +1,7 @@
 "use client"
 
 import { UI_V2 } from "@/v2/ui"
+import { cn } from "@/lib/utils"
 import { TimeChartV2 } from "@/v2/ui/time-chart"
 import { ChartHeadV2, V2_CURSOR, rangeChange, v2ActiveDot } from "@/v2/ui/chart"
 
@@ -92,7 +93,7 @@ export const GraphTokenPrice = ({ token, title, selectedTab, data, fetchPriceHis
 
   return (
     <ReliefCard className="flex h-full w-full flex-col items-start justify-start p-5">
-      <div className="flex w-full items-center justify-between">
+      <div className={cn("flex w-full justify-between", UI_V2 ? "items-start" : "items-center")}>
         {UI_V2 ? (
           <ChartHeadV2 label={`${title} price`} value={formatDollar(latestValue, 4)} change={rangeChange(data[0]?.uv, latestPoint?.uv)} />
         ) : (

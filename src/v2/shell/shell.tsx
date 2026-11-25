@@ -260,7 +260,7 @@ function Nav({ path, collapsed }: { path: string; collapsed: boolean }) {
                 <span className={cn("relative whitespace-nowrap transition-opacity duration-200", collapsed && "opacity-0")}>{it.label}</span>
                 {it.external && (
                   <ArrowUpRight
-                    className={cn("relative ml-auto h-3.5 w-3.5 shrink-0 text-white transition-opacity duration-200", collapsed ? "opacity-0" : "opacity-40")}
+                    className={cn("relative ml-auto h-4 w-4 shrink-0 text-white transition-opacity duration-200", collapsed ? "opacity-0" : "opacity-50")}
                     strokeWidth={1.75}
                   />
                 )}
@@ -411,7 +411,7 @@ function MoreSheet({ open, onClose, path }: { open: boolean; onClose: () => void
                         >
                           <Icon className="h-[18px] w-[18px] shrink-0 text-white opacity-80" strokeWidth={1.75} />
                           <span className="truncate">{it.label}</span>
-                          {it.external && <ArrowUpRight className="ml-auto h-3.5 w-3.5 shrink-0 opacity-40" strokeWidth={1.75} />}
+                          {it.external && <ArrowUpRight className="ml-auto h-4 w-4 shrink-0 opacity-50" strokeWidth={1.75} />}
                         </Link>
                       )
                     })}

@@ -25,10 +25,22 @@ const subscribe = (cb: () => void) => {
   return () => listeners.delete(cb)
 }
 
+// one observer on <html data-theme> for the whole page, however many logos and charts listen
+const themeListeners = new Set<() => void>()
+let themeObserver: MutationObserver | null = null
 const subscribeTheme = (cb: () => void) => {
-  const mo = new MutationObserver(cb)
-  mo.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] })
-  return () => mo.disconnect()
+  themeListeners.add(cb)
+  if (!themeObserver) {
+    themeObserver = new MutationObserver(() => themeListeners.forEach((l) => l()))
+    themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] })
+  }
+  return () => {
+    themeListeners.delete(cb)
+    if (!themeListeners.size) {
+      themeObserver?.disconnect()
+      themeObserver = null
+    }
+  }
 }
 const readTheme = (): Theme => (document.documentElement.dataset.theme === "light" ? "light" : "dark")
 

@@ -120,19 +120,18 @@ export function TimeChartV2<T extends object>({
 
   if (!data.length) return null
   const lastX = meta.lastRow ? val(meta.lastRow, xKey) : undefined
-  // every line ends on a pulsing point; stacked lines sit at their running total, and an empty layer (0) gets none
+  // every line ends on a pulsing point, stacked lines at their running total (a layer at zero too, on the floor)
   const ends = series
     .map((s, i) => ({
       s,
-      own: val(meta.lastRow, s.key),
       y: stacked ? series.slice(0, i + 1).reduce((a, x) => a + val(meta.lastRow, x.key), 0) : val(meta.lastRow, s.key),
     }))
-    .filter((e) => Number.isFinite(e.y) && !(stacked && !e.own))
+    .filter((e) => Number.isFinite(e.y))
 
   return (
     <div className={cn("group/chart relative w-full", grow && "min-h-56 flex-1", className)} style={grow ? undefined : { height }}>
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart data={data} margin={{ top: 24, right: 16, left: 0, bottom: 0 }}>
+        <AreaChart data={data} margin={{ top: 24, right: 16, left: 0, bottom: 6 }}>
           <defs>
             {series.map((s) => (
               <linearGradient key={s.key} id={`${id}-fill-${s.key}`} x1="0" y1="0" x2="0" y2="1">

@@ -195,9 +195,30 @@ export function StakePageV2() {
                 </span>
               </span>
             </div>
-            <div className="mt-6 text-[13px] text-ink-2">Current APY</div>
-            <div className="mt-1 text-[56px] font-light tabular-nums leading-none tracking-[-0.03em]">
-              <Roll value={sUSGCurrentAPY ? `${sUSGCurrentAPY.toFixed(2)}%` : "-"} />
+            {/* the yield on the left, the vault facts beside it (same reading as the market facts), under it on narrow cards */}
+            <div className="mt-6 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between lg:gap-8">
+              <div className="shrink-0">
+                <div className="text-[13px] text-ink-2">Current APY</div>
+                <div className="mt-1 text-[56px] font-light tabular-nums leading-none tracking-[-0.03em]">
+                  <Roll value={sUSGCurrentAPY ? `${sUSGCurrentAPY.toFixed(2)}%` : "-"} />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-y-4 sm:grid-cols-4 sm:gap-y-0 lg:w-[300px] lg:shrink-0 lg:grid-cols-2 lg:gap-x-6 lg:gap-y-3">
+                {[
+                  [`${share} price`, USGsUSGMetrics ? formatDollar(formatUnits(USGsUSGMetrics.sUSGPrice || 0n, 18), 4) : "-"],
+                  ["Supply", USGsUSGMetrics ? `${formatMillions(Number(formatUnits(USGsUSGMetrics.sUSGSupply || 0n, 18)))} ${share}` : "-"],
+                  ["Your balance", `${formatNumber(sUSGBalance, 2)} ${share}`],
+                  ["Lockup", "None"],
+                ].map(([l, v]) => (
+                  <div
+                    key={l}
+                    className="min-w-0 pr-3 sm:border-l sm:border-divider sm:px-4 sm:first:border-l-0 sm:first:pl-0 sm:last:pr-0 lg:border-l-0 lg:px-0"
+                  >
+                    <div className="whitespace-nowrap text-xs text-ink-3">{l}</div>
+                    <div className="mt-1 truncate text-[15px] font-medium tabular-nums">{v}</div>
+                  </div>
+                ))}
+              </div>
             </div>
             <p className="mt-2 text-[13px] text-ink-2">
               {vault.hasData
@@ -227,19 +248,6 @@ export function StakePageV2() {
                   </div>
                 ))}
             </div>
-          </div>
-          <div className="grid grid-cols-2 divide-divider border-t border-divider md:grid-cols-4 md:divide-x">
-            {[
-              [`${share} price`, USGsUSGMetrics ? formatDollar(formatUnits(USGsUSGMetrics.sUSGPrice || 0n, 18), 4) : "-"],
-              ["Supply", USGsUSGMetrics ? `${formatMillions(Number(formatUnits(USGsUSGMetrics.sUSGSupply || 0n, 18)))} ${share}` : "-"],
-              ["Your balance", `${formatNumber(sUSGBalance, 2)} ${share}`],
-              ["Lockup", "None"],
-            ].map(([l, v]) => (
-              <div key={l} className="flex items-baseline justify-between px-5 py-3.5 text-[13px]">
-                <span className="text-ink-3">{l}</span>
-                <span className="font-medium tabular-nums">{v}</span>
-              </div>
-            ))}
           </div>
         </div>
 

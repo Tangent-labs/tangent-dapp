@@ -38,9 +38,8 @@ export const GraphGlobalTVL = ({ fetchTVLData, tvlSelectedTab, protocolCurrentTV
   const rangeMs = getDataRangeMs(tvl)
   const xAxisTicks = getXAxisTicks(tvl)
 
-  // V2: a series that stays at zero over the whole range only adds an empty legend entry and a flat line
-  const isEmpty = (key: keyof TVLData) => !(protocolCurrentTVL?.[key] as number) && !tvl?.some((d) => ((d[key] as number) ?? 0) > 0)
-  const visibleSeries = UI_V2 && tvl?.length ? SERIES_CONFIG.filter((s) => !isEmpty(s.key)) : SERIES_CONFIG
+  // every series stays on the chart and in the legend on every range, Peg Keepers included when it is at zero
+  const visibleSeries = SERIES_CONFIG
 
   const sortedSeries = tvl?.length
     ? [...visibleSeries].sort((a, b) => {

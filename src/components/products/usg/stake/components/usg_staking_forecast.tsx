@@ -260,7 +260,8 @@ export const ForecastGraph = ({ currentInvestment, newLiquidity, apy, currentFea
               data={forecastData}
               xKey="t"
               series={[
-                { key: "baseAmount", label: "Current position", color: COLOR.fg, fill: !showSecondLine },
+                // no sUSG yet: the current position is a flat $0 line, only the projection is drawn
+                ...(currentInvestment > 0 || !showSecondLine ? [{ key: "baseAmount", label: "Current position", color: COLOR.fg, fill: !showSecondLine }] : []),
                 ...(showSecondLine ? [{ key: "amountWithLiquidity", label: "With this change", color: COLOR.data }] : []),
               ]}
               format={(v) => "$" + formatMillions(v)}

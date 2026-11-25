@@ -120,8 +120,14 @@ export function TimeChartV2<T extends object>({
 
   if (!data.length) return null
   const lastX = meta.lastRow ? val(meta.lastRow, xKey) : undefined
-  // the halo marks the top of the stack (or each line when not stacked)
-  const haloSeries = stacked ? series.slice(-1) : series
+  // every line ends on a pulsing point; stacked lines sit at their running total, and an empty layer (0) gets none
+  const ends = series
+    .map((s, i) => ({
+      s,
+      own: val(meta.lastRow, s.key),
+      y: stacked ? series.slice(0, i + 1).reduce((a, x) => a + val(meta.lastRow, x.key), 0) : val(meta.lastRow, s.key),
+    }))
+    .filter((e) => Number.isFinite(e.y) && !(stacked && !e.own))
 
   return (
     <div className={cn("group/chart relative w-full", grow && "min-h-56 flex-1", className)} style={grow ? undefined : { height }}>
@@ -217,9 +223,7 @@ export function TimeChartV2<T extends object>({
           ))}
 
           {lastX !== undefined &&
-            haloSeries.map((s) => {
-              const y = stacked ? series.reduce((a, x) => a + val(meta.lastRow, x.key), 0) : val(meta.lastRow, s.key)
-              if (!Number.isFinite(y)) return null
+            ends.map(({ s, y }) => {
               return (
                 <ReferenceDot
                   key={s.key}

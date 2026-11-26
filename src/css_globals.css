@@ -414,6 +414,17 @@ html:has(.v2-shell)::-webkit-scrollbar-thumb,
 html:has(.v2-shell) {
   scrollbar-gutter: stable;
 }
+/* V2 desktop: Radix menus and dialogs lock the page by hiding its scrollbar and adding the bar width as body margin,
+   which slid the whole layout sideways for a frame. The page keeps its scrollbar and the margin is dropped; the lock
+   itself still holds (Radix also blocks wheel and touch scrolling outside the open layer). */
+@media (min-width: 1024px) {
+  html[data-ui="v2"] {
+    overflow-y: scroll;
+  }
+  html[data-ui="v2"] body[data-scroll-locked] {
+    margin-right: 0 !important;
+  }
+}
 /* V2 phones: OLED screens and low brightness swallow 5-6% white hairlines, so borders and dividers step up on small screens */
 @media (max-width: 767px) {
   html[data-ui="v2"] {

@@ -161,10 +161,8 @@ export function StakePageV2() {
   return (
     <div className="w-full pb-20 pt-2 font-sans">
       <div className="text-[13px] text-ink-3">
-        <Link href="/stake" className="hover:text-white">
-          Savings
-        </Link>{" "}
-        / <span className="text-ink-2">{vault.key}</span>
+        {/* plain text while sUSG is the only live vault: the /stake list is not shown yet */}
+        Savings / <span className="text-ink-2">{vault.key}</span>
       </div>
       <h1 className="mt-2 text-[32px] font-semibold tracking-[-0.02em]">{vault.title}</h1>
       <p className="mt-1 max-w-[720px] text-[14px] text-ink-2">

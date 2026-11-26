@@ -37,7 +37,8 @@ export const NAV: NavGroup[] = [
     group: "Protocol",
     items: [
       { href: "/", label: "Markets", icon: BarChart3, isActive: isOnMarket },
-      { href: "/stake", label: "Savings", icon: PiggyBank, isActive: (p) => p.startsWith("/stake") },
+      // only sUSG is live for now: Savings opens it directly (the /stake list comes back with the other vaults)
+      { href: "/stake/sUSG", label: "Savings", icon: PiggyBank, isActive: (p) => p.startsWith("/stake") },
       { href: "/earn", label: "Yields", icon: Sprout },
       {
         href: "/swap?tokenIn=0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48&tokenOut=0xb1c2db5d6ca03fce73dbd304d320bf76c55ae1b1",

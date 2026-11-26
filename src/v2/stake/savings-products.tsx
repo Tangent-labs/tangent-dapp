@@ -1,0 +1,126 @@
+"use client"
+
+import Link from "next/link"
+import { ArrowUpRight, ChevronRight } from "lucide-react"
+import { SavingsVault } from "@/components/products/usg/stake/savings_vaults"
+import { TokenImage } from "@/components/design_system/structure/token_image"
+import { formatDollar, formatMillions } from "@/lib/number_formatter"
+
+export type SavingsRowV2 = { vault: SavingsVault; apy?: number; tvl: number; deposit: number }
+
+/**
+ * V2 Savings products list (feat/sUSGreUSD). Markup only: rows, totals and the APY/TVL rules all come from SavingsProducts.
+ * One card per product, on the V2 surface tokens, the yield first.
+ */
+export function SavingsProductsV2({
+  rows,
+  totalTvl,
+  bestApy,
+  deposits,
+  docsHref,
+}: {
+  rows: SavingsRowV2[]
+  totalTvl: number
+  bestApy: number
+  deposits: number
+  docsHref: string
+}) {
+  return (
+    <div className="w-full pb-20 pt-2 font-sans">
+      <h1 className="text-[32px] font-semibold tracking-[-0.02em]">Savings</h1>
+      <p className="mt-1 max-w-[720px] text-[14px] text-ink-2">
+        Stake USG directly, or pick a Yearn V3 vault that auto-compounds a USG pool. All products are ERC4626 tokens and can be used further in DeFi.{" "}
+        <Link
+          href={docsHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-0.5 text-white underline decoration-white/25 underline-offset-4 hover:decoration-white"
+        >
+          Learn more <ArrowUpRight className="h-3.5 w-3.5" strokeWidth={1.75} />
+        </Link>
+      </p>
+
+      <div className="v2-kpis mt-8 flex flex-wrap items-stretch gap-y-4">
+        <div className="min-w-[220px] flex-[1.6] pr-8">
+          <div className="text-xs text-ink-3">Best APY</div>
+          <div className="mt-1 text-[48px] font-light tabular-nums leading-[1.05] tracking-[-0.02em]">
+            {bestApy > 0 ? `${bestApy.toFixed(2)}%` : <span className="v2-shimmer inline-block h-11 w-36 rounded-md align-middle" />}
+          </div>
+        </div>
+        <Stat label="Total TVL" value={totalTvl > 0 ? `$${formatMillions(totalTvl)}` : "–"} sub={`${rows.length} products`} />
+        <Stat label="Your deposits" value={formatDollar(deposits)} sub="Across all products" />
+      </div>
+
+      <div className="mt-8 grid grid-cols-1 gap-3 md:mt-10 md:grid-cols-2 md:gap-4 xl:grid-cols-3">
+        {rows.map((row) => (
+          <ProductCard key={row.vault.key} {...row} />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+/** One savings product. Same card and hover as the markets cards view: raised on hover, a chevron that steps right. */
+function ProductCard({ vault, apy, tvl, deposit }: SavingsRowV2) {
+  return (
+    <Link
+      href={`/stake/${vault.key}`}
+      className="focus-visible:border-action/60 group relative flex flex-col overflow-hidden rounded-2xl border border-hairline bg-surface p-4 outline-none transition-colors duration-200 hover:border-white/[0.12] hover:bg-raised sm:p-5"
+    >
+      <span className="relative flex items-center gap-3">
+        <TokenImage token={vault.share.logo} size={48} className="h-10 w-auto shrink-0" />
+        <span className="min-w-0">
+          <span className="block text-[17px] font-semibold tracking-[-0.01em]">{vault.key}</span>
+          <span className="block truncate text-xs text-ink-3">
+            {vault.subtitle} · {vault.source}
+          </span>
+        </span>
+      </span>
+
+      <p className="relative mt-4 hidden min-h-10 text-[13px] leading-5 text-ink-2 md:block">{vault.summary}</p>
+
+      <span className="relative mt-4 grid grid-cols-2 gap-2">
+        <span className="rounded-xl bg-white/[0.04] px-3.5 py-3">
+          <span className="block text-xs text-ink-3">APY</span>
+          <span className="mt-1 block text-[22px] font-light tabular-nums leading-none tracking-[-0.02em] sm:text-[26px]">
+            {apy === undefined ? <span className="text-ink-3">-</span> : `${apy.toFixed(2)}%`}
+          </span>
+        </span>
+        <span className="rounded-xl bg-white/[0.04] px-3.5 py-3">
+          <span className="block text-xs text-ink-3">TVL</span>
+          <span className="mt-1.5 block text-[18px] font-medium tabular-nums leading-none">
+            {tvl > 0 ? `$${formatMillions(tvl)}` : <span className="text-ink-3">–</span>}
+          </span>
+        </span>
+      </span>
+
+      <span className="relative mt-4 flex items-center justify-between gap-3 border-t border-divider pt-3.5">
+        <span className="flex min-w-0 items-center truncate text-[13px]">
+          <span className="font-semibold">{vault.source === "Tangent" ? "Stake USG" : vault.depositLabel}</span>
+          {/* accepted tokens with their logos (same list the live card prints as text) */}
+          {(vault.depositTokens ? vault.depositTokens.split(", ") : [vault.asset.symbol]).map((t) => (
+            <span key={t} className="ml-2.5 inline-flex items-center gap-1 align-middle text-ink-2">
+              <TokenImage token={t} size={16} className="h-4 w-4 shrink-0" />
+              {t}
+            </span>
+          ))}
+          {deposit > 0 && <span className="ml-2 text-ink-2">· You have {formatDollar(deposit)}</span>}
+        </span>
+        <ChevronRight
+          className="h-4 w-4 shrink-0 text-ink-3 transition-[color,transform] duration-150 group-hover:translate-x-0.5 group-hover:text-white"
+          strokeWidth={1.75}
+        />
+      </span>
+    </Link>
+  )
+}
+
+function Stat({ label, value, sub }: { label: string; value: string; sub?: string }) {
+  return (
+    <div className="min-w-[150px] flex-1 border-l border-divider px-6">
+      <div className="text-xs text-ink-3">{label}</div>
+      <div className="mt-1 whitespace-nowrap text-[24px] font-medium tabular-nums tracking-[-0.02em]">{value}</div>
+      {sub && <div className="mt-1.5 text-xs text-ink-2">{sub}</div>}
+    </div>
+  )
+}

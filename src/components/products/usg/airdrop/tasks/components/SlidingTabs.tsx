@@ -2,6 +2,8 @@
 
 import { cn } from "@/lib/utils"
 import { useMemo } from "react"
+import { motion } from "framer-motion"
+import { UI_V2 } from "@/v2/ui"
 
 type SlidingTabsProps = {
   labels: string[]
@@ -17,6 +19,35 @@ export function SlidingTabs({ labels, value, onSwitchTab, className }: SlidingTa
   }, [labels, value])
 
   const numberOfLabels = labels.length
+
+  if (UI_V2)
+    return (
+      <div role="tablist" aria-orientation="horizontal" className={cn("flex w-full gap-6 border-b border-hairline", className)}>
+        {labels.map((label, i) => {
+          const selected = i === activeTabIndex
+          return (
+            <button
+              key={label}
+              role="tab"
+              aria-selected={selected}
+              aria-controls={`panel-${label}`}
+              tabIndex={selected ? 0 : -1}
+              onClick={() => onSwitchTab(label)}
+              className={cn("relative pb-3 text-[14px] font-medium transition-colors duration-150", selected ? "text-white" : "text-ink-3 hover:text-ink-2")}
+            >
+              {label}
+              {selected && (
+                <motion.span
+                  layoutId={`v2-sliding-${labels.join("-")}`}
+                  className="absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-white"
+                  transition={{ type: "spring", visualDuration: 0.35, bounce: 0.15 }}
+                />
+              )}
+            </button>
+          )
+        })}
+      </div>
+    )
 
   return (
     <div className={`relative w-full ${className}`}>

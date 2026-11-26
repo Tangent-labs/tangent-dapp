@@ -1,5 +1,6 @@
 "use client"
 
+import { v2Hidden } from "@/v2/ui"
 import { formatDollar } from "@/lib/number_formatter"
 import { useUSGRecordContext } from "../usg_record_context"
 import { useUSGLeverageContext } from "./usg_record_leverage_context"
@@ -64,7 +65,7 @@ export default function USGLeverageContent() {
   return (
     <div className="flex flex-col gap-1.5">
       <div className="flex w-full items-center justify-between gap-2">
-        <span className="text-sm font-semibold md:text-xl">Deposit {collateralInfo?.symbol?.replaceAll("-", "/")}</span>
+        <span className={v2Hidden("text-sm font-semibold md:text-xl")}>Deposit {collateralInfo?.symbol?.replaceAll("-", "/")}</span>
         <span className="text-xs text-subtitle">{maxDepositString}</span>
       </div>
 
@@ -110,7 +111,7 @@ export default function USGLeverageContent() {
 
       <div className="flex flex-col gap-2">
         <div className="flex w-full items-end justify-between gap-1">
-          <span className="flex items-start justify-start text-sm font-semibold md:text-xl">Borrow USG</span>
+          <span className={v2Hidden("flex items-start justify-start text-sm font-semibold md:text-xl")}>Borrow USG</span>
 
           {!formState.errors.some((e) => e.key === "low-max-leverage") && (
             <div className="flex items-end justify-end text-xs text-subtitle">{`Max leverage: x${leverageRange.maxLeverageAdjusted}`}</div>

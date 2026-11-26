@@ -6,6 +6,7 @@ import { formatUnits, parseUnits } from "viem"
 import { BorderPanel } from "../structure/border_panel"
 import { AssetDataPriced, CollateralInfo } from "@/types"
 import { cn, PERCENTAGE_INPUT_AMOUNT } from "@/lib/utils"
+import { UI_V2 } from "@/v2/ui"
 import { IconThunder, IconWallet } from "@/components/icons"
 import { useAutoGrowInputWidth } from "@/hooks/useAutoGrowInputWidth"
 import { ReactNode, useEffect, useMemo, useRef, useState } from "react"
@@ -186,9 +187,9 @@ export function GenericInputAssetAmount({
   // HANDLE SLIDER CHANGE
   // Updates input value and calls parent callback when slider moves
   // ---------------------------
-  const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const percentage = Number(e.target.value)
+  const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => applyPercentage(Number(e.target.value))
 
+  const applyPercentage = (percentage: number) => {
     // Immediate visual update
     setSliderPercentage(percentage)
 
@@ -242,6 +243,96 @@ export function GenericInputAssetAmount({
     if (target.closest(".stop-focus")) return
     if (target.closest("[data-radix-popper-content-wrapper]")) return
     inputRef.current?.focus()
+  }
+
+  if (UI_V2) {
+    // leverage drives this field with an external multiplier (unit "x"): keep the slider there, percentage chips everywhere else
+    const isMultiplier = isSliderDisplay && sliderUnit === "x"
+    return (
+      <div
+        onClick={handlePanelClick}
+        className={cn(
+          "flex flex-col rounded-xl border border-hairline p-4 transition-[border-color,opacity] duration-200",
+          disabled ? "cursor-not-allowed opacity-45" : "cursor-text bg-white/[0.04] focus-within:border-white/20 hover:border-white/[0.12]",
+          isLoading && "shimmer"
+        )}
+      >
+        <div className="flex select-none items-center justify-between gap-2 text-xs text-ink-2">
+          <span>{label}</span>
+          {displayBalance ? (
+            <span className="text-ink-3">Balance {formatBigIntFloor(maxWeiValue, asset?.decimals || 18, 2)}</span>
+          ) : (
+            slippageInput && <span className="stop-focus no-parent-hover">{slippageInput}</span>
+          )}
+        </div>
+        <div className="mt-1.5 flex items-center justify-between gap-3">
+          <span ref={inputSpanRef} className="invisible absolute whitespace-pre text-[28px] font-light" aria-hidden="true" />
+          <input
+            {...props}
+            lang="en"
+            disabled={isLoading || disabled}
+            type="text"
+            value={isLoading ? "-" : localDisplay}
+            placeholder="0.00"
+            onChange={handleInputChange}
+            onBlur={handleBlur}
+            className="w-full min-w-0 bg-transparent text-[28px] font-light tabular-nums tracking-[-0.02em] placeholder:text-ink-3 focus:outline-none disabled:cursor-not-allowed"
+            ref={inputRef}
+            step="any"
+            inputMode="decimal"
+          />
+          <div className="stop-focus no-parent-hover flex shrink-0 items-center gap-2">
+            {isZapping && <IconThunder className="h-auto w-[8px] text-action" />}
+            {depositSelect}
+          </div>
+        </div>
+        <div className="mt-2 flex items-center justify-between gap-2">
+          <span className="select-none text-xs tabular-nums text-ink-3">{isLoading ? "$-" : dollarDepositDisplay.slice(1, -1)}</span>
+          {!isMultiplier && (isSliderDisplay || isMaxButtonDisplay) && (
+            <span className="stop-focus flex gap-1.5 md:gap-1">
+              {isSliderDisplay &&
+                [25, 50, 75].map((pct) => (
+                  <button
+                    key={pct}
+                    type="button"
+                    disabled={disabled}
+                    onClick={() => applyPercentage(pct)}
+                    className={cn(
+                      "h-8 rounded-md px-3 text-[12px] transition-colors md:h-auto md:px-2 md:py-0.5 md:text-[11px]",
+                      Math.round(sliderPercentage) === pct ? "bg-white/[0.12] text-white" : "bg-white/[0.07] text-ink-2 hover:text-white"
+                    )}
+                  >
+                    {pct}%
+                  </button>
+                ))}
+              {isMaxButtonDisplay && (
+                <button
+                  type="button"
+                  disabled={disabled}
+                  onClick={handleMaxClick}
+                  className="h-8 rounded-md bg-white/[0.07] px-3 text-[12px] text-ink-2 transition-colors hover:text-white md:h-auto md:px-2 md:py-0.5 md:text-[11px]"
+                >
+                  Max
+                </button>
+              )}
+            </span>
+          )}
+        </div>
+        {isMultiplier && (
+          <div className="stop-focus mt-3">
+            <SliderInput
+              disabled={disabled}
+              value={sliderPercentage}
+              handleSliderChange={handleSliderChange}
+              legendValues={sliderLegendValues}
+              startEndRange={sliderStartEndRange}
+              unit={sliderUnit as "%" | "x"}
+            />
+          </div>
+        )}
+        {bottomPart}
+      </div>
+    )
   }
 
   return (

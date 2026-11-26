@@ -9,6 +9,9 @@ import { GraphProtocolRevenues } from "./components/GraphProtocolRevenues"
 import { GraphProtocolVolumes } from "./components/GraphProtocolVolumes"
 import { GraphLpLiquidity } from "./components/GraphLpLiquidity"
 import { GraphCollateralsAndDebts } from "./components/GraphCollateralsAndDebts"
+import { UI_V2 } from "@/v2/ui"
+import { DashboardHeaderV2 } from "@/v2/dashboard/header"
+import { COLOR, SERIES } from "@/v2/theme/colors"
 
 export const USGDashboardContent = () => {
   const {
@@ -44,6 +47,7 @@ export const USGDashboardContent = () => {
 
   return (
     <div className="flex w-full flex-col items-start justify-start gap-5">
+      {UI_V2 && <DashboardHeaderV2 />}
       <div className="flex w-full flex-col gap-5 lg:flex-row">
         <GraphTokenPrice
           token="USG"
@@ -51,8 +55,8 @@ export const USGDashboardContent = () => {
           selectedTab={priceSelectedTabs.USG}
           data={priceHistory.USG}
           fetchPriceHistoryData={fetchPriceHistoryData}
-          accentColor="#0075FF"
-          gradientStart="#0075FF"
+          accentColor={COLOR.data}
+          gradientStart={COLOR.data}
         />
 
         <GraphTokenPrice
@@ -61,8 +65,8 @@ export const USGDashboardContent = () => {
           selectedTab={priceSelectedTabs.sUSG}
           data={priceHistory.sUSG}
           fetchPriceHistoryData={fetchPriceHistoryData}
-          accentColor="#A3FF12"
-          gradientStart="#D9FB0B"
+          accentColor={UI_V2 ? SERIES.violet : "#A3FF12"}
+          gradientStart={UI_V2 ? SERIES.violet : "#D9FB0B"}
         />
       </div>
 
@@ -82,7 +86,7 @@ export const USGDashboardContent = () => {
 
       <div className="flex w-full flex-col gap-5 lg:flex-row">
         {/* USG Collaterals & Market debts */}
-        {userData && <GraphCollateralsAndDebts userData={userData} marketTVLMaxValue={marketTVLMaxValue} />}
+        {(UI_V2 || userData) && <GraphCollateralsAndDebts userData={userData ?? undefined} marketTVLMaxValue={marketTVLMaxValue} />}
 
         {/* PROTOCOL REVENUES */}
         <GraphProtocolRevenues

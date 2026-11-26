@@ -1,5 +1,8 @@
 "use client"
 
+import { UI_V2 } from "@/v2/ui"
+import { SavingsProductsV2 } from "@/v2/stake/savings-products"
+
 import Link from "next/link"
 import Image from "next/image"
 import { useEffect, useState } from "react"
@@ -45,6 +48,17 @@ export default function SavingsProducts() {
   const deposits = VAULTS.reduce((sum, v) => sum + toUsd(metricsOf(v)?.sUSGBalance, metricsOf(v)?.sUSGPrice), 0)
 
   const sUSG = SAVINGS_VAULTS.sUSG
+
+  if (UI_V2)
+    return (
+      <SavingsProductsV2
+        rows={VAULTS.map((v) => ({ vault: v, apy: apyOf(v), tvl: tvlOf(v), deposit: toUsd(metricsOf(v)?.sUSGBalance, metricsOf(v)?.sUSGPrice) }))}
+        totalTvl={totalTvl}
+        bestApy={bestApy}
+        deposits={deposits}
+        docsHref={sUSG.docsHref}
+      />
+    )
 
   return (
     <>

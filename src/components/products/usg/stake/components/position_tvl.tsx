@@ -1,4 +1,6 @@
 import { ReactNode, useMemo, useState } from "react"
+import { UI_V2 } from "@/v2/ui"
+import { TimeChartV2 } from "@/v2/ui/time-chart"
 import { TVLData } from "../../usg_type"
 import { formatMillions } from "@/lib/number_formatter"
 import { convertRange } from "@/components/products/root/root_controller"
@@ -6,6 +8,7 @@ import { ButtonTab } from "@/components/design_system/inputs/button_tab"
 import { TokenImage } from "@/components/design_system/structure/token_image"
 import { ValueType } from "recharts/types/component/DefaultTooltipContent"
 import { Area, AreaChart, CartesianGrid, ReferenceDot, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
+import { COLOR } from "@/v2/theme/colors"
 
 const TIME_TICK_COUNT = 7
 const CHART_Y_AXIS_WIDTH = 52
@@ -126,12 +129,20 @@ export const PositionTVL = ({ tvl }: PositionTVLProps) => {
     <>
       <div className="flex w-full items-center justify-between">
         <div className="flex items-center justify-start gap-3">
-          <div className="flex items-center justify-center gap-[5px] rounded-[10px] bg-overlay-panel p-[10px]">
-            <TokenImage token="sUSG" size={20} />
-            sUSG
-          </div>
+          {UI_V2 ? (
+            <div className="text-[13px] text-ink-2">
+              Total value locked <span className="ml-1.5 text-[15px] font-semibold tabular-nums text-white">${formatMillions(latestPoint?.uv ?? 0)}</span>
+            </div>
+          ) : (
+            <>
+              <div className="flex items-center justify-center gap-[5px] rounded-[10px] bg-overlay-panel p-[10px]">
+                <TokenImage token="sUSG" size={20} />
+                sUSG
+              </div>
 
-          <div className="text-xl font-semibold">${formatMillions(latestPoint?.uv ?? 0)}</div>
+              <div className="text-xl font-semibold">${formatMillions(latestPoint?.uv ?? 0)}</div>
+            </>
+          )}
         </div>
 
         <div className="hidden items-end justify-end gap-2 md:flex">
@@ -142,67 +153,79 @@ export const PositionTVL = ({ tvl }: PositionTVLProps) => {
       </div>
 
       {hasTvlHistory ? (
-        <div className="relative mt-2.5 h-[18rem]">
-          <ResponsiveContainer width="100%" height="100%" className="!max-h-none">
-            <AreaChart data={data} margin={CHART_MARGIN}>
-              <defs>
-                <linearGradient id="susgTvlGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor={SUSG_COLOR} stopOpacity={0.4} />
-                  <stop offset="100%" stopColor={SUSG_COLOR} stopOpacity={0} />
-                </linearGradient>
-              </defs>
+        UI_V2 ? (
+          <TimeChartV2
+            className="-mx-6 mt-2.5 w-[calc(100%+3rem)]"
+            data={data}
+            xKey="date"
+            series={[{ key: "uv", label: "TVL", color: COLOR.data }]}
+            format={formatYAxis}
+            valueFormat={(v) => "$" + formatMillions(v)}
+            height="18rem"
+          />
+        ) : (
+          <div className="relative mt-2.5 h-[18rem]">
+            <ResponsiveContainer width="100%" height="100%" className="!max-h-none">
+              <AreaChart data={data} margin={CHART_MARGIN}>
+                <defs>
+                  <linearGradient id="susgTvlGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor={SUSG_COLOR} stopOpacity={0.4} />
+                    <stop offset="100%" stopColor={SUSG_COLOR} stopOpacity={0} />
+                  </linearGradient>
+                </defs>
 
-              <CartesianGrid horizontal={true} vertical={false} stroke="rgba(255,255,255,0.05)" />
+                <CartesianGrid horizontal={true} vertical={false} stroke="rgba(255,255,255,0.05)" />
 
-              <XAxis
-                padding={X_AXIS_PADDING}
-                dataKey="date"
-                type="number"
-                scale="time"
-                domain={[startTs, endTs]}
-                ticks={ticks}
-                tickFormatter={fmtTick}
-                tick={TICK_STYLE}
-                axisLine={AXIS_LINE_STYLE}
-                tickLine={false}
-                allowDataOverflow
-                height={20}
-              />
+                <XAxis
+                  padding={X_AXIS_PADDING}
+                  dataKey="date"
+                  type="number"
+                  scale="time"
+                  domain={[startTs, endTs]}
+                  ticks={ticks}
+                  tickFormatter={fmtTick}
+                  tick={TICK_STYLE}
+                  axisLine={AXIS_LINE_STYLE}
+                  tickLine={false}
+                  allowDataOverflow
+                  height={20}
+                />
 
-              <YAxis
-                orientation="right"
-                width={CHART_Y_AXIS_WIDTH}
-                axisLine={false}
-                tick={({ x, y, payload }) => (
-                  <text x={x - 10} y={y - 7} dy={4} textAnchor="end" fill="rgba(255,255,255,0.5)" fontSize={11}>
-                    {formatYAxis(payload.value)}
-                  </text>
-                )}
-                tickLine={false}
-              />
+                <YAxis
+                  orientation="right"
+                  width={CHART_Y_AXIS_WIDTH}
+                  axisLine={false}
+                  tick={({ x, y, payload }) => (
+                    <text x={x - 10} y={y - 7} dy={4} textAnchor="end" fill="rgba(255,255,255,0.5)" fontSize={11}>
+                      {formatYAxis(payload.value)}
+                    </text>
+                  )}
+                  tickLine={false}
+                />
 
-              <Area
-                type="monotone"
-                dataKey="uv"
-                stroke={SUSG_COLOR}
-                strokeWidth={2}
-                fill="url(#susgTvlGradient)"
-                dot={false}
-                activeDot={{
-                  r: 4,
-                  stroke: SUSG_COLOR,
-                  strokeWidth: 2,
-                  fill: SUSG_COLOR,
-                  filter: `drop-shadow(0 0 8px ${SUSG_COLOR})`,
-                }}
-              />
+                <Area
+                  type="monotone"
+                  dataKey="uv"
+                  stroke={SUSG_COLOR}
+                  strokeWidth={2}
+                  fill="url(#susgTvlGradient)"
+                  dot={false}
+                  activeDot={{
+                    r: 4,
+                    stroke: SUSG_COLOR,
+                    strokeWidth: 2,
+                    fill: SUSG_COLOR,
+                    filter: `drop-shadow(0 0 8px ${SUSG_COLOR})`,
+                  }}
+                />
 
-              <Tooltip cursor={{ ...AXIS_LINE_STYLE, strokeWidth: 1.5, strokeDasharray: "4 4" }} content={<TvlTooltip fmtLabel={fmtTooltipLabel} />} />
+                <Tooltip cursor={{ ...AXIS_LINE_STYLE, strokeWidth: 1.5, strokeDasharray: "4 4" }} content={<TvlTooltip fmtLabel={fmtTooltipLabel} />} />
 
-              <ReferenceDot x={latestPoint.date} y={latestPoint.uv} r={4} fill={SUSG_COLOR} stroke={SUSG_COLOR} isFront={true} />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
+                <ReferenceDot x={latestPoint.date} y={latestPoint.uv} r={4} fill={SUSG_COLOR} stroke={SUSG_COLOR} isFront={true} />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        )
       ) : (
         <div className="mb mt-3 flex h-[18rem] w-full items-center justify-center text-subtitle">No TVL data</div>
       )}

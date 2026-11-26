@@ -51,7 +51,7 @@ export const FeatureSelect = ({
                 }}
                 className={cn(
                   "h-10 w-full rounded-[10px] text-center font-gilroy text-[15px] font-semibold transition-colors duration-200",
-                  isActive ? "bg-button-active text-white" : "border border-white/20 bg-transparent text-subtitle hover:bg-white/10 hover:text-white",
+                  isActive ? "bg-button-active text-on-fill" : "border border-white/20 bg-transparent text-subtitle hover:bg-white/10 hover:text-white",
                   opt.disabled && "cursor-not-allowed opacity-50 hover:bg-transparent hover:text-subtitle"
                 )}
               >

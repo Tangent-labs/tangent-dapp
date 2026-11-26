@@ -4,6 +4,7 @@ import { useMemo } from "react"
 import { FormAction } from "@/types"
 import { Button } from "@/components/design_system/inputs/button"
 import { FormState } from "@/components/products/usg/usg_type"
+import { UI_V2 } from "@/v2/ui"
 
 type FormButtonsProps = {
   formState: FormState
@@ -34,7 +35,15 @@ export default function FormButtons({
 
   const isApproveNeeded = !!actions.handleApprove && formState?.haveToApprove
 
-  const label = isApproveNeeded ? labelApprove : labelProcess
+  const blockedBy = formState?.errors?.find((e) => e?.key !== "no-wallet")
+  const label =
+    UI_V2 && blockedBy && !isApproveNeeded
+      ? blockedBy.key === "empty-form"
+        ? "Enter an amount"
+        : blockedBy.title
+      : isApproveNeeded
+        ? labelApprove
+        : labelProcess
 
   const funcCalledOnClick = isApproveNeeded ? actions.handleApprove : actions.handleProcess
 

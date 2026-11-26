@@ -8,6 +8,8 @@ import { ToastComponent } from "@/components/design_system/toast"
 import { toast } from "react-toastify"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { Divider } from "@/components/design_system/structure/divider"
+import { Copy, ArrowUpRight } from "lucide-react"
+import { UI_V2 } from "@/v2/ui"
 
 type MarketDetailsContractsProps = {
   marketContracts: Array<{ name: string; address: Address }>
@@ -20,6 +22,39 @@ export const MarketDetailsContracts = ({ marketContracts }: MarketDetailsContrac
     copy(address)
     toast.success(ToastComponent, { data: { type: "Success", content: "Address copied to clipboard" } })
   }
+
+  if (UI_V2)
+    return (
+      <div>
+        <div className="text-[15px] font-semibold">Contracts</div>
+        <div className="mt-3 grid grid-cols-1 gap-x-6 md:grid-cols-2">
+          {marketContracts.map((c) => (
+            <div key={c?.address} className="flex items-center justify-between gap-3 border-b border-divider py-2.5 text-[13px]">
+              <span className="text-ink-2">{c.name}</span>
+              <span className="flex items-center gap-1">
+                <a
+                  href={`https://etherscan.io/address/${c?.address}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1 rounded-md px-1.5 py-0.5 font-medium tabular-nums transition-colors hover:bg-white/[0.06]"
+                >
+                  {formatAddress(c?.address, 4)}
+                  <ArrowUpRight className="h-3.5 w-3.5 text-ink-3" strokeWidth={1.75} />
+                </a>
+                <button
+                  type="button"
+                  aria-label={`Copy ${c.name} address`}
+                  onClick={() => onClickCopyAddress(c?.address)}
+                  className="grid h-7 w-7 place-items-center rounded-md text-ink-3 transition-colors hover:bg-white/[0.06] hover:text-white"
+                >
+                  <Copy className="h-3.5 w-3.5" strokeWidth={1.75} />
+                </button>
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    )
 
   return (
     <ReliefCard className="hidden flex-col flex-wrap items-start justify-start p-4 md:flex">

@@ -1,4 +1,6 @@
 import { specialTokensList } from "../../usg_repository"
+import { UI_V2 } from "@/v2/ui"
+import { CollateralsDebtV2 } from "@/v2/dashboard/collaterals"
 import { formatMillions } from "@/lib/number_formatter"
 import { MarketDebtData, USGCollateralData } from "../../usg_type"
 import { Divider } from "@/components/design_system/structure/divider"
@@ -6,9 +8,10 @@ import { TokenImage } from "@/components/design_system/structure/token_image"
 import { InnerTooltip } from "@/components/design_system/structure/inner_tooltip"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { formatEther } from "viem"
+import { COLOR } from "@/v2/theme/colors"
 
 type CollateralsAndDebtsProps = {
-  userData: {
+  userData?: {
     totalUserDebt: bigint
     totalUserDeposit: bigint
     totalProtocolDeposit: bigint
@@ -25,6 +28,9 @@ const getDebtRatio = (debtValue: bigint, collateralValue: bigint) => {
 }
 
 export const GraphCollateralsAndDebts = ({ userData, marketTVLMaxValue }: CollateralsAndDebtsProps) => {
+  if (UI_V2)
+    return <CollateralsDebtV2 collaterals={userData?.USGCollateralsData} marketDebtData={userData?.marketDebtData} marketTVLMaxValue={marketTVLMaxValue} />
+
   const collaterals = userData?.USGCollateralsData?.filter((el: USGCollateralData) => el.value > 0) || []
   const debtByMarket = new Map<string, bigint>((userData?.marketDebtData || []).map((el: MarketDebtData) => [el.marketAddress, el.rawValue]))
 
@@ -40,11 +46,11 @@ export const GraphCollateralsAndDebts = ({ userData, marketTVLMaxValue }: Collat
           <div className="text-white">{collaterals.length}</div>
         </div>
         <div className="flex items-center gap-1.5">
-          <span className="h-2 w-2 rounded-full" style={{ backgroundColor: "rgba(0, 117, 255, 0.5)" }}></span>
+          <span className="h-2 w-2 rounded-full" style={{ backgroundColor: COLOR.data, opacity: 0.5 }}></span>
           <span className="text-subtitle">TVL</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <span className="h-2 w-2 rounded-full" style={{ backgroundColor: "rgba(0, 117, 255, 1)" }}></span>
+          <span className="h-2 w-2 rounded-full" style={{ backgroundColor: COLOR.data }}></span>
           <span className="text-subtitle">Debt</span>
         </div>
       </div>
@@ -76,10 +82,10 @@ export const GraphCollateralsAndDebts = ({ userData, marketTVLMaxValue }: Collat
                   className="relative h-2 shrink-0 cursor-pointer overflow-hidden rounded-full"
                   style={{
                     width: `calc(${(data.value / marketTVLMaxValue).toFixed(4)} * (100% - 12rem))`,
-                    backgroundColor: "rgba(0, 117, 255, 0.5)",
+                    backgroundColor: `color-mix(in srgb, ${COLOR.data} 50%, transparent)`,
                   }}
                 >
-                  <div className="absolute left-0 top-0 h-full rounded-full" style={{ width: `${ltv * 100}%`, backgroundColor: "rgba(0, 117, 255, 1)" }} />
+                  <div className="absolute left-0 top-0 h-full rounded-full" style={{ width: `${ltv * 100}%`, backgroundColor: COLOR.data }} />
                 </div>
               </InnerTooltip>
 

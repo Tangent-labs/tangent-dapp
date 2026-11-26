@@ -2,6 +2,7 @@
 
 import { ImageProps } from "next/image"
 import { useEffect, useState } from "react"
+import { hasWhiteEdge, useThemedLogo } from "@/v2/theme/logos"
 
 interface TokenImageProps extends React.HTMLAttributes<HTMLImageElement> {
   token?: string
@@ -20,6 +21,8 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
   ...props
 }) => {
   const [hasError, setHasError] = useState(false)
+  // V2 light theme: white-on-transparent logos switch to their ink copy
+  const themedSrc = useThemedLogo(src)
 
   useEffect(() => {
     setHasError(false) // Reset error state when `src` changes
@@ -30,8 +33,9 @@ const ImageWithFallback: React.FC<ImageWithFallbackProps> = ({
     <img
       {...props}
       alt={alt}
-      src={hasError ? fallback : src}
+      src={hasError ? fallback : themedSrc}
       onError={() => setHasError(true)} // Set error to true if the image fails to load
+      data-ring={hasWhiteEdge(src) || undefined}
     />
   )
 }
@@ -63,6 +67,10 @@ export function TokenImage({ token, size, ...props }: TokenImageProps) {
     "LP SUSG": "sUSG_LP.webp",
     REUSD: "reUSD.webp",
     "CRVUSD-ETH/CRV": "triCRV.webp",
+    // asset on disk is stan.webp — without this, token="sTAN" 404s on a case-sensitive filesystem
+    STAN: "stan.webp",
+    VSTAN: "vsTAN.webp",
+    TAN: "TAN.webp",
   }
 
   const imageFilename = specialImages[prefix] || specialImages[token?.toUpperCase()] || `${token}.webp`

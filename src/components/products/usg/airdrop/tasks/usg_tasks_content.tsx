@@ -1,5 +1,8 @@
 "use client"
 
+import { UI_V2 } from "@/v2/ui"
+import { TasksPageV2 } from "@/v2/airdrop/tasks-page"
+
 import Image from "next/image"
 import { useUSGContext } from "../../usg_context"
 import { SlidingTabs } from "./components/SlidingTabs"
@@ -17,6 +20,11 @@ import { LargeButtonTab } from "@/components/design_system/inputs/large_button_t
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 
 export default function UsgTasksContent() {
+  if (UI_V2) return <TasksPageV2 />
+  return <UsgTasksContentV1 />
+}
+
+function UsgTasksContentV1() {
   const { lpUserPoints, voteUserPoints, userBoostFactor } = useUSGContext()
 
   const { isConnected } = useWalletConnexionContext()

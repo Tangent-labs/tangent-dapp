@@ -3,6 +3,8 @@
 import { cn } from "@/lib/utils"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { formatDollar, formatNumber } from "@/lib/number_formatter"
+import { UI_V2 } from "@/v2/ui"
+import { useResolvedTheme } from "@/v2/theme/use-appearance"
 
 import {
   AutoscaleInfo,
@@ -23,6 +25,27 @@ import {
 
 import { CollatGraphData } from "../usg_type"
 import { OraclePricePoint } from "./collat_price/collat_price_controller"
+
+/** V2 palettes. The canvas needs literal colours, so the values mirror the --tgt-v2-* tokens of each theme.
+ *  Candles in a soft mint and coral (not the stock trading green and red), one step deeper on the light theme. */
+const V2_CHART_THEMES = {
+  dark: {
+    up: "#3dd6a3",
+    down: "#f2727f",
+    oracle: "#0075ff",
+    liquidation: "#f5b544",
+    text: "rgba(255,255,255,0.45)",
+    grid: "rgba(255,255,255,0.04)",
+  },
+  light: {
+    up: "#34c499",
+    down: "#ef6f7c",
+    oracle: "#0062d6",
+    liquidation: "#e3a33b",
+    text: "rgba(0,0,0,0.5)",
+    grid: "rgba(0,0,0,0.06)",
+  },
+}
 
 // The oracle series comes with its own timestamps, which can stretch the shared time scale
 // and visually separate the candles. We keep the candles as the source of truth and project
@@ -111,6 +134,8 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
   const visibleBarsCount = 50
   const containerRef = useRef<HTMLDivElement>(null)
   const chartShellRef = useRef<HTMLDivElement>(null)
+  const theme = useResolvedTheme()
+  const V2_CHART = V2_CHART_THEMES[theme]
   const chartRef = useRef<IChartApi | null>(null)
   const seriesRef = useRef<ISeriesApi<"Candlestick"> | null>(null)
   const oracleSeriesRef = useRef<ISeriesApi<"Line"> | null>(null)
@@ -118,6 +143,10 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
 
   const [showBackupBadge, setShowBackupBadge] = useState(false)
   const [isAboveView, setIsAboveView] = useState(false)
+  // V2: the liquidation chip zooms the price scale out to frame the candles and the liquidation price together.
+  // A counter, not a boolean: every click refits, even when the scale moved again since the last one (0 = off).
+  const [fitRequest, setFitRequest] = useState(0)
+  const fitLiquidation = fitRequest > 0
   const [oracleLabelTop, setOracleLabelTop] = useState<number | null>(null)
 
   const liquidationPriceNumber = useMemo(() => {
@@ -149,15 +178,15 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
     const chartOptions: DeepPartial<TimeChartOptions> = {
       layout: {
         background: { color: "transparent" },
-        textColor: "rgba(255,255,255,0.82)",
+        textColor: UI_V2 ? V2_CHART.text : "rgba(255,255,255,0.82)",
+        ...(UI_V2 ? { fontFamily: "var(--font-dm-sans), sans-serif", fontSize: 11, attributionLogo: false } : {}),
       },
       grid: {
-        vertLines: { color: "rgba(255,255,255,0.06)" },
-        horzLines: { color: "rgba(255,255,255,0.06)" },
+        vertLines: { color: UI_V2 ? "transparent" : "rgba(255,255,255,0.06)" },
+        horzLines: { color: UI_V2 ? V2_CHART.grid : "rgba(255,255,255,0.06)" },
       },
-      rightPriceScale: {
-        scaleMargins: { top: 0.1, bottom: 0.1 },
-      },
+      ...(UI_V2 ? { rightPriceScale: { borderVisible: false, scaleMargins: { top: 0.1, bottom: 0.1 } } } : {}),
+      ...(UI_V2 ? {} : { rightPriceScale: { scaleMargins: { top: 0.1, bottom: 0.1 } } }),
       timeScale: {
         borderVisible: false,
         rightOffset: 2,
@@ -174,13 +203,15 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
     const chart = createChart(containerRef.current, chartOptions)
     chartRef.current = chart
 
+    const up = UI_V2 ? V2_CHART.up : "#26a69a"
+    const down = UI_V2 ? V2_CHART.down : "#ef5350"
     const seriesOptions: DeepPartial<CandlestickSeriesOptions> = {
-      upColor: "#26a69a",
-      downColor: "#ef5350",
-      borderUpColor: "#26a69a",
-      borderDownColor: "#ef5350",
-      wickUpColor: "#26a69a",
-      wickDownColor: "#ef5350",
+      upColor: up,
+      downColor: down,
+      borderUpColor: up,
+      borderDownColor: down,
+      wickUpColor: up,
+      wickDownColor: down,
       priceFormat: { type: "price", minMove: 0.0001 },
     }
 
@@ -188,7 +219,7 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
     seriesRef.current = series
 
     const oracleSeriesOptions: DeepPartial<LineSeriesOptions> = {
-      color: "#3b82f6",
+      color: UI_V2 ? V2_CHART.oracle : "#3b82f6",
       lineWidth: 2,
       crosshairMarkerVisible: true,
       lastValueVisible: false,
@@ -216,7 +247,21 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
       oracleSeriesRef.current = null
       priceLineRef.current = null
     }
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps -- built once; the theme colours are re-applied below
+
+  useEffect(() => {
+    if (!UI_V2) return
+    chartRef.current?.applyOptions({ layout: { textColor: V2_CHART.text }, grid: { horzLines: { color: V2_CHART.grid } } })
+    seriesRef.current?.applyOptions({
+      upColor: V2_CHART.up,
+      downColor: V2_CHART.down,
+      borderUpColor: V2_CHART.up,
+      borderDownColor: V2_CHART.down,
+      wickUpColor: V2_CHART.up,
+      wickDownColor: V2_CHART.down,
+    })
+    oracleSeriesRef.current?.applyOptions({ color: V2_CHART.oracle })
+  }, [V2_CHART])
 
   useEffect(() => {
     if (!seriesRef.current || !chartRef.current || !graphData?.data?.length) return
@@ -229,9 +274,18 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
 
     seriesRef.current.applyOptions({
       autoscaleInfoProvider: (original: () => AutoscaleInfo | null) => {
+        // framed with the liquidation price: same range, stretched to reach it, with the same padding
+        const withLiquidation = (r: { minValue: number; maxValue: number }) => {
+          if (!fitLiquidation || !(liquidationPriceNumber > 0)) return r
+          const minValue = Math.min(r.minValue, liquidationPriceNumber)
+          const maxValue = Math.max(r.maxValue, liquidationPriceNumber)
+          const pad = Math.max((maxValue - minValue) * PRICE_RANGE_PADDING_RATIO, 0.0001)
+          return { minValue: minValue - pad, maxValue: maxValue + pad }
+        }
+
         if (clampedVisiblePriceRange) {
           return {
-            priceRange: clampedVisiblePriceRange,
+            priceRange: withLiquidation(clampedVisiblePriceRange),
           }
         }
 
@@ -243,14 +297,20 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
 
         return {
           ...autoscaleInfo,
-          priceRange: {
+          priceRange: withLiquidation({
             minValue: autoscaleInfo.priceRange.minValue - padding,
             maxValue: autoscaleInfo.priceRange.maxValue + padding,
-          },
+          }),
         }
       },
     })
-  }, [clampedVisiblePriceRange])
+    // a new autoscale provider is only read on the next scale change: switch autoscale off, then back on in the next
+    // frame (two calls in the same frame are merged and change nothing). Also resets a manual drag of the scale.
+    const scale = chartRef.current?.priceScale("right")
+    scale?.applyOptions({ autoScale: false })
+    const frame = requestAnimationFrame(() => scale?.applyOptions({ autoScale: true }))
+    return () => cancelAnimationFrame(frame)
+  }, [clampedVisiblePriceRange, fitRequest, liquidationPriceNumber])
 
   useEffect(() => {
     if (!oracleSeriesRef.current) return
@@ -280,13 +340,16 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
     const series = seriesRef.current
     if (!series) return
 
+    // V2: no loan means no liquidation price, so the line and its "$0" label are not drawn
+    const hasLiquidation = !UI_V2 || liquidationPriceNumber > 0
     const options: Partial<PriceLineOptions> = {
       price: liquidationPriceNumber,
-      color: "#ff0300",
+      color: UI_V2 ? V2_CHART.liquidation : "#ff0300",
       lineWidth: 1,
-      lineStyle: LineStyle.Dotted,
-      axisLabelVisible: true,
-      title: `Liquidation price`,
+      lineStyle: UI_V2 ? LineStyle.Dashed : LineStyle.Dotted,
+      lineVisible: hasLiquidation,
+      axisLabelVisible: hasLiquidation,
+      title: hasLiquidation ? `Liquidation price` : "",
     }
 
     if (!priceLineRef.current) {
@@ -294,7 +357,7 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
     } else {
       priceLineRef.current.applyOptions(options)
     }
-  }, [liquidationPriceNumber])
+  }, [liquidationPriceNumber, V2_CHART])
 
   useEffect(() => {
     const series = seriesRef.current
@@ -332,6 +395,10 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
     }
 
     const onPointer = () => scheduleCheck()
+    const onWheel = () => {
+      scheduleCheck()
+      settleChecks()
+    }
 
     container.addEventListener("pointerdown", onPointer, { passive: true })
     container.addEventListener("pointermove", onPointer, { passive: true })
@@ -339,6 +406,18 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
 
     const ro = new ResizeObserver(() => scheduleCheck())
     ro.observe(container)
+
+    // the scale also moves on wheel zoom, time scroll and refits: re-check then too
+    container.addEventListener("wheel", onWheel, { passive: true })
+    const timeScale = chartRef.current?.timeScale()
+    timeScale?.subscribeVisibleLogicalRangeChange(scheduleCheck)
+    // the chart redraws a few frames after a refit or a wheel zoom, at a pace that varies: check again over ~0.6s
+    let settles: number[] = []
+    const settleChecks = () => {
+      settles.forEach(window.clearTimeout)
+      settles = [60, 180, 360, 640, 1000].map((ms) => window.setTimeout(scheduleCheck, ms))
+    }
+    settleChecks()
 
     scheduleCheck()
 
@@ -348,24 +427,58 @@ export const CollateralGraph = ({ graphData, oraclePriceData, isPending, liquida
       container.removeEventListener("pointerup", onPointer)
 
       ro.disconnect()
+      container.removeEventListener("wheel", onWheel)
+      timeScale?.unsubscribeVisibleLogicalRangeChange(scheduleCheck)
+      settles.forEach(window.clearTimeout)
       if (animationFrame) cancelAnimationFrame(animationFrame)
     }
-  }, [liquidationPriceNumber, isPending, graphData?.data?.length, lastVisibleOracleValue])
+  }, [liquidationPriceNumber, isPending, graphData?.data?.length, lastVisibleOracleValue, fitRequest])
 
   return (
-    <div ref={chartShellRef} className="relative min-h-80 w-full rounded-[10px] bg-[#0a0a0a] ring-1 ring-white/5">
+    <div ref={chartShellRef} className={cn("relative min-h-80 w-full", UI_V2 ? "rounded-xl" : "rounded-[10px] bg-[#0a0a0a] ring-1 ring-white/5")}>
       <div ref={containerRef} className={cn("absolute inset-0", isPending && "animate-pulse")} />
 
       {oracleLabelTop !== null && !isPending && (
-        <div className="absolute right-2 z-10 rounded-[2px] bg-[#3b82f6] px-1 py-0.5 text-xs text-white" style={{ top: `${oracleLabelTop}px` }}>
+        <div
+          className={cn("absolute right-2 z-10 px-1 py-0.5 text-xs text-on-fill", UI_V2 ? "rounded bg-action-fill tabular-nums" : "rounded-[2px] bg-[#3b82f6]")}
+          style={{ top: `${oracleLabelTop}px` }}
+        >
           Oracle ${(lastVisibleOracleValue || 0).toFixed(5)}
         </div>
       )}
 
-      {showBackupBadge && !isPending && (
+      {showBackupBadge && !isPending && UI_V2 && liquidationPriceNumber > 0 && (
+        <button
+          type="button"
+          onClick={() => {
+            // the refit frames the line: hide the chip now instead of waiting for the redraw
+            setShowBackupBadge(false)
+            setFitRequest((n) => n + 1)
+          }}
+          title="Zoom out to show the liquidation price"
+          className={cn(
+            "absolute right-2 z-10 flex items-center gap-1.5 rounded-md border border-hairline bg-surface px-2 py-1 text-[11px] tabular-nums text-ink-2 shadow-pop transition-colors hover:text-white",
+            isAboveView ? "top-2" : "bottom-9"
+          )}
+        >
+          <span className="h-1.5 w-1.5 rounded-full bg-warning" />
+          Liquidation ${formatNumber(liquidationPriceNumber, 3)}
+          <span className="text-ink-3">{isAboveView ? "↑" : "↓"}</span>
+        </button>
+      )}
+      {showBackupBadge && !isPending && !UI_V2 && (
         <div className={cn("absolute right-2 z-10 rounded-[2px] bg-[#ff0300] px-1 py-0.5 text-xs text-white", isAboveView ? "top-2" : "bottom-2")}>
           Liquidation price ${formatNumber(liquidationPriceNumber, 3)}
         </div>
+      )}
+      {UI_V2 && fitLiquidation && !isPending && (
+        <button
+          type="button"
+          onClick={() => setFitRequest(0)}
+          className="absolute left-2 top-2 z-10 rounded-md border border-hairline bg-surface px-2 py-1 text-[11px] text-ink-2 shadow-pop transition-colors hover:text-white"
+        >
+          Zoom to price
+        </button>
       )}
     </div>
   )

@@ -22,6 +22,8 @@ import { ListProvider, useListContext } from "@/components/design_system/list/li
 import { useWalletConnexionContext } from "@/components/products/wallet/wallet_connexion_context"
 import { FeatureBannerCarousel } from "@/components/design_system/structure/feature_banner_carousel"
 import { ThreeCardRowWithMask } from "@/components/design_system/structure/three_cards_with_background_and_neon"
+import { UI_V2 } from "@/v2/ui"
+import { ClaimPageV2 } from "@/v2/claim/claim-page"
 
 const listeState: ListState = {
   search: undefined,
@@ -46,6 +48,12 @@ const ClaimRowDisposition = ({ children }: { children: React.ReactNode[] }) => {
 }
 
 export default function USGClaimContent() {
+  if (UI_V2) return <ClaimPageV2 />
+
+  return <USGClaimContentV1 />
+}
+
+function USGClaimContentV1() {
   const {
     displayRows,
     onClickClaim,

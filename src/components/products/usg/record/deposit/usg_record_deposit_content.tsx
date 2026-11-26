@@ -1,5 +1,6 @@
 "use client"
 
+import { v2Hidden } from "@/v2/ui"
 import { PERCENTAGE_INPUT_AMOUNT } from "@/lib/utils"
 import { formatBigInt } from "@/lib/number_formatter"
 import { useUSGRecordContext } from "../usg_record_context"
@@ -63,7 +64,7 @@ export default function USGDepositContent() {
   return (
     <div className="flex flex-col gap-1.5">
       <div className="flex w-full items-center justify-between gap-2">
-        <span className="text-sm font-semibold md:text-xl">Deposit {collateralInfo.symbol?.replaceAll("-", "/")}</span>
+        <span className={v2Hidden("text-sm font-semibold md:text-xl")}>Deposit {collateralInfo.symbol?.replaceAll("-", "/")}</span>
         <span className="text-xs text-subtitle">{maxDepositString}</span>
       </div>
 
@@ -122,7 +123,7 @@ export default function USGDepositContent() {
       {isDepositAndBorrow && (
         <div className="flex flex-col gap-1">
           <div className="flex items-end justify-between">
-            <span className="text-sm font-semibold md:text-xl">Borrow USG</span>
+            <span className={v2Hidden("text-sm font-semibold md:text-xl")}>Borrow USG</span>
             <span className="text-xs text-subtitle"> Max: {formatBigInt(maxBorrowableValue, 18, 2)} USG</span>
           </div>
           <GenericInputAssetAmount

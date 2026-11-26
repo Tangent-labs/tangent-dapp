@@ -1,143 +1,241 @@
-// "use client"
+"use client"
 
-// import { cn } from "@/lib/utils"
-// import { formatUnits } from "viem"
-// import { BorderPanel } from "../structure/border_panel"
-// import { AssetDataPriced, CollateralInfo } from "@/types"
-// import { ReactNode, useEffect, useMemo, useState } from "react"
-// import { formatDisplayValue, formatDollar, toBigInt } from "@/lib/number_formatter"
+import { MaxButton } from "./MaxButton"
+import { SliderInput } from "./SliderInput"
+import { formatUnits, parseUnits } from "viem"
+import { IconThunder } from "@/components/icons"
+import { BorderPanel } from "../structure/border_panel"
+import { AssetDataPriced, CollateralInfo } from "@/types"
+import { cn, PERCENTAGE_INPUT_AMOUNT } from "@/lib/utils"
+import { useAutoGrowInputWidth } from "@/hooks/useAutoGrowInputWidth"
+import { ReactNode, useEffect, useMemo, useRef, useState } from "react"
+import { formatBigIntFloor, formatDollar } from "@/lib/number_formatter"
 
-// type InputSelectLockPositionProps = React.InputHTMLAttributes<HTMLInputElement> & {
-//   className?: string
-//   depositAmount?: bigint
-//   balance?: bigint
-//   disabled?: boolean
-//   labelDeposit?: string
-//   depositSelect: ReactNode
-//   assetSelect: ReactNode
-//   depositAsset?: AssetDataPriced | CollateralInfo
-//   depositInput?: ReactNode
-//   onValueChange: (value: bigint | undefined) => void
-//   setMaxBalance: () => void
-//   displayBalance?: boolean
-//   isLoading?: boolean
-// }
+type InputSelectLockPositionProps = React.InputHTMLAttributes<HTMLInputElement> & {
+  depositAmount?: bigint
+  balance?: bigint
+  disabled?: boolean
+  labelDeposit?: string | ReactNode
+  // Lock position dropdown (New / #tokenId)
+  depositSelect: ReactNode
+  // Asset dropdown (TAN or any zappable asset)
+  assetSelect: ReactNode
+  depositAsset?: AssetDataPriced | CollateralInfo
+  onValueChange: (value: bigint | undefined) => void
+  setMaxBalance: () => void
+  isZapping?: boolean
+  isLoading?: boolean
+  slippageInput?: ReactNode
+  bottomPart?: ReactNode
+}
 
-// export const InputSelectLockPosition = ({
-//   depositAmount,
-//   balance = BigInt(0),
-//   labelDeposit = "You deposit",
-//   setMaxBalance,
-//   onValueChange,
-//   depositSelect = <></>,
-//   assetSelect = <></>,
-//   depositAsset,
-//   displayBalance = true,
-//   isLoading = false,
-//   ...props
-// }: InputSelectLockPositionProps) => {
-//   const [percentage, setPercentage] = useState<number>(0)
+export const InputSelectLockPosition = ({
+  depositAmount,
+  balance = BigInt(0),
+  labelDeposit = "You deposit",
+  setMaxBalance,
+  onValueChange,
+  depositSelect = <></>,
+  assetSelect = <></>,
+  depositAsset,
+  isZapping = false,
+  isLoading = false,
+  disabled,
+  slippageInput,
+  bottomPart,
+  ...props
+}: InputSelectLockPositionProps) => {
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-//   const balanceNumber = useMemo(() => {
-//     if (balance) {
-//       return Number(formatUnits(balance, depositAsset?.decimals || 18))
-//     }
-//     return 0
-//   }, [balance, depositAsset])
+  const [sliderPercentage, setSliderPercentage] = useState<number>(0)
 
-//   const [innerValue, setInnerValue] = useState<string>(depositAmount !== undefined ? formatUnits(depositAmount, depositAsset?.decimals || 18) : "")
-//   const [isUserInput, setIsUserInput] = useState(false)
+  const decimals = depositAsset?.decimals ?? 18
 
-//   const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-//     if (!!setPercentage) {
-//       const newPercentage = Number(e.target.value)
-//       setPercentage(newPercentage)
-//       const newValue = newPercentage === 100 ? balanceNumber : Number(((newPercentage / 100) * balanceNumber).toFixed(0))
-//       setInnerValue(formatDisplayValue(newValue))
-//       onValueChange(!!newValue ? toBigInt(newValue, depositAsset?.decimals || 18) : undefined)
-//     }
-//   }
+  // Input field value as a human readable string
+  const [localDisplay, setLocalDisplay] = useState(() => (depositAmount !== undefined ? formatUnits(depositAmount, decimals) : ""))
 
-//   useEffect(() => {
-//     if (depositAmount !== undefined && depositAsset?.decimals !== undefined) {
-//       const updatedValue = formatUnits(depositAmount, depositAsset.decimals)
-//       setInnerValue(formatDisplayValue(updatedValue))
-//       setIsUserInput(false)
-//     }
-//   }, [depositAmount, depositAsset])
+  const { inputRef, inputSpanRef } = useAutoGrowInputWidth(localDisplay, { placeholder: "Amount", minPx: 32 })
 
-//   useEffect(() => {
-//     if (!depositAsset?.decimals || !isUserInput) return
+  // ---------------------------
+  // SYNC WITH PARENT VALUE
+  // Updates local input display when parent value changes
+  // ---------------------------
+  useEffect(() => {
+    if (depositAmount === undefined) {
+      setLocalDisplay("")
+      return
+    }
 
-//     const handler = setTimeout(() => {
-//       const val = innerValue ? toBigInt(Number(innerValue), depositAsset.decimals) : undefined
-//       onValueChange(val)
-//     }, 500)
+    if (document.activeElement !== inputRef.current) {
+      setLocalDisplay(formatBigIntFloor(depositAmount, decimals, depositAsset?.displayDecimals || 2))
+    }
+  }, [depositAmount, decimals])
 
-//     return () => clearTimeout(handler)
-//   }, [innerValue, depositAsset, isUserInput, onValueChange])
+  // ---------------------------
+  // SYNC SLIDER WITH INPUT
+  // ---------------------------
+  useEffect(() => {
+    if (!balance || balance === 0n) return
+    if (depositAmount === undefined) {
+      setSliderPercentage(0)
+      return
+    }
+    const percentage = (Number(depositAmount) / Number(balance)) * 100
+    setSliderPercentage(Math.min(100, Math.max(0, percentage)))
+  }, [depositAmount, balance])
 
-//   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-//     const newValue = e.target.value
-//     setIsUserInput(true)
-//     setInnerValue(formatDisplayValue(newValue))
+  const dollarDepositDisplay = useMemo(() => {
+    const val = Number(formatUnits(depositAmount || BigInt(0), decimals)) * (depositAsset?.price || 0)
+    return `(${formatDollar(val)})`
+  }, [depositAmount, depositAsset, decimals])
 
-//     if (!!setPercentage) {
-//       setPercentage(newValue !== "" && balanceNumber > 0 ? (Number(newValue) / balanceNumber) * 100 : 0)
-//     }
-//   }
+  // ---------------------------
+  // HANDLE INPUT CHANGE
+  // Updates local display and calls parent callback with debounce
+  // ---------------------------
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value.replace(",", ".").trim()
 
-//   const dollarDepositDisplay = useMemo(() => {
-//     const val = Number(formatUnits(depositAmount || BigInt(0), depositAsset?.decimals || 18)) * (depositAsset?.price || 0)
-//     return `${formatDollar(val)}`
-//   }, [depositAmount, depositAsset])
+    // Allow empty string or valid numeric input
+    if (val === "" || /^\d*\.?\d*$/.test(val)) {
+      setLocalDisplay(val)
 
-//   return (
-//     <BorderPanel className={`${isLoading ? "shimmer" : ""} flex w-full flex-col items-center justify-center p-2 backdrop-blur-[60px]`}>
-//       <div className="mb-2 flex h-full w-full justify-between">
-//         <div className="flex w-full max-w-32 flex-col items-start justify-between">
-//           <div className="text-xs font-semibold text-subtitle">{labelDeposit}</div>
+      if (debounceRef.current) clearTimeout(debounceRef.current)
 
-//           <div className="text-xl">
-//             <input
-//               {...props}
-//               disabled={isLoading}
-//               type="number"
-//               value={innerValue !== undefined ? innerValue : ""}
-//               placeholder="Amount"
-//               onInput={handleInputChange}
-//               className={cn("min-h-8 rounded-[10px] border-opacity-10 bg-transparent font-semibold focus:outline-none")}
-//             />
-//           </div>
+      debounceRef.current = setTimeout(() => {
+        if (val === "") {
+          onValueChange(undefined)
+          return
+        }
+        try {
+          onValueChange(parseUnits(val, decimals))
+        } catch (err) {
+          // eslint-disable-next-line no-console
+          console.warn("Invalid amount", val, err)
+        }
+      }, 400)
+    }
+  }
 
-//           <div className="text-xs text-subtitle">{dollarDepositDisplay}</div>
-//         </div>
+  const handleBlur = () => {
+    if (localDisplay && localDisplay !== ".") {
+      setLocalDisplay(localDisplay.replace(/^0+(\d)/, "$1"))
+    }
+  }
 
-//         <div className="mr-2 flex h-full w-full max-w-32 flex-col items-start justify-start">
-//           <span className="mb-1 text-xs font-semibold text-subtitle">Select asset</span>
+  // ---------------------------
+  // HANDLE SLIDER CHANGE
+  // ---------------------------
+  const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const percentage = Number(e.target.value)
 
-//           <>{assetSelect}</>
-//         </div>
+    // Immediate visual update
+    setSliderPercentage(percentage)
 
-//         <div className="flex h-full flex-col items-end justify-between">
-//           <>{depositSelect}</>
+    if (debounceRef.current) clearTimeout(debounceRef.current)
 
-//           <div className="mt-1 text-xs text-subtitle">
-//             {displayBalance && (
-//               <div className="flex cursor-pointer items-center">
-//                 <BorderPanel
-//                   className="w-10 min-w-10 cursor-pointer bg-button-active px-1 text-center text-xs text-white hover:font-semibold"
-//                   onClick={() => {
-//                     if (setMaxBalance) setMaxBalance()
-//                   }}
-//                 >
-//                   Max.
-//                 </BorderPanel>
-//               </div>
-//             )}
-//           </div>
-//         </div>
-//       </div>
-//     </BorderPanel>
-//   )
-// }
+    if (!balance || balance === 0n) return
+
+    debounceRef.current = setTimeout(() => {
+      const wei = percentage === 100 ? balance : (BigInt(Math.round(percentage)) * balance) / 100n
+
+      onValueChange(wei)
+      setLocalDisplay(formatBigIntFloor(wei, decimals, depositAsset?.displayDecimals || 2))
+    }, 300)
+  }
+
+  const handleMaxClick = () => {
+    setMaxBalance()
+    setSliderPercentage(100)
+    if (balance !== 0n) {
+      setLocalDisplay(formatBigIntFloor(balance, decimals, depositAsset?.displayDecimals || 2))
+    }
+  }
+
+  // ---------------------------
+  // HANDLE PANEL CLICK
+  // Focuses input when clicking on the panel except for interactive elements
+  // ---------------------------
+  const handlePanelClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLElement
+    if (target.closest(".stop-focus")) return
+    if (target.closest("[data-radix-popper-content-wrapper]")) return
+    inputRef.current?.focus()
+  }
+
+  return (
+    <BorderPanel
+      className={cn(
+        isLoading ? "shimmer" : "",
+        disabled
+          ? "bg-panel-disabled"
+          : cn(
+              "cursor-text bg-white bg-opacity-[3%] ease-out",
+              "focus-within:border-[--tgt-button-active] focus-within:shadow-[0_0_6px_1px_var(--tgt-button-active)]",
+              "hover:bg-white/[0.08] [&:has(.no-parent-hover:hover)]:!bg-white/[0.03] [&:has(.no-parent-hover:hover)]:!shadow-none"
+            ),
+        "flex w-full flex-col p-2.5 transition-all duration-200"
+      )}
+      onClick={handlePanelClick}
+    >
+      <div className="flex w-full select-none items-center justify-between">
+        <div className="text-sm text-subtitle">{labelDeposit}</div>
+        {slippageInput && <div className="stop-focus no-parent-hover text-xs text-subtitle">{slippageInput}</div>}
+      </div>
+
+      <div className="flex justify-between gap-2">
+        <div className="flex max-w-44 items-center justify-start gap-2">
+          <div className="relative inline-block w-full max-w-[250px]">
+            <span ref={inputSpanRef} className="invisible absolute whitespace-pre bg-transparent text-[24px] font-semibold" aria-hidden="true" />
+
+            <input
+              {...props}
+              lang="en"
+              disabled={isLoading || disabled}
+              type="text"
+              value={localDisplay}
+              placeholder="0.00"
+              onChange={handleInputChange}
+              onBlur={handleBlur}
+              className={cn(
+                "auto-grow",
+                "block w-full",
+                "bg-transparent text-left text-[24px] font-semibold",
+                "placeholder:text-left placeholder:text-gray-400",
+                "focus:outline-none",
+                "truncate"
+              )}
+              ref={inputRef}
+              step="any"
+              inputMode="decimal"
+            />
+          </div>
+
+          <div className="select-none text-xs text-subtitle">{dollarDepositDisplay}</div>
+        </div>
+
+        <div className="stop-focus flex select-none items-center justify-center gap-2">
+          {isZapping && <IconThunder className="h-auto w-[8px] text-row-tonic" />}
+          <div className="no-parent-hover rounded-[10px]">{assetSelect}</div>
+          <div className="no-parent-hover rounded-[10px]">{depositSelect}</div>
+        </div>
+      </div>
+
+      <div className="mt-1 flex w-full items-center gap-2">
+        <div className="group flex w-full flex-col">
+          <SliderInput
+            disabled={disabled}
+            value={sliderPercentage}
+            handleSliderChange={handleSliderChange}
+            legendValues={PERCENTAGE_INPUT_AMOUNT}
+            startEndRange={["0", "100", "1"]}
+            unit="%"
+          />
+        </div>
+        <MaxButton className="stop-focus" onClick={() => handleMaxClick()} />
+      </div>
+
+      {bottomPart}
+    </BorderPanel>
+  )
+}

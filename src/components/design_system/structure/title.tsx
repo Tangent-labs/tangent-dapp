@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils"
+import { UI_V2 } from "@/v2/ui"
 
 type TitleProps = Partial<React.HTMLAttributes<HTMLSpanElement>> & {
   label: string
@@ -8,7 +9,7 @@ type TitleProps = Partial<React.HTMLAttributes<HTMLSpanElement>> & {
 export function Title({ label, size = "normal", className, ...props }: TitleProps) {
   const cssSizeClass = {
     small: "text-xl",
-    normal: "text-[24px]",
+    normal: UI_V2 ? "text-[17px] tracking-[-0.01em]" : "text-[24px]",
     big: "text-5xl",
   }
 

@@ -1,5 +1,6 @@
 import clsx from "clsx"
 import { ButtonHTMLAttributes } from "react"
+import { UI_V2 } from "@/v2/ui"
 
 type ButtonTabProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   label: string
@@ -7,6 +8,24 @@ type ButtonTabProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 }
 
 export function LargeButtonTab({ label, active, className, ...props }: ButtonTabProps) {
+  if (UI_V2)
+    return (
+      <button
+        type="button"
+        role="tab"
+        aria-selected={active}
+        data-state={active ? "active" : "inactive"}
+        className={clsx(
+          className,
+          "h-[34px] w-full rounded-[6px] text-[13px] font-semibold transition-colors duration-150",
+          active ? "bg-white/[0.14] text-white md:bg-white/[0.09]" : "text-ink-2 hover:text-white"
+        )}
+        {...props}
+      >
+        {label}
+      </button>
+    )
+
   return (
     <div className="group relative inline w-full">
       <button

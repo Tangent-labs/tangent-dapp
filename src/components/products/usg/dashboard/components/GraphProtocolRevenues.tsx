@@ -1,5 +1,8 @@
 "use client"
 
+import { UI_V2 } from "@/v2/ui"
+import { AverageLine, ChartHeadV2, ChartLegendV2 } from "@/v2/ui/chart"
+
 import { useMemo } from "react"
 import { cn } from "@/lib/utils"
 import { ProtocolRevenue, RevenueRange } from "../../usg_type"
@@ -11,6 +14,7 @@ import { useGraphPeriodSelection } from "@/hooks/useGraphPeriodSelection"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { InnerTooltip } from "@/components/design_system/structure/inner_tooltip"
 import { formatPeriodLabel, formatYAxis, computeYAxisTicks } from "../dashboard_controller"
+import { COLOR, SERIES } from "@/v2/theme/colors"
 
 type GraphProtocolRevenuesProps = {
   protocolRevenues: ProtocolRevenue[]
@@ -57,10 +61,14 @@ export const GraphProtocolRevenues = ({ totalRevenues, protocolRevenues, selecte
 
   return (
     <ReliefCard ref={cardRef} className="flex w-full flex-col items-start justify-start p-5">
-      <div className="flex w-full items-center justify-between">
-        <div className="text-xl font-semibold">Protocol revenues</div>
+      <div className={cn("flex w-full justify-between", UI_V2 ? "items-start" : "items-center")}>
+        {UI_V2 ? (
+          <ChartHeadV2 label="Protocol revenues" value={"$" + formatMillions(totalRevenues)} />
+        ) : (
+          <div className="text-xl font-semibold">Protocol revenues</div>
+        )}
 
-        <div className="flex gap-3">
+        <div className={cn("flex", UI_V2 ? "gap-2" : "gap-3")}>
           {REVENUE_RANGE_TABS.map((tab) => (
             <ButtonTab
               key={tab.range}
@@ -75,13 +83,31 @@ export const GraphProtocolRevenues = ({ totalRevenues, protocolRevenues, selecte
 
       <Divider />
 
+      {UI_V2 && visibleRevenues.length > 0 && (
+        <div className="-mt-2 mb-4 w-full">
+          {(() => {
+            // share of each source over the bars on screen (the head shows the period total)
+            const ir = visibleRevenues.reduce((acc, el) => acc + (el?.ir ?? 0), 0)
+            const reward = visibleRevenues.reduce((acc, el) => acc + (el?.reward ?? 0), 0)
+            const sum = ir + reward || 1
+            return (
+              <ChartLegendV2
+                items={[
+                  { color: COLOR.data, label: "Interest", value: `${((ir / sum) * 100).toFixed(0)}%` },
+                  { color: SERIES.violet, label: "Rewards", value: `${((reward / sum) * 100).toFixed(0)}%` },
+                ]}
+              />
+            )
+          })()}
+        </div>
+      )}
       <div className="mb-4 flex items-center justify-start gap-1 text-xs">
-        <div className="text-subtitle">Total: </div>
-        <div className="font-semibold text-white">${formatMillions(totalRevenues)}</div>
+        {!UI_V2 && <div className="text-subtitle">Total: </div>}
+        {!UI_V2 && <div className="font-semibold text-white">${formatMillions(totalRevenues)}</div>}
       </div>
 
-      <div className="w-full pr-12">
-        <div ref={plotRef} className="relative h-44 w-full">
+      <div className={cn("w-full pr-12", UI_V2 && "flex flex-1 flex-col")}>
+        <div ref={plotRef} className={cn("relative w-full", UI_V2 ? "min-h-44 flex-1" : "h-44")}>
           {ticks.map((tick) => (
             <div key={tick} className="pointer-events-none absolute inset-x-0" style={{ bottom: `${(tick / axisMax) * 100}%` }}>
               <div className="h-px w-full bg-white/[0.06]" />
@@ -91,6 +117,7 @@ export const GraphProtocolRevenues = ({ totalRevenues, protocolRevenues, selecte
             </div>
           ))}
 
+          {UI_V2 && <AverageLine values={visibleRevenues.slice(0, -1).map((el) => el?.total ?? 0)} axisMax={axisMax} />}
           <div className="absolute inset-0 flex items-end transition-opacity duration-200">
             {visibleRevenues.map((el) => {
               const isSelected = !isDesktop && el?.period === selectedPeriod
@@ -116,11 +143,31 @@ export const GraphProtocolRevenues = ({ totalRevenues, protocolRevenues, selecte
                     isDimmed && "opacity-40"
                   )}
                 >
-                  <div className={cn("relative h-full w-6 overflow-hidden rounded-md bg-white/[0.08]", isSelected && "ring-1 ring-white/40")}>
-                    <div
-                      className="absolute bottom-0 left-0 w-full bg-[#0075FF] transition-all duration-300 group-hover:bg-[#3B93FF]"
-                      style={{ height: `${el?.total > 0 ? (el.total / axisMax) * 100 : 0}%` }}
-                    />
+                  <div className={cn("relative h-full w-6 overflow-hidden rounded-md", !UI_V2 && "bg-white/[0.08]", isSelected && "ring-1 ring-white/40")}>
+                    {UI_V2 ? (
+                      // interest at the bottom, rewards on top; the period still running is hatched
+                      <div
+                        className="absolute bottom-0 left-0 flex w-full flex-col-reverse overflow-hidden rounded-md transition-opacity duration-300 group-hover:opacity-80"
+                        style={{ height: `${el?.total > 0 ? (el.total / axisMax) * 100 : 0}%` }}
+                      >
+                        <div className="w-full bg-data-primary" style={{ height: `${el?.total > 0 ? (el.ir / el.total) * 100 : 0}%` }} />
+                        <div
+                          className="w-full bg-[color:var(--tgt-v2-series-violet)]"
+                          style={{ height: `${el?.total > 0 ? (el.reward / el.total) * 100 : 0}%` }}
+                        />
+                        {el?.period === visibleRevenues.at(-1)?.period && (
+                          <div
+                            className="pointer-events-none absolute inset-0"
+                            style={{ backgroundImage: "repeating-linear-gradient(135deg, rgba(255,255,255,0.22) 0 2px, transparent 2px 5px)" }}
+                          />
+                        )}
+                      </div>
+                    ) : (
+                      <div
+                        className="absolute bottom-0 left-0 w-full bg-[#0075FF] transition-all duration-300 group-hover:bg-[#3B93FF]"
+                        style={{ height: `${el?.total > 0 ? (el.total / axisMax) * 100 : 0}%` }}
+                      />
+                    )}
                   </div>
                 </div>
               )

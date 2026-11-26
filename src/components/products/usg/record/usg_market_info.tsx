@@ -6,9 +6,49 @@ import { InterestRateGraph } from "./usg_interest_rate_graph"
 import { useUSGRecordContext } from "./usg_record_context"
 import { ButtonTab } from "@/components/design_system/inputs/button_tab"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
+import { UI_V2 } from "@/v2/ui"
+
+const RANGES = ["1w", "1m", "1y", "all"]
 
 export function USGMarketInfo() {
   const { totalBorrow, totalBorrowTimeWindow, setTotalBorrowTimeWindow } = useUSGRecordContext()
+
+  if (UI_V2)
+    return (
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <ReliefCard className="p-5">
+          <div className="text-[15px] font-semibold">Interest rate model</div>
+          <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-ink-2">
+            <span className="flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full bg-action" /> Rewards cut (left)
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="h-2 w-2 rounded-full bg-white" /> Interest rate (right)
+            </span>
+            <span className="text-ink-3">X axis: USG price</span>
+          </div>
+          <div className="mt-4 h-[260px] w-full">
+            <InterestRateGraph />
+          </div>
+        </ReliefCard>
+        <ReliefCard className="p-5">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <div className="text-[15px] font-semibold">Total borrow</div>
+              <div className="mt-1 text-[22px] font-light tabular-nums tracking-[-0.02em]">${formatMillions(totalBorrow?.latestTotalDebt)}</div>
+            </div>
+            <div role="tablist" className="flex gap-0.5 rounded-lg bg-white/[0.04] p-0.5">
+              {RANGES.map((r) => (
+                <ButtonTab key={r} onClick={() => setTotalBorrowTimeWindow(r)} label={r} active={totalBorrowTimeWindow === r} />
+              ))}
+            </div>
+          </div>
+          <div className="-mx-5 -mb-5 mt-2 h-[236px]">
+            <UsgTotalBorrow totalBorrow={totalBorrow?.data} />
+          </div>
+        </ReliefCard>
+      </div>
+    )
 
   return (
     <ReliefCard className="px-5 pt-5">

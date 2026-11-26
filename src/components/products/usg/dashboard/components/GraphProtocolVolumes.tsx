@@ -11,6 +11,9 @@ import { useGraphPeriodSelection } from "@/hooks/useGraphPeriodSelection"
 import { ReliefCard } from "@/components/design_system/structure/relief_card"
 import { InnerTooltip } from "@/components/design_system/structure/inner_tooltip"
 import { formatPeriodLabel, formatYAxis, computeYAxisTicks } from "../dashboard_controller"
+import { UI_V2 } from "@/v2/ui"
+import { AverageLine, ChartHeadV2 } from "@/v2/ui/chart"
+import { COLOR, SERIES } from "@/v2/theme/colors"
 
 type GraphProtocolVolumesProps = {
   protocolVolumes: ProtocolVolume[]
@@ -26,11 +29,11 @@ const VOLUME_RANGE_TABS: { label: string; range: VolumeRange }[] = [
 ]
 
 const VOLUME_CATEGORIES: { key: string; label: string; color: string; value: (el: ProtocolVolume) => number }[] = [
-  { key: "collateral", label: "Collateral", color: "#8FC1FF", value: (el) => el.collateralIn + el.collateralOut },
-  { key: "debt", label: "Debt", color: "#0075FF", value: (el) => el.debtIn + el.debtOut },
-  { key: "lpLiquidity", label: "LP liquidity", color: "#6A3DE8", value: (el) => el.lpLiquidityIn + el.lpLiquidityOut },
-  { key: "lpSwap", label: "LP swaps", color: "#B84DFF", value: (el) => el.lpSwap },
-  { key: "susg", label: "sUSG", color: "#FC76FF", value: (el) => el.susgIn + el.susgOut },
+  { key: "collateral", label: "Collateral", color: UI_V2 ? SERIES.pink : "#8FC1FF", value: (el) => el.collateralIn + el.collateralOut },
+  { key: "debt", label: "Debt", color: UI_V2 ? SERIES.gold : "#0075FF", value: (el) => el.debtIn + el.debtOut },
+  { key: "lpLiquidity", label: "LP liquidity", color: UI_V2 ? SERIES.violet : "#6A3DE8", value: (el) => el.lpLiquidityIn + el.lpLiquidityOut },
+  { key: "lpSwap", label: "LP swaps", color: UI_V2 ? COLOR.data : "#B84DFF", value: (el) => el.lpSwap },
+  { key: "susg", label: "sUSG", color: UI_V2 ? SERIES.slate : "#FC76FF", value: (el) => el.susgIn + el.susgOut },
 ]
 
 const PLOT_HEIGHT_PX = 256
@@ -80,10 +83,14 @@ export const GraphProtocolVolumes = ({ totalVolumes, protocolVolumes, selectedVo
 
   return (
     <ReliefCard ref={cardRef} className="flex w-full flex-col items-start justify-start p-5">
-      <div className="flex w-full items-center justify-between">
-        <div className="text-xl font-semibold">Protocol volumes</div>
+      <div className={cn("flex w-full justify-between", UI_V2 ? "items-start" : "items-center")}>
+        {UI_V2 ? (
+          <ChartHeadV2 label="Protocol volumes" value={"$" + formatMillions(totalVolumes)} />
+        ) : (
+          <div className="text-xl font-semibold">Protocol volumes</div>
+        )}
 
-        <div className="flex gap-3">
+        <div className={cn("flex", UI_V2 ? "gap-2" : "gap-3")}>
           {VOLUME_RANGE_TABS.map((tab) => (
             <ButtonTab
               key={tab.range}
@@ -100,8 +107,8 @@ export const GraphProtocolVolumes = ({ totalVolumes, protocolVolumes, selectedVo
 
       <div className="mb-4 flex w-full flex-wrap items-center justify-between gap-x-6 gap-y-2 text-xs">
         <div className="flex items-center justify-start gap-1">
-          <div className="text-subtitle">Total: </div>
-          <div className="font-semibold text-white">${formatMillions(totalVolumes)}</div>
+          {!UI_V2 && <div className="text-subtitle">Total: </div>}
+          {!UI_V2 && <div className="font-semibold text-white">${formatMillions(totalVolumes)}</div>}
         </div>
 
         {/* LEGEND */}
@@ -126,6 +133,9 @@ export const GraphProtocolVolumes = ({ totalVolumes, protocolVolumes, selectedVo
             </div>
           ))}
 
+          {UI_V2 && (
+            <AverageLine values={visibleVolumes.slice(0, -1).map((el) => VOLUME_CATEGORIES.reduce((sum, s) => sum + s.value(el), 0))} axisMax={axisMax} />
+          )}
           <div className="absolute inset-0 flex items-end transition-opacity duration-200">
             {visibleVolumes.map((el) => {
               const segments = stackSegments(el, axisMax)
@@ -152,7 +162,7 @@ export const GraphProtocolVolumes = ({ totalVolumes, protocolVolumes, selectedVo
                     isDimmed && "opacity-40"
                   )}
                 >
-                  <div className={cn("relative h-full w-6 overflow-hidden rounded-md bg-white/[0.08]", isSelected && "ring-1 ring-white/40")}>
+                  <div className={cn("relative h-full w-6 overflow-hidden rounded-md", !UI_V2 && "bg-white/[0.08]", isSelected && "ring-1 ring-white/40")}>
                     {/* Stack bottom-up, 1px of track between segments so adjacent colors never touch */}
                     <div className="absolute bottom-0 left-0 flex w-full flex-col-reverse gap-px transition-opacity duration-300 group-hover:opacity-80">
                       {segments
@@ -160,6 +170,12 @@ export const GraphProtocolVolumes = ({ totalVolumes, protocolVolumes, selectedVo
                         .map((segment) => (
                           <div key={segment.key} className="w-full" style={{ height: `${segment.px}px`, backgroundColor: segment.color }} />
                         ))}
+                      {UI_V2 && el?.period === visibleVolumes.at(-1)?.period && (
+                        <div
+                          className="pointer-events-none absolute inset-0"
+                          style={{ backgroundImage: "repeating-linear-gradient(135deg, rgba(255,255,255,0.22) 0 2px, transparent 2px 5px)" }}
+                        />
+                      )}
                     </div>
                   </div>
                 </div>

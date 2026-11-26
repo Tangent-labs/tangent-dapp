@@ -1,5 +1,7 @@
 interface IconProps {
   className?: string
+  /** "white" renders the Tangent symbol in plain white (used on the claim airdrop page) */
+  variant?: "gradient" | "white"
 }
 
 export function IconTan({ className }: IconProps) {
@@ -9,11 +11,11 @@ export function IconTan({ className }: IconProps) {
       <g clipPath="url(#clip0_1995_1313)">
         <path
           d="M10.0089 1.09961V9.99961H4.83997C5.08033 9.98259 5.31432 9.95706 5.54192 9.92301C7.47336 9.63152 8.94746 8.6528 9.61538 5.58684C9.87064 4.42089 10.0068 2.95067 10.0089 1.10174V1.09961Z"
-          fill="url(#paint0_linear_1995_1313)"
+          fill="white"
         />
         <path
           d="M10.0199 18.8994L10.0199 9.99941L15.1888 9.99941C14.9485 10.0164 14.7145 10.042 14.4869 10.076C12.5555 10.3675 11.0813 11.3462 10.4134 14.4122C10.1582 15.5781 10.022 17.0484 10.0199 18.8973L10.0199 18.8994Z"
-          fill="url(#paint1_linear_1995_1313)"
+          fill="white"
         />
       </g>
       <defs>

@@ -49,6 +49,9 @@ export const ERC20S: Erc20Details[] = [
     symbol: "sUSG",
   },
 
+  // TAN and vsTAN come back here once their contracts are deployed: an address without code makes the batched
+  // balance read (getBalances over all ERC20S) revert, which empties every wallet balance in the dapp
+
   // CURVE LP
   {
     address: "0x97ba10115da528c113462ede9c20d7adc806d93f",

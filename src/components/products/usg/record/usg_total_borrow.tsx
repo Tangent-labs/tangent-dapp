@@ -2,6 +2,9 @@
 
 import { formatDollar, formatMillions } from "@/lib/number_formatter"
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from "recharts"
+import { UI_V2 } from "@/v2/ui"
+import { TimeChartV2 } from "@/v2/ui/time-chart"
+import { COLOR } from "@/v2/theme/colors"
 
 type UsgTotalBorrowProps = {
   totalBorrow: Array<{
@@ -69,6 +72,20 @@ export default function UsgTotalBorrow({ totalBorrow }: UsgTotalBorrowProps) {
     const valueInMillions = value / 1_000_000
     return `$${Number(valueInMillions.toFixed(2)).toString()}M`
   }
+
+  if (UI_V2)
+    return (
+      <TimeChartV2
+        // the API sends ISO dates and string amounts: the chart reads numbers
+        data={totalBorrow.map((d) => ({ t: new Date(d.timestamp).getTime(), value: Number(d.value) }))}
+        xKey="t"
+        series={[{ key: "value", label: "Total borrow", color: COLOR.data }]}
+        // one unit per axis: K under a million, M above
+        format={(v) => (v >= 1_000_000 ? "$" + Number((v / 1_000_000).toFixed(2)) + "M" : "$" + Number((v / 1_000).toFixed(0)) + "K")}
+        valueFormat={(v) => formatDollar(v.toFixed(0), 0)}
+        height="100%"
+      />
+    )
 
   return (
     <ResponsiveContainer width="100%" height="100%">

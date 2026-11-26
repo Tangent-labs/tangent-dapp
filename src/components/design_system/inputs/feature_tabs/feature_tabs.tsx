@@ -2,6 +2,8 @@
 
 import { Address } from "viem"
 import { cn } from "@/lib/utils"
+import { FeatureTabsV2 } from "@/v2/record/feature-tabs"
+import { UI_V2 } from "@/v2/ui"
 import { LayoutGroup } from "framer-motion"
 import { Divider } from "../../structure/divider"
 import { LargeButtonTab } from "../large_button_tab"
@@ -44,6 +46,23 @@ export const FeatureTabs = ({
   onTabClick,
   onTabClickLeverage,
 }: FeatureTabsProps) => {
+  if (UI_V2)
+    return (
+      <FeatureTabsV2
+        feature={feature}
+        activeTab={activeTab}
+        canLeverage={canLeverage}
+        marketAddress={marketAddress}
+        isDepositPaused={isDepositPaused}
+        isBorrowPaused={isBorrowPaused}
+        isLeveragePaused={isLeveragePaused}
+        onClickBorrow={onClickBorrow}
+        onClickRepay={onClickRepay}
+        onTabClick={onTabClick}
+        onTabClickLeverage={onTabClickLeverage}
+      />
+    )
+
   return (
     <>
       <div className="hidden w-full flex-col items-center justify-between gap-1 md:flex">

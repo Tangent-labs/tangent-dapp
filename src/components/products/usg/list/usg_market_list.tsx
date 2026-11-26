@@ -29,6 +29,8 @@ import { ListProvider, useListContext } from "@/components/design_system/list/li
 import { FeatureBannerCarousel } from "@/components/design_system/structure/feature_banner_carousel"
 import { ThreeCardRowWithMask } from "@/components/design_system/structure/three_cards_with_background_and_neon"
 import { MaxLeverageVAPR } from "@/components/design_system/list/market_max_lev_vapr"
+import { UI_V2 } from "@/v2/ui"
+import { MarketListV2 } from "@/v2/markets/market-list"
 
 interface ListRowDispositionProps {
   children: React.ReactNode[]
@@ -84,6 +86,8 @@ export default function USGMarketList() {
     filteredBy,
     setFilteredBy,
   } = useUSGMaketListContext()
+
+  if (UI_V2) return <MarketListV2 />
 
   return (
     <>

@@ -3,11 +3,15 @@
 import { Footer } from "./footer"
 import { usePathname } from "next/navigation"
 import MenuBarFeature from "@/components/products/product_nav/menu_bar_feature"
+import { UI_V2 } from "@/v2/ui"
+import { ShellV2 } from "@/v2/shell/shell"
 
 export function RouteManager({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
 
   const isPredeposit = pathname === "/predeposit"
+
+  if (UI_V2 && !isPredeposit) return <ShellV2>{children}</ShellV2>
 
   return (
     <div className="flex min-h-screen flex-col">

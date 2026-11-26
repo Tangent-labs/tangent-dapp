@@ -1,5 +1,6 @@
 "use client"
 
+import { v2Hidden } from "@/v2/ui"
 import { formatBigInt } from "@/lib/number_formatter"
 import { useUSGRecordContext } from "../usg_record_context"
 import { useUSGBorrowContext } from "./usg_record_borrow_context"
@@ -21,7 +22,7 @@ export default function USGRecordBorrowContent() {
   return (
     <div className="flex flex-col gap-1.5">
       <div className="flex items-center justify-between gap-2">
-        <span className="text-sm font-semibold md:text-xl">Borrow USG</span>
+        <span className={v2Hidden("text-sm font-semibold md:text-xl")}>Borrow USG</span>
         <span className="text-xs text-subtitle"> Max: {formatBigInt(maxBorrowableValue, 18, 3)} USG</span>
       </div>
 

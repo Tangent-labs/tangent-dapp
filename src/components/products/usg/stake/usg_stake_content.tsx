@@ -21,6 +21,8 @@ import { useWalletConnexionContext } from "@/components/products/wallet/wallet_c
 import { GenericInputAssetAmount } from "@/components/design_system/inputs/GenericInputAssetAmount"
 import { FeatureBannerCarousel } from "@/components/design_system/structure/feature_banner_carousel"
 import { ThreeCardRowWithMask } from "@/components/design_system/structure/three_cards_with_background_and_neon"
+import { UI_V2 } from "@/v2/ui"
+import { StakePageV2 } from "@/v2/stake/stake-page"
 
 export default function USGStakeContent() {
   const {
@@ -51,6 +53,8 @@ export default function USGStakeContent() {
   const tvl = vault.hasData ? root.tvl : []
 
   const { connect } = useWalletConnexionContext()
+
+  if (UI_V2) return <StakePageV2 />
 
   const isStake = "stake" === currentFeature
   let inputInAsset = ""
@@ -99,7 +103,7 @@ export default function USGStakeContent() {
         </div>
       </div>
 
-      <div className="mt-5 flex w-full flex-col gap-2 lg:flex-row lg:items-start lg:gap-5">
+      <div className="mt-4 flex w-full flex-col gap-2 lg:flex-row lg:items-start lg:gap-5">
         <ReliefCard className="flex w-full flex-col items-center justify-start gap-1 p-5 lg:w-5/12 xl:w-1/3">
           <div className="flex w-full items-center justify-between gap-4">
             <LargeButtonTab

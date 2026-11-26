@@ -1,5 +1,6 @@
 "use client"
 
+import { v2Hidden, UI_V2 } from "@/v2/ui"
 import { formatBigInt } from "@/lib/number_formatter"
 import { zeroAddress } from "viem"
 import { useUSGRecordContext } from "../usg_record_context"
@@ -72,7 +73,8 @@ export default function USGRepayContent() {
   let assetSelectElement = <></>
   if (collateralInfo) {
     assetSelectElement =
-      marketData?.constants?.receipt !== zeroAddress ? (
+      // V2: nothing to pick until the balances are loaded, so the collateral shows with its logo instead of an empty menu
+      marketData?.constants?.receipt !== zeroAddress && !(UI_V2 && !depositAssetOptions.length) ? (
         <InputSelect
           className="w-full"
           template={WithdrawAssetSelectTemplate}
@@ -89,7 +91,7 @@ export default function USGRepayContent() {
     <div className="flex flex-col gap-1.5">
       <div className="flex flex-col gap-2">
         <div className="flex items-center justify-between">
-          <span className="text-sm font-semibold md:text-xl">Repay debt</span>
+          <span className={v2Hidden("text-sm font-semibold md:text-xl")}>Repay debt</span>
 
           <span className="text-xs text-subtitle">
             Max: {formatBigInt(maxRepayable, repayAssetInfo?.decimals || 18, 3)} {repayAssetInfo?.symbol || "USG"}
@@ -150,7 +152,7 @@ export default function USGRepayContent() {
         {isRepayAndWithdraw && (
           <div className="flex flex-col gap-1">
             <div className="flex items-end justify-between">
-              <span className="text-sm font-semibold md:text-xl">Withdraw collateral</span>
+              <span className={v2Hidden("text-sm font-semibold md:text-xl")}>Withdraw collateral</span>
               <span className="text-xs text-subtitle">
                 Max: {formatBigInt(maxWithdrawable, 18, 2)} {withdrawSelectedAsset}
               </span>

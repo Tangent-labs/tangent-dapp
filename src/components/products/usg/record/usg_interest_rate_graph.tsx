@@ -6,6 +6,15 @@ import { computeIR, computeRewardsCut } from "./usg_record_controller"
 import { useUSGRecordContext } from "./usg_record_context"
 import { ResponsiveContainer, AreaChart, XAxis, YAxis, CartesianGrid, Area, Tooltip, ReferenceLine } from "recharts"
 import { isVolatileCollateral } from "@/lib/risk_color"
+import { UI_V2 } from "@/v2/ui"
+import { ChartTooltipV2, V2_CURSOR, V2_GRID, V2_TICK, v2ActiveDot } from "@/v2/ui/chart"
+import { COLOR } from "@/v2/theme/colors"
+
+const TICK = UI_V2 ? V2_TICK.fill : "rgba(255,255,255,0.6)"
+const IR_COLOR = UI_V2 ? COLOR.fg : "#95FF00"
+// V1 fill as an rgb triplet (the V2 fill uses IR_COLOR with stopOpacity)
+const IR_FILL = "149,255,0"
+const GRID = UI_V2 ? V2_GRID : "#FFFFFF1A"
 
 const CustomTooltip = ({
   active,
@@ -17,6 +26,13 @@ const CustomTooltip = ({
   label?: number
 }) => {
   if (!active || !payload?.length) return null
+  if (UI_V2)
+    return (
+      <ChartTooltipV2
+        title={"USG at $" + (label ?? 0).toFixed(4)}
+        rows={payload.map((e) => ({ color: e.color, label: e.dataKey === "rewardsCut" ? "Rewards cut" : "Interest rate", value: e.value.toFixed(2) + "%" }))}
+      />
+    )
   return (
     <div className="flex flex-col items-start justify-center gap-1 rounded-[10px] border border-white border-opacity-10 bg-input p-2 text-xs text-white backdrop-blur-[60px]">
       <span className="text-xs text-white">Price: ${(label ?? 0).toFixed(5)}</span>
@@ -33,13 +49,13 @@ const CustomTooltip = ({
 }
 
 const RewardsCutAxisTick = ({ x, y, value }: { x?: number; y?: number; value: string }) => (
-  <text x={(x ?? 0) + 8} y={y} dy={4} textAnchor="start" fill="rgba(255,255,255,0.6)" fontSize={11}>
+  <text x={(x ?? 0) + 8} y={y} dy={4} textAnchor="start" fill={TICK} fontSize={11}>
     {value}%
   </text>
 )
 
 const InterestRateAxisTick = ({ x, y, value }: { x?: number; y?: number; value: string }) => (
-  <text x={(x ?? 0) - 8} y={y} dy={4} textAnchor="end" fill="rgba(255,255,255,0.6)" fontSize={11}>
+  <text x={(x ?? 0) - 8} y={y} dy={4} textAnchor="end" fill={TICK} fontSize={11}>
     {value}%
   </text>
 )
@@ -101,14 +117,14 @@ export function InterestRateGraph() {
       >
         <defs>
           <linearGradient id="gradiant-blue" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="rgba(0,117,255,0.3)" stopOpacity={1} />
-            <stop offset="50%" stopColor="rgba(0,117,255,0.05)" stopOpacity={1} />
-            <stop offset="100%" stopColor="rgba(0,117,255,0)" stopOpacity={0} />
+            <stop offset="0%" stopColor={COLOR.data} stopOpacity={0.3} />
+            <stop offset="50%" stopColor={COLOR.data} stopOpacity={0.05} />
+            <stop offset="100%" stopColor={COLOR.data} stopOpacity={0} />
           </linearGradient>
           <linearGradient id="gradiant-yellow" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="rgba(149,255,0,0.3)" stopOpacity={1} />
-            <stop offset="50%" stopColor="rgba(149,255,0,0.05)" stopOpacity={1} />
-            <stop offset="100%" stopColor="rgba(149,255,0,0)" stopOpacity={0} />
+            <stop offset="0%" stopColor={UI_V2 ? IR_COLOR : `rgba(${IR_FILL},0.3)`} stopOpacity={UI_V2 ? 0.14 : 1} />
+            <stop offset="50%" stopColor={UI_V2 ? IR_COLOR : `rgba(${IR_FILL},0.03)`} stopOpacity={UI_V2 ? 0.03 : 1} />
+            <stop offset="100%" stopColor={UI_V2 ? IR_COLOR : `rgba(${IR_FILL},0)`} stopOpacity={0} />
           </linearGradient>
         </defs>
 
@@ -124,7 +140,7 @@ export function InterestRateGraph() {
           domain={[0.98, 1.0]}
           padding={{ left: 25, right: 30 }}
           textAnchor="middle"
-          tick={{ fontSize: 12, fill: "rgba(255,255,255,0.6)" }}
+          tick={{ fontSize: UI_V2 ? 11 : 12, fill: TICK }}
           tickMargin={8}
         />
 
@@ -151,33 +167,43 @@ export function InterestRateGraph() {
           tick={({ x, y, payload }) => <InterestRateAxisTick x={x} y={y - 7} value={payload.value} />}
         />
 
-        <CartesianGrid horizontal={true} vertical={false} stroke="#FFFFFF1A" />
+        <CartesianGrid horizontal={true} vertical={false} stroke={GRID} />
 
-        <Tooltip content={<CustomTooltip />} />
+        <Tooltip cursor={UI_V2 ? V2_CURSOR : undefined} content={<CustomTooltip />} />
 
         <ReferenceLine
           yAxisId="right"
           x={USGInfo?.price}
-          stroke="rgba(255,255,255,0.6)"
+          stroke={UI_V2 ? COLOR.line : "rgba(255,255,255,0.6)"}
           strokeDasharray="3 3"
           label={{
             value: `$${(USGInfo?.price ?? 1).toFixed(4)}`,
             position: "insideTopRight",
-            fill: "rgba(255,255,255,0.6)",
+            fill: TICK,
             fontSize: 11,
           }}
         />
 
-        <Area yAxisId="left" type="stepAfter" dataKey="rewardsCut" stroke="#0075FF" strokeWidth={1.5} fill="url(#gradiant-blue)" fillOpacity={1} />
+        <Area
+          yAxisId="left"
+          type="stepAfter"
+          dataKey="rewardsCut"
+          stroke={COLOR.data}
+          strokeWidth={1.5}
+          fill="url(#gradiant-blue)"
+          fillOpacity={1}
+          activeDot={UI_V2 ? v2ActiveDot(COLOR.data) : undefined}
+        />
 
         <Area
           yAxisId="right"
           type="monotone"
           dataKey="interestRate"
-          stroke="#95FF00"
+          stroke={IR_COLOR}
           strokeWidth={1.5}
           fill="url(#gradiant-yellow)"
           fillOpacity={1}
+          activeDot={UI_V2 ? v2ActiveDot(IR_COLOR) : undefined}
           animationDuration={1000}
         />
       </AreaChart>

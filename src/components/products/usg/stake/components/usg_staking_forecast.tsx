@@ -8,6 +8,9 @@ import type { LineDot } from "recharts/types/cartesian/Line"
 import { ButtonTab } from "@/components/design_system/inputs/button_tab"
 import { ValueType } from "recharts/types/component/DefaultTooltipContent"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer, Tooltip } from "recharts"
+import { UI_V2 } from "@/v2/ui"
+import { TimeChartV2 } from "@/v2/ui/time-chart"
+import { COLOR } from "@/v2/theme/colors"
 
 const MS_PER_YEAR = 365.25 * 24 * 60 * 60 * 1000
 
@@ -240,7 +243,7 @@ export const ForecastGraph = ({ currentInvestment, newLiquidity, apy, currentFea
   return (
     <>
       <div className="flex w-full items-center justify-between">
-        <APRDisplay apy={apy} />
+        {UI_V2 ? <span className="text-[13px] text-ink-2">Value of your sUSG over time</span> : <APRDisplay apy={apy} />}
         <div className="hidden items-end justify-end gap-2 md:flex">
           <ButtonTab onClick={() => setRange("1m")} label={"1m"} active={range === "1m"} className="rounded-full !py-1" />
           <ButtonTab onClick={() => setRange("3m")} label={"3m"} active={range === "3m"} className="rounded-full !py-1" />
@@ -250,85 +253,104 @@ export const ForecastGraph = ({ currentInvestment, newLiquidity, apy, currentFea
 
       {apy && apy > 0 ? (
         <>
-          <div className="mt-2.5 flex h-[18rem] w-full">
-            <ResponsiveContainer width="100%" height="100%" className="!max-h-none">
-              <LineChart
-                margin={{
-                  top: 20,
-                  right: -50,
-                  left: 0,
-                  bottom: 0,
-                }}
-                data={forecastData}
-              >
-                <defs>
-                  <linearGradient id="gradientColor" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#FBF911" />
-                    <stop offset="100%" stopColor="#99FF00" />
-                  </linearGradient>
-                </defs>
+          {UI_V2 ? (
+            <TimeChartV2
+              className="-mx-6 mt-2.5 w-[calc(100%+3rem)]"
+              data={forecastData}
+              xKey="t"
+              series={[
+                // no sUSG yet: the current position is a flat $0 line, only the projection is drawn
+                ...(currentInvestment > 0 || !showSecondLine ? [{ key: "baseAmount", label: "Current position", color: COLOR.fg, fill: !showSecondLine }] : []),
+                ...(showSecondLine ? [{ key: "amountWithLiquidity", label: "With this change", color: COLOR.data }] : []),
+              ]}
+              format={(v) => "$" + formatMillions(v)}
+              valueFormat={(v) => formatDollar(v)}
+              domain={[yAxis.min, yAxis.max]}
+              height="18rem"
+              startLabel="Today"
+              endLabel={new Date(endTs).toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" })}
+            />
+          ) : (
+            <div className="mt-2.5 flex h-[18rem] w-full">
+              <ResponsiveContainer width="100%" height="100%" className="!max-h-none">
+                <LineChart
+                  margin={{
+                    top: 20,
+                    right: -50,
+                    left: 0,
+                    bottom: 0,
+                  }}
+                  data={forecastData}
+                >
+                  <defs>
+                    <linearGradient id="gradientColor" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#FBF911" />
+                      <stop offset="100%" stopColor="#99FF00" />
+                    </linearGradient>
+                  </defs>
 
-                <CartesianGrid horizontal vertical={false} stroke="rgba(255,255,255,0.05)" />
+                  <CartesianGrid horizontal vertical={false} stroke="rgba(255,255,255,0.05)" />
 
-                <XAxis
-                  dataKey="t"
-                  type="number"
-                  scale="time"
-                  domain={[startTs, endTs]}
-                  ticks={ticks}
-                  tickFormatter={fmtTick}
-                  tick={TICK_STYLE}
-                  padding={{ left: 0, right: 45 }}
-                  axisLine={AXIS_LINE_STYLE}
-                  tickLine={false}
-                  allowDataOverflow
-                  height={20}
-                />
+                  <XAxis
+                    dataKey="t"
+                    type="number"
+                    scale="time"
+                    domain={[startTs, endTs]}
+                    ticks={ticks}
+                    tickFormatter={fmtTick}
+                    tick={TICK_STYLE}
+                    padding={{ left: 0, right: 45 }}
+                    axisLine={AXIS_LINE_STYLE}
+                    tickLine={false}
+                    allowDataOverflow
+                    height={20}
+                  />
 
-                <YAxis
-                  orientation="right"
-                  tickFormatter={(v) => `$${formatMillions(v)}`}
-                  width={CHART_Y_AXIS_WIDTH}
-                  domain={[yAxis.min, yAxis.max]}
-                  ticks={Array.from({ length: Math.floor((yAxis.max - yAxis.min) / yAxis.stepSize) + 1 }, (_, i) => yAxis.min + i * yAxis.stepSize)}
-                  tick={({ x, y, payload }) => (
-                    <text x={x - 10} y={y - 7} dy={4} textAnchor="end" fill="rgba(255,255,255,0.5)" fontSize={11}>
-                      ${formatMillions(payload.value)}
-                    </text>
-                  )}
-                  axisLine={false}
-                  tickLine={false}
-                />
+                  <YAxis
+                    orientation="right"
+                    tickFormatter={(v) => `$${formatMillions(v)}`}
+                    width={CHART_Y_AXIS_WIDTH}
+                    domain={[yAxis.min, yAxis.max]}
+                    ticks={Array.from({ length: Math.floor((yAxis.max - yAxis.min) / yAxis.stepSize) + 1 }, (_, i) => yAxis.min + i * yAxis.stepSize)}
+                    tick={({ x, y, payload }) => (
+                      <text x={x - 10} y={y - 7} dy={4} textAnchor="end" fill="rgba(255,255,255,0.5)" fontSize={11}>
+                        ${formatMillions(payload.value)}
+                      </text>
+                    )}
+                    axisLine={false}
+                    tickLine={false}
+                  />
 
-                <Tooltip
-                  cursor={{ stroke: "rgba(255,255,255,0.25)", strokeWidth: 2 }}
-                  content={<CustomTooltip fmtLabel={fmtTooltipLabel} newLiquidity={newLiquidity} />}
-                />
+                  <Tooltip
+                    cursor={{ stroke: "rgba(255,255,255,0.25)", strokeWidth: 2 }}
+                    content={<CustomTooltip fmtLabel={fmtTooltipLabel} newLiquidity={newLiquidity} />}
+                  />
 
-                <Line
-                  strokeWidth={2}
-                  type="monotone"
-                  dataKey="baseAmount"
-                  stroke="#FFFFFF"
-                  name="Current Position Growth"
-                  dot={EndDot(forecastData.length - 1, "#FFFFFF") as LineDot}
-                  isAnimationActive={false}
-                />
-
-                {showSecondLine && (
                   <Line
                     strokeWidth={2}
                     type="monotone"
-                    dataKey="amountWithLiquidity"
-                    stroke="url(#gradientColor)"
-                    name={`Total After ${liquidityChangeSign}${formatDollar(newLiquidity, 0)}`}
-                    dot={EndDot(forecastData.length - 1, "url(#gradientColor)") as LineDot}
+                    dataKey="baseAmount"
+                    stroke="#FFFFFF"
+                    name="Current Position Growth"
+                    dot={EndDot(forecastData.length - 1, "#FFFFFF") as LineDot}
                     isAnimationActive={false}
                   />
-                )}
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
+
+                  {showSecondLine && (
+                    <Line
+                      strokeWidth={2}
+                      type="monotone"
+                      dataKey="amountWithLiquidity"
+                      stroke="url(#gradientColor)"
+                      name={`Total After ${liquidityChangeSign}${formatDollar(newLiquidity, 0)}`}
+                      dot={EndDot(forecastData.length - 1, "url(#gradientColor)") as LineDot}
+                      isAnimationActive={false}
+                    />
+                  )}
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          )}
         </>
       ) : (
         <div className="mt-3 flex h-[18rem] w-full items-center justify-center text-subtitle">No APY data</div>

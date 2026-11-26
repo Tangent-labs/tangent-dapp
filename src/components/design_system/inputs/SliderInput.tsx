@@ -1,6 +1,8 @@
 "use client"
 
 import { useState } from "react"
+import { cn } from "@/lib/utils"
+import { UI_V2 } from "@/v2/ui"
 
 type SliderInputProps = {
   handleSliderChange: (e: React.ChangeEvent<HTMLInputElement>) => void
@@ -18,6 +20,83 @@ export const SliderInput = ({ className, handleSliderChange, legendValues, value
   const end = Number(startEndRange[1])
 
   const percentage = ((value - start) * 100) / (end - start)
+  const pick = (el: string) => handleSliderChange({ target: { value: el.toString() } } as React.ChangeEvent<HTMLInputElement>)
+
+  if (UI_V2)
+    return (
+      <div className={cn("stop-focus no-parent-hover w-full select-none", disabled && "opacity-45")}>
+        <style jsx>{`
+          .v2-range::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 9999px;
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(0, 117, 255, 0.25);
+            cursor: pointer;
+            transition: transform 150ms ease;
+          }
+          .v2-range:active::-webkit-slider-thumb {
+            transform: scale(1.12);
+          }
+          .v2-range::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            border: none;
+            border-radius: 9999px;
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(0, 117, 255, 0.25);
+            cursor: pointer;
+          }
+        `}</style>
+        <div className="relative h-4 w-full">
+          <div className="absolute inset-x-0 top-1/2 h-1 -translate-y-1/2 rounded-full bg-white/10" />
+          <div
+            className="absolute left-0 top-1/2 h-1 -translate-y-1/2 rounded-full bg-action"
+            style={{ width: `calc(8px + (100% - 16px) * ${Math.min(100, Math.max(0, percentage)) / 100})` }}
+          />
+          <input
+            type="range"
+            min={start}
+            max={end}
+            step={startEndRange[2]}
+            disabled={disabled}
+            value={value}
+            onChange={handleSliderChange}
+            aria-label={unit === "x" ? "Leverage" : "Amount"}
+            className={cn("v2-range absolute inset-0 z-10 h-4 w-full cursor-pointer appearance-none bg-transparent disabled:cursor-not-allowed", className)}
+          />
+        </div>
+        <div className="relative mt-2 h-4 text-[11px] tabular-nums">
+          {legendValues.map((el, i) => {
+            const pos = ((Number(el) - start) * 100) / (end - start)
+            const last = i === legendValues.length - 1
+            // a mark too close to the max (6x next to 6.12x) is dropped instead of overlapping it
+            const nextPos = last ? undefined : ((Number(legendValues[legendValues.length - 1]) - start) * 100) / (end - start)
+            if (!last && nextPos !== undefined && nextPos - pos < 9) return null
+            return (
+              <button
+                key={`label-${el}`}
+                type="button"
+                disabled={disabled}
+                onClick={() => pick(el)}
+                className={cn(
+                  "absolute whitespace-nowrap transition-colors hover:text-white",
+                  // the max sits flush with the right edge, the others centre under the thumb position
+                  !last && "-translate-x-1/2",
+                  Number(el) <= value ? "text-ink-2" : "text-ink-3"
+                )}
+                style={last ? { right: 0 } : { left: `calc(8px + (100% - 16px) * ${pos / 100})` }}
+              >
+                {unit === "x" ? `${el}x` : `${el}%`}
+              </button>
+            )
+          })}
+        </div>
+      </div>
+    )
+
   return (
     <>
       <style jsx>{`

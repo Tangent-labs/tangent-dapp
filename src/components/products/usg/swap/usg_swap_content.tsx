@@ -21,8 +21,16 @@ import { FeatureBannerCarousel } from "@/components/design_system/structure/feat
 import { UsgBalanceAndTotalPoints } from "@/components/design_system/structure/balance_and_total_points"
 import { FormAlert } from "@/components/design_system/inputs/form_alert"
 import { PageHeader } from "@/components/design_system/structure/page_header"
+import { UI_V2 } from "@/v2/ui"
+import { SwapPageV2 } from "@/v2/swap/swap-page"
 
 export default function USGSwapContent() {
+  if (UI_V2) return <SwapPageV2 />
+
+  return <USGSwapContentV1 />
+}
+
+function USGSwapContentV1() {
   const {
     handleSellChange,
     handleBuyChange,

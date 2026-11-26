@@ -8,6 +8,7 @@ const config: Config = {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/lib/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/v2/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {
@@ -15,7 +16,13 @@ const config: Config = {
         "md-lg": "930px",
       },
       fontFamily: {
-        gilroy: ["var(--font-gilroy)", "sans-serif"],
+        // V1 loads Gilroy (--font-gilroy), V2 loads DM Sans (--font-dm-sans), see app/layout.tsx.
+        // font-gilroy falls back to DM Sans under V2, font-sans falls back to the Tailwind default under V1.
+        gilroy: ["var(--font-gilroy, var(--font-dm-sans))", "sans-serif"],
+        sans: ["var(--font-dm-sans, ui-sans-serif)", "system-ui", "sans-serif"],
+      },
+      boxShadow: {
+        pop: "var(--tgt-v2-shadow-pop)",
       },
       borderWidth: {
         tangent: "1.5px",
@@ -40,6 +47,33 @@ const config: Config = {
         body: "var(--tgt-image-body)",
       },
       colors: {
+        // "white" is the foreground of the theme: white on the dark theme (V1 and V2 dark unchanged), black on the V2 light
+        // theme, so text-white and every white/x veil flip with it. Text sitting on a coloured fill uses "on-fill" (always white).
+        white: "rgb(var(--tgt-fg, 255 255 255) / <alpha-value>)",
+        "on-fill": "#ffffff",
+        bar: "var(--tgt-v2-bg-bar)",
+        // V2 tokens (css_globals.css --tgt-v2-*), for the reworked components
+        page: "var(--tgt-v2-bg-page)",
+        sidebar: "var(--tgt-v2-bg-sidebar)",
+        surface: "var(--tgt-v2-bg-surface)",
+        raised: "var(--tgt-v2-bg-raised)",
+        subtle: "var(--tgt-v2-bg-subtle)",
+        control: "var(--tgt-v2-bg-control)",
+        hairline: "var(--tgt-v2-border-hairline)",
+        divider: "var(--tgt-v2-border-divider)",
+        ink: { DEFAULT: "var(--tgt-v2-text-primary)", 2: "var(--tgt-v2-text-secondary)", 3: "var(--tgt-v2-text-tertiary)" },
+        action: {
+          DEFAULT: "var(--tgt-v2-action-primary)",
+          hover: "var(--tgt-v2-action-hover)",
+          // button fill with white text: a step darker than the brand blue so labels pass WCAG AA (5.2:1, hover 4.6:1)
+          fill: "var(--tgt-v2-action-fill)",
+          "fill-hover": "var(--tgt-v2-action-fill-hover)",
+        },
+        "data-primary": "var(--tgt-v2-data-primary)",
+        projected: "var(--tgt-v2-data-projected)",
+        negative: "var(--tgt-v2-data-negative)",
+        warning: "var(--tgt-v2-status-warning)",
+        alert: "var(--tgt-v2-status-alert)",
         "button-active-hover": "var(--tgt-button-active-hover)",
         "button-active": "var(--tgt-button-active)",
         "button-active-dark": "var(--tgt-button-active-dark)",

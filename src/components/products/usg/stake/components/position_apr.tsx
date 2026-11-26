@@ -1,5 +1,9 @@
 import { ReactNode, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { APRDisplay } from "./apr_display"
+import { UI_V2 } from "@/v2/ui"
+import { TimeChartV2 } from "@/v2/ui/time-chart"
+import { COLOR } from "@/v2/theme/colors"
+
 import { ButtonTab } from "@/components/design_system/inputs/button_tab"
 import { ValueType } from "recharts/types/component/DefaultTooltipContent"
 import { Area, AreaChart, CartesianGrid, ReferenceDot, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
@@ -24,6 +28,7 @@ type ApyHistoryPoint = {
 
 type PositionAPRProps = {
   apy: number
+  token?: string
   fetchsUSGHistoryAPY: (range: string) => Promise<void>
   sUSGSelectedTab: string
   apyHistory: ApyHistoryPoint[]
@@ -116,7 +121,7 @@ const ApyTooltip = (props: {
 
 const formatYAxis = (tick: number) => `${tick}%`
 
-export const PositionAPR = ({ apy, fetchsUSGHistoryAPY, sUSGSelectedTab, apyHistory }: PositionAPRProps) => {
+export const PositionAPR = ({ apy, token, fetchsUSGHistoryAPY, sUSGSelectedTab, apyHistory }: PositionAPRProps) => {
   const selectedRange: RangeKey = isRangeKey(sUSGSelectedTab) ? sUSGSelectedTab : "1m"
 
   const { data, averageApy, ticks, fmtTick, fmtTooltipLabel, startTs, endTs, latestPoint } = useMemo(() => {
@@ -162,7 +167,7 @@ export const PositionAPR = ({ apy, fetchsUSGHistoryAPY, sUSGSelectedTab, apyHist
   return (
     <>
       <div className="flex w-full items-center justify-between">
-        <APRDisplay apy={apy} />
+        {UI_V2 ? <span className="text-[13px] text-ink-2">APY over time</span> : <APRDisplay apy={apy} token={token} />}
 
         <div className="hidden items-end justify-end gap-2 md:flex">
           {RANGE_KEYS.map((range) => (
@@ -172,78 +177,91 @@ export const PositionAPR = ({ apy, fetchsUSGHistoryAPY, sUSGSelectedTab, apyHist
       </div>
 
       {hasApyHistory ? (
-        <div className="relative mt-2.5 h-[18rem]">
-          <ResponsiveContainer width="100%" height="100%" className="!max-h-none">
-            <AreaChart data={data} margin={CHART_MARGIN}>
-              <defs>
-                <linearGradient id="greenGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#95FF00" stopOpacity={0.4} />
-                  <stop offset="100%" stopColor="#95FF00" stopOpacity={0} />
-                </linearGradient>
-              </defs>
+        UI_V2 ? (
+          <TimeChartV2
+            className="-mx-6 mt-2.5 w-[calc(100%+3rem)]"
+            data={data}
+            xKey="date"
+            series={[{ key: "uv", label: "APY", color: COLOR.data }]}
+            format={formatYAxis}
+            valueFormat={(v) => v.toFixed(2) + "%"}
+            height="18rem"
+            reference={Number.isFinite(averageApy) ? { y: averageApy, label: "avg " + averageApy.toFixed(2) + "%" } : undefined}
+          />
+        ) : (
+          <div className="relative mt-2.5 h-[18rem]">
+            <ResponsiveContainer width="100%" height="100%" className="!max-h-none">
+              <AreaChart data={data} margin={CHART_MARGIN}>
+                <defs>
+                  <linearGradient id="greenGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#95FF00" stopOpacity={0.4} />
+                    <stop offset="100%" stopColor="#95FF00" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
 
-              <CartesianGrid horizontal={true} vertical={false} stroke="rgba(255,255,255,0.05)" />
+                <CartesianGrid horizontal={true} vertical={false} stroke="rgba(255,255,255,0.05)" />
 
-              <XAxis
-                padding={X_AXIS_PADDING}
-                dataKey="date"
-                type="number"
-                scale="time"
-                domain={[startTs, endTs]}
-                ticks={ticks}
-                tickFormatter={fmtTick}
-                tick={TICK_STYLE}
-                axisLine={AXIS_LINE_STYLE}
-                tickLine={false}
-                allowDataOverflow
-                height={20}
-              />
+                <XAxis
+                  padding={X_AXIS_PADDING}
+                  dataKey="date"
+                  type="number"
+                  scale="time"
+                  domain={[startTs, endTs]}
+                  ticks={ticks}
+                  tickFormatter={fmtTick}
+                  tick={TICK_STYLE}
+                  axisLine={AXIS_LINE_STYLE}
+                  tickLine={false}
+                  allowDataOverflow
+                  height={20}
+                />
 
-              <YAxis
-                orientation="right"
-                width={CHART_Y_AXIS_WIDTH}
-                axisLine={false}
-                tick={({ x, y, payload }) => (
-                  <text x={x - 10} y={y - 7} dy={4} textAnchor="end" fill="rgba(255,255,255,0.5)" fontSize={11}>
-                    {formatYAxis(payload.value)}
-                  </text>
-                )}
-                tickLine={false}
-              />
+                <YAxis
+                  orientation="right"
+                  width={CHART_Y_AXIS_WIDTH}
+                  axisLine={false}
+                  tick={({ x, y, payload }) => (
+                    <text x={x - 10} y={y - 7} dy={4} textAnchor="end" fill="rgba(255,255,255,0.5)" fontSize={11}>
+                      {formatYAxis(payload.value)}
+                    </text>
+                  )}
+                  tickLine={false}
+                />
 
-              <Area
-                type="monotone"
-                dataKey="uv"
-                stroke="#95FF00"
-                strokeWidth={2}
-                fill="url(#greenGradient)"
-                dot={false}
-                activeDot={{
-                  r: 4,
-                  stroke: "#95FF00",
-                  strokeWidth: 2,
-                  fill: "#95FF00",
-                  filter: "drop-shadow(0 0 8px rgba(217, 251, 11, 0.7))",
-                }}
-              />
+                <Area
+                  type="monotone"
+                  dataKey="uv"
+                  stroke="#95FF00"
+                  strokeWidth={2}
+                  fill="url(#greenGradient)"
+                  dot={false}
+                  activeDot={{
+                    r: 4,
+                    stroke: "#95FF00",
+                    strokeWidth: 2,
+                    fill: "#95FF00",
+                    filter: "drop-shadow(0 0 8px rgba(217, 251, 11, 0.7))",
+                  }}
+                />
 
-              <Tooltip cursor={{ ...AXIS_LINE_STYLE, strokeWidth: 1.5, strokeDasharray: "4 4" }} content={<ApyTooltip fmtLabel={fmtTooltipLabel} />} />
+                <Tooltip cursor={{ ...AXIS_LINE_STYLE, strokeWidth: 1.5, strokeDasharray: "4 4" }} content={<ApyTooltip fmtLabel={fmtTooltipLabel} />} />
 
-              <ReferenceLine
-                segment={[
-                  { x: startTs, y: averageApy },
-                  { x: endTs, y: averageApy },
-                ]}
-                stroke="#0075FF"
-                strokeDasharray="8 6"
-                strokeWidth={2}
-                label={<CustomAverageDisplay averageApy={averageApy} apy={apy} />}
-              />
+                <ReferenceLine
+                  segment={[
+                    { x: startTs, y: averageApy },
+                    { x: endTs, y: averageApy },
+                  ]}
+                  stroke="#0075FF"
+                  strokeDasharray="8 6"
+                  strokeWidth={2}
+                  label={<CustomAverageDisplay averageApy={averageApy} apy={apy} />}
+                />
 
-              <ReferenceDot x={latestPoint.date} y={latestPoint.uv} r={4} fill="#95FF00" stroke="#95FF00" isFront={true} />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
+                <ReferenceDot x={latestPoint.date} y={latestPoint.uv} r={4} fill="#95FF00" stroke="#95FF00" isFront={true} />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        )
       ) : (
         <div className="mb mt-3 flex h-[18rem] w-full items-center justify-center text-subtitle">No APY data</div>
       )}

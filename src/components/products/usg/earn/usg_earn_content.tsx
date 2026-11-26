@@ -15,6 +15,8 @@ import { PageHeader } from "@/components/design_system/structure/page_header"
 import { ListProvider, useListContext } from "@/components/design_system/list/list_context"
 import { FeatureBannerCarousel } from "@/components/design_system/structure/feature_banner_carousel"
 import { UsgBalanceAndTotalPoints } from "@/components/design_system/structure/balance_and_total_points"
+import { UI_V2 } from "@/v2/ui"
+import { EarnPageV2 } from "@/v2/earn/earn-page"
 
 const listeState: ListState = {
   search: undefined,
@@ -28,6 +30,8 @@ export const USGEarnContent = () => {
   const { displayRows, USGsUSGMetrics, getSortedRows } = useUSGEarnContext()
 
   const { lpUserPoints, voteUserPoints } = useUSGContext()
+
+  if (UI_V2) return <EarnPageV2 />
 
   return (
     <>

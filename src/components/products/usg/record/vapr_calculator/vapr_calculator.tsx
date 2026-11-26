@@ -18,6 +18,8 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/h
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { CartesianGrid, Legend, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 import { cn } from "@/lib/utils"
+import { UI_V2 } from "@/v2/ui"
+import { VAPRCalculatorV2 } from "@/v2/record/vapr-calculator"
 
 type VAPRSimulation = {
   isLeveraged: boolean
@@ -28,8 +30,19 @@ type VAPRSimulation = {
   debtVAPR: number
 }
 
-const inputClassName =
-  "flex h-[34px] flex-col items-center justify-center rounded-[10px] border border-white border-opacity-20 bg-overlay-panel p-2.5 text-xs font-semibold text-white placeholder:text-subtitle/60 focus-visible:border-opacity-40 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+const inputClassName = UI_V2
+  ? "flex h-9 rounded-lg border border-hairline bg-white/[0.04] px-3 text-[13px] tabular-nums text-white placeholder:text-ink-3 focus-visible:border-white/20 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+  : "flex h-[34px] flex-col items-center justify-center rounded-[10px] border border-white border-opacity-20 bg-overlay-panel p-2.5 text-xs font-semibold text-white placeholder:text-subtitle/60 focus-visible:border-opacity-40 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+
+/** V2 shows the position metrics as a plain strip; V1 keeps its neon card. */
+const MetricsFrame = ({ children }: { children: React.ReactNode }) =>
+  UI_V2 ? (
+    <div className="flex w-full rounded-xl border border-hairline bg-white/[0.03] px-2 py-3">{children}</div>
+  ) : (
+    <NeonLightCard paddingHorizontal={0} className="flex w-full" color1="#0077ffa3" color2="#0075FF">
+      {children}
+    </NeonLightCard>
+  )
 
 const LAYOUT_TRANSITION = { layout: { duration: 0.3, ease: "easeInOut" }, opacity: { duration: 0.3 } } as const
 
@@ -145,12 +158,34 @@ export const VAPRCalculator = () => {
     }
   }, [chartData, USGInfo, isLeveraged, initialCollatAmount, totalCollatAmount, simulatedCollatAmount, debtFarming, onChainData, marketData])
 
+  if (UI_V2)
+    return (
+      <VAPRCalculatorV2
+        metrics={positionMetrics}
+        chartData={chartData}
+        usgPrice={USGInfo?.price}
+        isLeveraged={isLeveraged}
+        setIsLeveraged={setIsLeveraged}
+        initialCollatAmount={initialCollatAmount}
+        setInitialCollatAmount={setInitialCollatAmount}
+        totalCollatAmount={totalCollatAmount}
+        setTotalCollatAmount={setTotalCollatAmount}
+        simulatedCollatAmount={simulatedCollatAmount}
+        setSimulatedCollatAmount={setSimulatedCollatAmount}
+        debtFarming={debtFarming}
+        setDebtFarming={setDebtFarming}
+        debtVAPR={debtVAPR}
+        setDebtVAPR={setDebtVAPR}
+        onSave={onClickSaveAndCompute}
+      />
+    )
+
   return (
     <Accordion type="single" collapsible>
       <AccordionItem value="item-1">
         <ReliefCard className="hidden cursor-pointer flex-col p-5 text-xs lg:flex">
           <AccordionTrigger className="flex w-full justify-between py-0">
-            <span className="text-[18px] font-semibold text-white">vAPR Calculator</span>
+            <span className={UI_V2 ? "text-[15px] font-semibold text-white" : "text-[18px] font-semibold text-white"}>vAPR Calculator</span>
           </AccordionTrigger>
 
           <AccordionContent className="pb-0">
@@ -164,22 +199,22 @@ export const VAPRCalculator = () => {
                   you will need to regularly update your debt info (amount used to farm and vAPR) so the calculator display a correct result.
                 </div>
 
-                <NeonLightCard paddingHorizontal={0} className="flex w-full" color1="#0077ffa3" color2="#0075FF">
+                <MetricsFrame>
                   <div className="flex items-center gap-2 xl:gap-4">
                     <div className="flex w-full items-center justify-between py-0.5">
                       {Object.entries(positionMetrics).map(([label, value], i) => (
                         <div key={label} className={cn("flex-1 text-center", i > 0 ? "xl:border-l xl:border-white/10" : "")}>
                           <div className="text-center text-xs text-subtitle">{label}</div>
-                          <div className="mt-1 text-center text-sm font-semibold">{value}</div>
+                          <div className={cn("mt-1 text-center text-sm font-semibold", UI_V2 && "tabular-nums")}>{value}</div>
                         </div>
                       ))}
                     </div>
                   </div>
-                </NeonLightCard>
+                </MetricsFrame>
               </div>
               <div className="flex w-full items-start gap-5">
                 <div className="flex w-1/4 flex-col items-start justify-start gap-3">
-                  <span className="text-xl font-semibold text-white">Settings</span>
+                  <span className={UI_V2 ? "text-[15px] font-semibold text-white" : "text-xl font-semibold text-white"}>Settings</span>
 
                   <div className="flex w-full items-center justify-between gap-1">
                     <InputLabel label="Leverage" info="Simulate a leveraged position where borrowed USG is used to buy additional collateral." />
@@ -296,7 +331,7 @@ export const VAPRCalculator = () => {
                       <div className="h-[360px] w-full">
                         <ResponsiveContainer width="100%" height="100%" className="!max-h-none">
                           <LineChart data={chartData} margin={{ top: 30, right: 5, left: 5, bottom: 5 }}>
-                            <CartesianGrid horizontal vertical={false} stroke="#FFFFFF1A" />
+                            <CartesianGrid horizontal vertical={false} stroke={UI_V2 ? "rgba(255,255,255,0.05)" : "#FFFFFF1A"} />
 
                             <XAxis
                               dataKey="price"
@@ -318,14 +353,14 @@ export const VAPRCalculator = () => {
                               type="number"
                             />
 
-                            <Line strokeWidth="3px" type="monotone" dataKey="vAPR" stroke="url(#gradientColor)" name="vAPR (%)" dot={false} />
+                            <Line strokeWidth={UI_V2 ? "2px" : "3px"} type="monotone" dataKey="vAPR" stroke="url(#gradientColor)" name="vAPR (%)" dot={false} />
 
                             <Legend formatter={(v) => (v === "vAPR" ? "vAPR (%)" : v)} />
 
                             <ReferenceLine
                               y={"0"}
-                              stroke="white"
-                              strokeWidth={2}
+                              stroke={UI_V2 ? "rgba(255,255,255,0.35)" : "white"}
+                              strokeWidth={UI_V2 ? 1 : 2}
                               ifOverflow="hidden"
                               label={({ viewBox }) => {
                                 return (

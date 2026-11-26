@@ -73,8 +73,11 @@ export function VoidTexture({
   cols?: number
   rows?: number
 }) {
-  // the ink texture needs a heavier hand on a white card than the white one on a dark card to read the same
-  const k = useResolvedTheme() === "light" ? 2.4 : 1
+  // the ink texture needs a heavier hand on a white card than the white one on a dark card to read the same:
+  // k for the masked hero texture, kCells for the breathing cells (no mask, so they need more)
+  const light = useResolvedTheme() === "light"
+  const k = light ? 1.6 : 1
+  const kCells = light ? 2.4 : 1
   const pw = W * SCALE + GAP
   const ph = H * SCALE + GAP
   const cx = origin === "tl" ? "0" : "1"
@@ -87,14 +90,14 @@ export function VoidTexture({
         const i = r * cols + c
         // same falloff as the static texture, from the origin corner
         const dx = origin === "tl" ? c : cols - 1 - c
-        const base = Math.max(0, 0.05 * k * (1 - Math.hypot(dx, r) / (span * 0.8)))
+        const base = Math.max(0, 0.05 * kCells * (1 - Math.hypot(dx, r) / (span * 0.8)))
         const lit = rand(i) < 0.22
         cells.push(
           <path key={i} d={PATH} transform={`translate(${(c * pw).toFixed(2)} ${(r * ph).toFixed(2)})`} fill={COLOR.fg} opacity={base}>
             {lit && (
               <animate
                 attributeName="opacity"
-                values={`${base};${(base + (0.025 + rand(i + 7) * 0.025) * k).toFixed(3)};${base}`}
+                values={`${base};${(base + (0.025 + rand(i + 7) * 0.025) * kCells).toFixed(3)};${base}`}
                 dur={`${(2.6 + rand(i + 3) * 3.4).toFixed(2)}s`}
                 begin={`${(rand(i + 11) * 6).toFixed(2)}s`}
                 repeatCount="indefinite"
@@ -131,10 +134,11 @@ export function VoidTexture({
         <pattern id={`${id}-p`} width={pw} height={ph} patternUnits="userSpaceOnUse">
           <path d={PATH} fill={COLOR.fg} />
         </pattern>
+        {/* mask gradient: masks read luminance, so it stays white on both themes (only the pattern takes the ink colour) */}
         <radialGradient id={`${id}-g`} cx={cx} cy="0" r="0.75">
-          <stop offset="0" stopColor={COLOR.fg} stopOpacity={0.075 * k} />
-          <stop offset="0.55" stopColor={COLOR.fg} stopOpacity={0.02 * k} />
-          <stop offset="1" stopColor={COLOR.fg} stopOpacity="0" />
+          <stop offset="0" stopColor="#ffffff" stopOpacity={0.075 * k} />
+          <stop offset="0.55" stopColor="#ffffff" stopOpacity={0.02 * k} />
+          <stop offset="1" stopColor="#ffffff" stopOpacity="0" />
         </radialGradient>
         <mask id={`${id}-m`}>
           <rect width="100%" height="100%" fill={`url(#${id}-g)`} />

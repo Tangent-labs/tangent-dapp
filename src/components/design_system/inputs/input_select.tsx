@@ -31,15 +31,22 @@ export const InputSelect = <T extends { value: string }>({
   if (UI_V2) {
     // V2: quiet chip trigger, dark menu. When the value has no matching option (options still loading), the raw value is shown instead of a blank.
     const selected = options?.find((o) => o.value === value)
+    // nothing to choose from: a plain chip, no empty menu
+    const empty = !options?.length
     return (
       <div className={cn("flex flex-col", className)}>
         {label && <div className="mb-1 text-xs text-ink-3">{label}</div>}
-        <SelectPrimitive.Root disabled={disabled} value={value} onValueChange={(v) => onChange(v)}>
-          <SelectPrimitive.Trigger className="focus-visible:ring-action/50 flex h-9 w-full items-center justify-between gap-1.5 rounded-lg bg-white/[0.07] px-2 text-[13px] font-medium outline-none transition-colors hover:bg-white/[0.11] focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:min-w-0 [&>span]:truncate">
+        <SelectPrimitive.Root disabled={disabled || empty} value={value} onValueChange={(v) => onChange(v)}>
+          <SelectPrimitive.Trigger
+            className={cn(
+              "focus-visible:ring-action/50 flex h-9 w-full items-center justify-between gap-1.5 rounded-lg bg-white/[0.07] px-2 text-[13px] font-medium outline-none transition-colors hover:bg-white/[0.11] focus-visible:ring-2 disabled:cursor-not-allowed disabled:opacity-50 [&>span]:min-w-0 [&>span]:truncate",
+              empty && "disabled:cursor-default disabled:opacity-100"
+            )}
+          >
             <SelectPrimitive.Value placeholder={<span className="text-ink-3">{placeholder}</span>}>
               {selected ? template ? <span className="flex items-center [&_img]:!h-5 [&_img]:!w-auto">{template(selected)}</span> : selected.value : value}
             </SelectPrimitive.Value>
-            <ChevronDown className="h-3.5 w-3.5 shrink-0 text-ink-3" strokeWidth={2} />
+            {!empty && <ChevronDown className="h-3.5 w-3.5 shrink-0 text-ink-3" strokeWidth={2} />}
           </SelectPrimitive.Trigger>
           <SelectPrimitive.Portal>
             <SelectPrimitive.Content

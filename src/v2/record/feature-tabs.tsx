@@ -2,7 +2,6 @@
 
 import { useEffect, useLayoutEffect, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
-import { Pause } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { LargeButtonTab } from "@/components/design_system/inputs/large_button_tab"
 
@@ -127,7 +126,7 @@ export function FeatureTabsV2({
           }}
         />
       </div>
-      <div ref={rowRef} role="tablist" className="v2-chips relative mt-4 flex w-full justify-between gap-1 overflow-x-auto border-b border-hairline sm:gap-3">
+      <div ref={rowRef} role="tablist" className="v2-chips relative mt-4 flex w-full justify-between gap-1 overflow-x-auto border-b border-hairline">
         {tabs.map((t) => {
           const active = shown === t.key
           return (
@@ -148,7 +147,10 @@ export function FeatureTabsV2({
               )}
             >
               {t.label}
-              {t.paused && <Pause aria-label="Paused" className="ml-1 inline-block h-3 w-3 fill-current align-[-1px] text-warning" strokeWidth={0} />}
+              {/* paused: a small amber dot (the bar icon pushed the four tabs past the panel width) */}
+              {t.paused && (
+                <span role="img" aria-label="Paused" title="Paused" className="ml-1 inline-block h-1.5 w-1.5 rounded-full bg-warning align-middle" />
+              )}
             </button>
           )
         })}
